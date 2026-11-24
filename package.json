@@ -1,0 +1,17 @@
+{
+  "name": "playsquashgo",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Play Squash — agenda das quadras, Sofia no WhatsApp, app do aluno e cobrança por Pix",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "test": "NODE_ENV=test node --test \"testes/unidade/**/*.test.js\"",
+    "test:integracao": "NODE_ENV=test node --test --test-concurrency=1 \"testes/integracao/**/*.test.js\"",
+    "matriz": "node scripts/matriz.js",
+    "matriz:conferir": "node scripts/matriz.js --conferir",
+    "migrar": "node scripts/migrar.js"
+  },
+  "dependencies": {
+    "pg": "^8.13.1"
+  }
+}

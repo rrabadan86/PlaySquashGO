@@ -1,0 +1,443 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><title>Mockups Play Squash</title>
+<style>
+:root{--v:#00A97E;--v2:#E3F5EE;--e:#0E2620;--t:#1d2a26;--s:#64746f;--l:#e3e9e6;--f:#f5f8f7;--exp:#F2A33A;--rep:#5B7FE0;--dup:#8E5CC8;--red:#D64545}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,sans-serif;color:var(--t);background:#cfd8d4}
+.frame{width:1440px;height:900px;margin:0 0 40px;background:#fff;display:flex;overflow:hidden;position:relative}
+.phones{height:820px !important;background:linear-gradient(160deg,#0E2620,#13372d);align-items:center;justify-content:center;gap:56px}
+/* desktop shell */
+.side{width:232px;background:var(--e);color:#cfe0d9;padding:22px 14px;flex-shrink:0;font-size:13.5px}
+.side .logo{display:flex;align-items:center;gap:10px;margin:0 6px 26px;color:#fff;font-weight:600;font-size:15px}
+.side .logo img{width:34px;height:34px}
+.side .g{font-size:10.5px;letter-spacing:.12em;color:#6f938a;margin:12px 8px 4px;font-weight:600}
+.side .i{padding:5px 10px;border-radius:7px;margin-bottom:1px}
+.side .i.on{background:#1d4237;color:#fff;font-weight:600;box-shadow:inset 3px 0 0 var(--v)}
+.main{flex:1;display:flex;flex-direction:column;min-width:0;background:var(--f)}
+.top{height:64px;background:#fff;border-bottom:1px solid var(--l);display:flex;align-items:center;padding:0 28px;gap:16px}
+.top h1{font-size:19px;margin:0;font-weight:600;color:var(--e)}
+.top .sp{flex:1}
+.btn{border:1px solid var(--l);background:#fff;border-radius:8px;padding:8px 13px;font-size:13px;font-weight:500;color:var(--t)}
+.btn.p{background:var(--v);border-color:var(--v);color:#fff;font-weight:600}
+.seg{display:flex;border:1px solid var(--l);border-radius:8px;overflow:hidden;font-size:13px}
+.seg span{padding:7px 13px}.seg span.on{background:var(--e);color:#fff;font-weight:600}
+.av{width:34px;height:34px;border-radius:50%;background:var(--v2);color:var(--v);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px}
+.body{flex:1;padding:22px 28px;display:flex;gap:20px;min-height:0}
+.card{background:#fff;border:1px solid var(--l);border-radius:12px;padding:18px}
+.card h3{margin:0 0 12px;font-size:14.5px;font-weight:600;color:var(--e)}
+.muted{color:var(--s)}
+.chip{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;padding:3px 9px;border-radius:20px}
+.chip.ok{background:#E3F5EE;color:#047857}.chip.wait{background:#FFF3DF;color:#A35F00}.chip.no{background:#FDE8E8;color:#B42318}.chip.info{background:#E8EEFC;color:#3651A8}
+/* grade */
+.grade{flex:1;display:flex;flex-direction:column;padding:0;overflow:hidden}
+.gh{display:grid;grid-template-columns:64px 1fr 1fr;border-bottom:1px solid var(--l)}
+.gh div{padding:12px 14px;font-weight:600;font-size:13.5px;color:var(--e)}
+.gh small{display:block;font-weight:400;color:var(--s);font-size:12px;margin-top:2px}
+.gb{display:grid;grid-template-columns:64px 1fr 1fr;height:520px;position:relative;overflow:hidden}
+.grade{align-self:flex-start}
+.hrs div{height:52px;font-size:11.5px;color:var(--s);padding:4px 10px 0;text-align:right;border-top:1px solid #f0f3f2}
+.col{position:relative;border-left:1px solid var(--l);background:repeating-linear-gradient(#fff 0 51px,#f0f3f2 51px 52px)}
+.ev{position:absolute;left:6px;right:6px;border-radius:7px;padding:6px 9px;font-size:12px;line-height:1.3;border-left:4px solid;overflow:hidden}
+.ev b{font-weight:600;display:block;font-size:12.5px}
+.ev.fix{background:#E3F5EE;border-color:var(--v)}.ev.exp{background:#FFF3DF;border-color:var(--exp)}.ev.rep{background:#E8EEFC;border-color:var(--rep)}.ev.dup{background:#F1E9FA;border-color:var(--dup)}
+.ev.free{background:repeating-linear-gradient(135deg,#fafcfb 0 6px,#f1f5f3 6px 12px);border:1px dashed #c4d2cc;color:var(--s)}
+.leg{display:flex;gap:16px;font-size:12px;color:var(--s);padding:10px 14px;border-top:1px solid var(--l)}
+.leg i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.right{width:330px;display:flex;flex-direction:column;gap:16px;flex-shrink:0}
+.row{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid #eef2f0;font-size:13px}
+.row:first-of-type{border-top:none}
+.row .n{flex:1}.row .n b{font-weight:600;display:block}.row .n span{color:var(--s);font-size:12px}
+/* phones */
+.ph{width:340px;height:720px;border-radius:44px;background:#0b0f0e;padding:12px;box-shadow:0 30px 60px rgba(0,0,0,.35);flex-shrink:0}
+.scr{width:100%;height:100%;border-radius:33px;overflow:hidden;background:#fff;display:flex;flex-direction:column;position:relative}
+.sb{height:34px;display:flex;justify-content:space-between;align-items:center;padding:0 22px;font-size:12px;font-weight:600;flex-shrink:0}
+.cap{color:#cfe0d9;text-align:center;font-size:15px;margin-top:16px;font-weight:500}
+.wa-h{background:#0E5E4B;color:#fff;display:flex;align-items:center;gap:10px;padding:10px 14px;flex-shrink:0}
+.wa-h .av{width:34px;height:34px;background:#fff}
+.wa-h b{font-size:14px;display:block}.wa-h span{font-size:11px;opacity:.8}
+.wa{flex:1;background:#ECE5DD;padding:8px 10px;display:flex;flex-direction:column;gap:5px;overflow:hidden;font-size:11.8px;line-height:1.33}
+.m .op{padding:4px 8px !important;margin-top:4px !important}
+.m{max-width:84%;padding:7px 10px 5px;border-radius:9px;background:#fff;box-shadow:0 1px 1px rgba(0,0,0,.08)}
+.m.me{align-self:flex-end;background:#DCF8C6}
+.m .tm{font-size:9.5px;color:#7a8a85;text-align:right;margin-top:2px}
+.m .op{display:block;margin-top:5px;padding:5px 8px;border-radius:6px;background:#f2f7f5;font-weight:500}
+.app-h{padding:6px 18px 14px;flex-shrink:0}
+.app-h small{color:var(--s);font-size:12px}.app-h h2{margin:2px 0 0;font-size:21px;font-weight:600;color:var(--e)}
+.who{display:flex;gap:6px;margin-top:10px}.who span{font-size:11.5px;padding:5px 10px;border-radius:20px;border:1px solid var(--l)}.who span.on{background:var(--e);color:#fff;border-color:var(--e);font-weight:600}
+.app-b{flex:1;padding:0 14px;display:flex;flex-direction:column;gap:10px;overflow:hidden;background:var(--f);padding-top:12px}
+.ac{background:#fff;border:1px solid var(--l);border-radius:14px;padding:12px 14px;font-size:12.5px}
+.ac .d{display:flex;justify-content:space-between;align-items:center}
+.ac b{font-size:14px;font-weight:600;color:var(--e)}
+.mini{font-size:11.5px;padding:6px 11px;border-radius:8px;border:1px solid var(--l);font-weight:600;background:#fff}
+.mini.p{background:var(--v);color:#fff;border-color:var(--v)}.mini.r{color:var(--red);border-color:#f3c9c9}
+.tab{height:62px;border-top:1px solid var(--l);display:flex;justify-content:space-around;align-items:center;font-size:10.5px;color:var(--s);flex-shrink:0;background:#fff}
+.tab div{text-align:center}.tab div.on{color:var(--v);font-weight:600}
+.tab .ic{width:20px;height:20px;border-radius:6px;background:currentColor;opacity:.25;margin:0 auto 3px}.tab .on .ic{opacity:1}
+/* forms */
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:14px 18px}
+.fl label{display:block;font-size:12px;color:var(--s);margin-bottom:5px;font-weight:500}
+.in{border:1px solid #d5dfdb;border-radius:8px;padding:9px 11px;font-size:13.5px;background:#fff;display:flex;justify-content:space-between}
+.in .c{color:var(--s)}
+.ban{background:#E8EEFC;border:1px solid #cdd9f7;color:#26407e;border-radius:10px;padding:11px 14px;font-size:13px;display:flex;gap:12px;align-items:center;margin-bottom:16px}
+.ban b{font-weight:600}
+table.t{width:100%;border-collapse:collapse;font-size:13px}
+table.t th{text-align:left;color:var(--s);font-weight:500;font-size:12px;padding:6px 8px;border-bottom:1px solid var(--l)}
+table.t td{padding:8px;border-bottom:1px solid #eef2f0}
+.days{display:flex;gap:6px}.days span{width:38px;text-align:center;padding:7px 0;border-radius:7px;border:1px solid #d5dfdb;font-size:12.5px}.days span.on{background:var(--e);color:#fff;border-color:var(--e);font-weight:600}
+.sum{display:flex;justify-content:space-between;font-size:13.5px;padding:6px 0}
+.sum.tot{border-top:1px solid var(--l);margin-top:6px;padding-top:10px;font-weight:700;font-size:15px;color:var(--e)}
+/* kpis */
+.kp{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:16px}
+.kp .card{padding:14px 16px}.kp .v{font-size:25px;font-weight:600;color:var(--e);margin-top:4px}.kp .l{font-size:12px;color:var(--s)}
+.kp .d{font-size:11.5px;margin-top:4px;color:var(--s)}
+.fn{display:flex;flex-direction:column;gap:9px}
+.fn .r{display:grid;grid-template-columns:150px 1fr 70px;align-items:center;gap:10px;font-size:12.5px}
+.fn .bar{height:22px;background:#e9efec;border-radius:0 4px 4px 0;position:relative}
+.fn .bar i{position:absolute;left:0;top:0;bottom:0;background:var(--v);border-radius:0 4px 4px 0}
+.hm{display:grid;grid-template-columns:52px repeat(6,1fr);gap:3px;font-size:11px}
+.hm div{height:24px;border-radius:3px;display:flex;align-items:center;justify-content:center}
+.hm .h{color:var(--s);justify-content:flex-end;padding-right:6px}
+.bars{display:flex;align-items:flex-end;gap:18px;height:170px;padding:0 6px;border-bottom:1px solid #cfd9d5}
+.bars .g{flex:1;display:flex;gap:4px;align-items:flex-end;height:100%}
+.bars .g i{flex:1;border-radius:4px 4px 0 0}
+.bx{display:flex;gap:18px;padding:6px 6px 0;font-size:11.5px;color:var(--s)}.bx span{flex:1;text-align:center}
+</style></head><body>
+
+<!-- M1 GRADE -->
+<div class="frame" id="m1" style="height:720px">
+ <div class="side">
+  <div class="logo"><img src="logo.png">Play Squash</div>
+  <div class="g">SOFIA</div><div class="i">Conversas</div><div class="i">Configuração</div><div class="i">Campanhas</div>
+  <div class="g">AGENDA</div><div class="i on">Grade</div><div class="i">Experimentais</div><div class="i">Reposições</div><div class="i">Quadras e professores</div>
+  <div class="g">ALUNOS</div><div class="i">Ativos e inativos</div><div class="i">Matrículas</div>
+  <div class="g">FINANCEIRO</div><div class="i">Cobranças</div><div class="i">Caixa</div>
+  <div class="g">INDICADORES</div><div class="i">Funil e ocupação</div>
+ </div>
+ <div class="main">
+  <div class="top"><h1>Grade</h1><span class="btn">‹</span><span style="font-weight:600;font-size:14px">Terça, 1 de dezembro</span><span class="btn">›</span><span class="btn">Hoje</span><div class="sp"></div><div class="seg"><span class="on">Dia</span><span>Semana</span></div><span class="btn">+ Bloqueio</span><span class="btn p">+ Aula</span><div class="av">GU</div></div>
+  <div class="body">
+   <div class="card grade">
+    <div class="gh"><div></div><div>Quadra 1<small>Prof. Guilherme</small></div><div>Quadra 2<small>Prof. Francisco</small></div></div>
+    <div class="gb">
+     <div class="hrs"><div>16:00</div><div>16:30</div><div>17:00</div><div>17:30</div><div>18:00</div><div>18:30</div><div>19:00</div><div>19:30</div><div>20:00</div><div>20:30</div></div>
+     <div class="col">
+      <div class="ev fix" style="top:2px;height:48px"><b>Aula — Ana Souza</b>Individual · 2x</div>
+      <div class="ev dup" style="top:54px;height:48px"><b>Aula — Carla + Diego (dupla)</b>Dupla · contratos separados</div>
+      <div class="ev exp" style="top:106px;height:48px"><b>Experimental — Rafael Lima ✓</b>Confirmada · iniciante</div>
+      <div class="ev fix" style="top:158px;height:100px"><b>Aula — Marcos Pereira</b>Individual · 60 min</div>
+      <div class="ev rep" style="top:262px;height:48px"><b>Reposição — Júlia Martins</b>Crédito de 26/11</div>
+      <div class="ev free" style="top:314px;height:48px"><b>Livre</b>2 na lista de espera</div>
+      <div class="ev fix" style="top:366px;height:48px"><b>Aula — Pedro Alves</b>Individual · 1x</div>
+      <div class="ev fix" style="top:418px;height:48px"><b>Aula — Laura Dias (kids)</b>Kids · responsável: Renata</div>
+     </div>
+     <div class="col">
+      <div class="ev fix" style="top:2px;height:48px"><b>Aula — Felipe Rocha</b>Individual · 3x</div>
+      <div class="ev free" style="top:54px;height:48px"><b>Livre</b>Desmarcada pelo aluno às 9h12</div>
+      <div class="ev fix" style="top:106px;height:48px"><b>Aula — Bianca Costa</b>Individual · 2x</div>
+      <div class="ev exp" style="top:158px;height:48px"><b>Experimental — Tiago + Lia</b>Aguardando confirmação</div>
+      <div class="ev dup" style="top:210px;height:48px"><b>Aula — Sérgio + Helena (dupla)</b>Dupla</div>
+      <div class="ev fix" style="top:262px;height:48px"><b>Aula — Gustavo Melo</b>Individual · 1x</div>
+      <div class="ev rep" style="top:314px;height:48px"><b>Reposição — Ana Souza</b>Crédito de 28/11</div>
+      <div class="ev fix" style="top:366px;height:100px"><b>Aula — Vitor Nunes</b>Individual · 60 min</div>
+     </div>
+    </div>
+    <div class="leg"><span><i style="background:var(--v)"></i>Aula fixa</span><span><i style="background:var(--dup)"></i>Dupla</span><span><i style="background:var(--exp)"></i>Experimental</span><span><i style="background:var(--rep)"></i>Reposição</span><span><i style="background:#c4d2cc"></i>Livre</span><span style="margin-left:auto">Espelhado no Google Agenda de cada quadra</span></div>
+   </div>
+   <div class="right">
+    <div class="card"><h3>Experimentais de hoje</h3>
+     <div class="row"><div class="n"><b>Rafael Lima</b><span>17h · Quadra 1 · gratuita</span></div><span class="chip ok">✓ Confirmada</span></div>
+     <div class="row"><div class="n"><b>Tiago + Lia</b><span>17h30 · Quadra 2 · dupla</span></div><span class="chip wait">Aguardando</span></div>
+     <div class="row"><div class="n"><b>Camila Reis</b><span>19h · Quadra 1 · paga</span></div><span class="chip no">Cancelada sem resposta</span></div>
+    </div>
+    <div class="card"><h3>Atenção hoje</h3>
+     <div class="row"><div class="n"><b>2 vagas abertas</b><span>3 pessoas avisadas na lista de espera</span></div><span class="chip info">Lista</span></div>
+     <div class="row"><div class="n"><b>3 parcelas vencidas sem baixa</b><span>Confira o extrato antes do bloqueio</span></div><span class="chip wait">Financeiro</span></div>
+     <div class="row"><div class="n"><b>Presenças de ontem</b><span>Sem marcação contam como presença</span></div><span class="chip ok">OK</span></div>
+    </div>
+   </div>
+  </div>
+ </div>
+</div>
+
+<!-- M2 SOFIA + PROFESSOR -->
+<div class="frame phones" id="m2">
+ <div><div class="ph"><div class="scr">
+  <div class="sb" style="background:#0E5E4B;color:#fff"><span>9:41</span><span>●●● 5G</span></div>
+  <div class="wa-h"><div class="av"><img src="logo.png" style="width:34px"></div><div><b>Play Squash</b><span>Sofia · atendimento</span></div></div>
+  <div class="wa">
+   <div class="m me">Oi! Queria fazer uma aula 🙂<div class="tm">21:02</div></div>
+   <div class="m">Oi! Eu sou a Sofia, da Play Squash 💚 Qual é o seu nome? Você já jogou squash alguma vez?<div class="tm">21:02</div></div>
+   <div class="m me">Rafael. Nunca joguei<div class="tm">21:03</div></div>
+   <div class="m">Então sua aula experimental é <b>gratuita</b>! Prefere aula individual ou em dupla, e qual período fica melhor?<div class="tm">21:03</div></div>
+   <div class="m me">Individual, fim de tarde<div class="tm">21:04</div></div>
+   <div class="m">Tenho estes horários livres:<span class="op">1 · Ter 01/12, 17h · Prof. Guilherme</span><span class="op">2 · Qua 02/12, 18h30 · Prof. Francisco</span><span class="op">3 · Qui 03/12, 17h30 · Prof. Guilherme</span><div class="tm">21:04</div></div>
+   <div class="m me">1<div class="tm">21:05</div></div>
+   <div class="m">Marcado! ✅ <b>Ter 01/12, 17h</b>, Quadra 1. Traga tênis de sola clara e água; a raquete a gente empresta 😉<div class="tm">21:05</div></div>
+  </div>
+ </div></div><div class="cap">Sofia marcando a experimental</div></div>
+
+ <div><div class="ph"><div class="scr">
+  <div class="sb" style="background:#0E5E4B;color:#fff"><span>9:41</span><span>●●● 5G</span></div>
+  <div class="wa-h"><div class="av"><img src="logo.png" style="width:34px"></div><div><b>Play Squash</b><span>avisos automáticos</span></div></div>
+  <div class="wa">
+   <div class="m">🗓 <b>Seu dia — terça, 01/12</b><br>Quadra 1 · 9 aulas<br>16h Ana Souza · 16h30 Carla + Diego<br>17h <b>Experimental: Rafael Lima ✓</b><br>17h30 Marcos Pereira (60 min)<br>18h30 Reposição: Júlia Martins<br>…<br><br>⚠ Pagamento em aberto: Pedro Alves<div class="tm">06:00</div></div>
+   <div class="m">🆕 <b>Nova experimental</b><br>Rafael Lima · ter 17h · Quadra 1 · iniciante · gratuita<div class="tm">21:05</div></div>
+   <div class="m">✅ <b>Confirmou</b><br>Rafael Lima · experimental hoje às 17h<div class="tm">19:12</div></div>
+   <div class="m">↩ <b>Desmarcação</b><br>Felipe Rocha desmarcou ter 16h30 (Quadra 2). Crédito de reposição gerado. Vaga oferecida à lista de espera.<div class="tm">09:12</div></div>
+   <div class="m">📌 <b>Vaga preenchida pela lista</b><br>Júlia Martins (11) 9 0000-0000 · reposição · ter 18h30 · Quadra 1<div class="tm">10:40</div></div>
+  </div>
+ </div></div><div class="cap">Resumo das 6h e avisos ao professor</div></div>
+</div>
+
+<!-- M3 APP DO ALUNO -->
+<div class="frame phones" id="m3">
+ <div><div class="ph"><div class="scr">
+  <div class="sb"><span>9:41</span><span>●●● 5G</span></div>
+  <div class="app-h"><small>Olá, Renata</small><h2>Minhas aulas</h2><div class="who"><span class="on">Laura (kids)</span><span>Renata</span></div></div>
+  <div class="app-b">
+   <div class="ac"><div class="d"><div><b>Ter 01/12 · 20h</b><div class="muted">Quadra 1 · Prof. Guilherme · Kids</div></div><span class="mini r">Desmarcar</span></div></div>
+   <div class="ac"><div class="d"><div><b>Qui 03/12 · 20h</b><div class="muted">Quadra 1 · Prof. Guilherme · Kids</div></div><span class="mini r">Desmarcar</span></div></div>
+   <div class="ac"><div class="d"><div><b>Sáb 05/12 · 10h</b><div class="muted">Quadra 2 · Reposição</div></div><span class="mini r">Desmarcar</span></div></div>
+   <div class="ac" style="background:#E3F5EE;border-color:#bfe6d6"><b style="font-size:13px">Desmarque com 3 h ou mais</b><div class="muted" style="margin-top:3px">e ganhe uma reposição válida por 7 dias a partir da data da aula.</div></div>
+  </div>
+  <div class="tab"><div class="on"><div class="ic"></div>Aulas</div><div><div class="ic"></div>Reposições</div><div><div class="ic"></div>Contratos</div><div><div class="ic"></div>Histórico</div></div>
+ </div></div><div class="cap">Aulas e desmarcação</div></div>
+
+ <div><div class="ph"><div class="scr">
+  <div class="sb"><span>9:41</span><span>●●● 5G</span></div>
+  <div class="app-h"><small>Laura (kids)</small><h2>Reposições</h2></div>
+  <div class="app-b">
+   <div class="ac"><div class="d"><div><b>1 crédito disponível</b><div class="muted">Aula de 26/11 · vale até 03/12</div></div><span class="chip wait">4 dias</span></div></div>
+   <div style="font-size:12px;color:var(--s);font-weight:600;margin:4px 2px 0">HORÁRIOS LIVRES · KIDS</div>
+   <div class="ac"><div class="d"><div><b>Qua 02/12 · 19h30</b><div class="muted">Quadra 2 · Prof. Francisco</div></div><span class="mini p">Usar</span></div></div>
+   <div class="ac"><div class="d"><div><b>Sex 04/12 · 18h</b><div class="muted">Quadra 1 · Prof. Guilherme</div></div><span class="mini p">Usar</span></div></div>
+   <div class="ac"><div class="d"><div><b>Qui 03/12 · 17h</b><div class="muted">Quadra 1 · lotado</div></div><span class="mini">Lista de espera</span></div></div>
+  </div>
+  <div class="tab"><div><div class="ic"></div>Aulas</div><div class="on"><div class="ic"></div>Reposições</div><div><div class="ic"></div>Contratos</div><div><div class="ic"></div>Histórico</div></div>
+ </div></div><div class="cap">Reposição e lista de espera</div></div>
+
+ <div><div class="ph"><div class="scr">
+  <div class="sb"><span>9:41</span><span>●●● 5G</span></div>
+  <div class="app-h"><small>Laura (kids)</small><h2>Meus contratos</h2></div>
+  <div class="app-b">
+   <div class="ac"><div class="d"><div><b>Kids 2x · trimestral</b><div class="muted">01/10 a 31/12 · parcela 3 de 3</div></div><span class="chip wait">Vence 05/12</span></div></div>
+   <div class="ac" style="text-align:center">
+    <div class="muted" style="font-size:12px">Pix da parcela</div><b style="font-size:24px;display:block;margin:2px 0 8px">R$ 420,00</b>
+    <svg id="qr" width="150" height="150" viewBox="0 0 29 29" style="display:block;margin:0 auto"></svg>
+    <div style="margin-top:10px;display:flex;gap:8px;justify-content:center"><span class="mini p">Copiar Pix copia e cola</span></div>
+    <div style="margin-top:8px"><span class="mini">Enviar comprovante</span></div>
+   </div>
+  </div>
+  <div class="tab"><div><div class="ic"></div>Aulas</div><div><div class="ic"></div>Reposições</div><div class="on"><div class="ic"></div>Contratos</div><div><div class="ic"></div>Histórico</div></div>
+ </div></div><div class="cap">Parcela com Pix e comprovante</div></div>
+</div>
+
+<!-- M4 MATRICULA -->
+<div class="frame" id="m4" style="height:640px">
+ <div class="side">
+  <div class="logo"><img src="logo.png">Play Squash</div>
+  <div class="g">SOFIA</div><div class="i">Conversas</div><div class="i">Configuração</div><div class="i">Campanhas</div>
+  <div class="g">AGENDA</div><div class="i">Grade</div><div class="i">Experimentais</div><div class="i">Reposições</div>
+  <div class="g">ALUNOS</div><div class="i">Ativos e inativos</div><div class="i on">Matrículas</div>
+  <div class="g">FINANCEIRO</div><div class="i">Planos</div><div class="i">Cobranças</div><div class="i">Caixa</div>
+  <div class="g">INDICADORES</div><div class="i">Funil e ocupação</div>
+ </div>
+ <div class="main">
+  <div class="top"><h1>Novo contrato</h1><div class="sp"></div><span class="btn">Cancelar</span><span class="btn p">Salvar e enviar para aceite</span><div class="av">GU</div></div>
+  <div class="body">
+   <div class="card" style="flex:1">
+    <div class="ban"><span style="font-size:18px">↻</span><div><b>Bianca Costa já tem um contrato (2x individual, vence em 15/12).</b> Este contrato é uma renovação? <u>Sim, manter o horário e os dados</u> · Não</div></div>
+    <div class="fg">
+     <div class="fl"><label>Aluno</label><div class="in">Bianca Costa<span class="c">▾</span></div></div>
+     <div class="fl"><label>Plano</label><div class="in">2x individual · trimestral<span class="c">▾</span></div></div>
+     <div class="fl"><label>Horário fixo — dias</label><div class="days"><span>Seg</span><span class="on">Ter</span><span>Qua</span><span class="on">Qui</span><span>Sex</span><span>Sáb</span></div></div>
+     <div class="fl"><label>Horário e quadra</label><div class="in">17h30 · Quadra 2 · Prof. Francisco<span class="c" style="color:#047857">● livre</span></div></div>
+     <div class="fl"><label>Início</label><div class="in">16/12/2026<span class="c">📅</span></div></div>
+     <div class="fl"><label>Valor mensal</label><div class="in">R$ 550,00<span class="c">definido no contrato</span></div></div>
+     <div class="fl"><label>Desconto</label><div class="in">10% · Família<span class="c">motivo obrigatório</span></div></div>
+     <div class="fl"><label>Pagamento</label><div class="in">3 parcelas · todo dia 16<span class="c">▾</span></div></div>
+     <div class="fl"><label>Trancamento</label><div class="in">Permite · 7 dias · mín. 7 por pedido<span class="c">aluno pode pedir: não</span></div></div>
+     <div class="fl"><label>Modelo de contrato</label><div class="in">Contrato adulto v1<span class="c">▾</span></div></div>
+    </div>
+   </div>
+   <div class="right" style="width:360px">
+    <div class="card"><h3>Resumo</h3>
+     <div class="sum"><span class="muted">3 meses × R$ 550,00</span><span>R$ 1.650,00</span></div>
+     <div class="sum"><span class="muted">Proporcional dez (16 a 31)</span><span>incluído</span></div>
+     <div class="sum"><span class="muted">Desconto família (10%)</span><span>− R$ 165,00</span></div>
+     <div class="sum tot"><span>Total</span><span>R$ 1.485,00</span></div>
+    </div>
+    <div class="card"><h3>Parcelas</h3>
+     <table class="t"><tr><th>#</th><th>Vencimento</th><th>Valor</th></tr>
+     <tr><td>1</td><td>16/12/2026</td><td>R$ 495,00</td></tr><tr><td>2</td><td>16/01/2027</td><td>R$ 495,00</td></tr><tr><td>3</td><td>16/02/2027</td><td>R$ 495,00</td></tr></table>
+     <p class="muted" style="font-size:12px;margin:12px 0 0">Ao salvar, a aluna recebe o resumo no WhatsApp e aceita o contrato no app. As aulas fixas entram no Google Agenda da quadra.</p>
+    </div>
+   </div>
+  </div>
+ </div>
+</div>
+
+<!-- M5 INDICADORES -->
+<div class="frame" id="m5" style="height:640px">
+ <div class="side">
+  <div class="logo"><img src="logo.png">Play Squash</div>
+  <div class="g">SOFIA</div><div class="i">Conversas</div><div class="i">Configuração</div><div class="i">Campanhas</div>
+  <div class="g">AGENDA</div><div class="i">Grade</div><div class="i">Experimentais</div><div class="i">Reposições</div>
+  <div class="g">ALUNOS</div><div class="i">Ativos e inativos</div><div class="i">Matrículas</div>
+  <div class="g">FINANCEIRO</div><div class="i">Cobranças</div><div class="i">Caixa</div>
+  <div class="g">INDICADORES</div><div class="i on">Funil e ocupação</div><div class="i">Receita</div><div class="i">Aulas por professor</div>
+ </div>
+ <div class="main">
+  <div class="top"><h1>Indicadores</h1><div class="sp"></div><div class="seg"><span>Semana</span><span class="on">Novembro 2026</span><span>Trimestre</span></div><div class="av">GU</div></div>
+  <div class="body" style="flex-direction:column;gap:0">
+   <div class="kp">
+    <div class="card"><div class="l">Alunos ativos</div><div class="v">68</div><div class="d">+5 novos · 2 saíram</div></div>
+    <div class="card"><div class="l">Ocupação das quadras</div><div class="v">74%</div><div class="d">Q1 81% · Q2 67%</div></div>
+    <div class="card"><div class="l">Recebido no mês</div><div class="v">R$ 28.960</div><div class="d">de R$ 31.200 previstos</div></div>
+    <div class="card"><div class="l">Em atraso</div><div class="v">R$ 2.240</div><div class="d">7 parcelas · 7,2%</div></div>
+   </div>
+   <div style="display:flex;gap:16px;flex:1;min-height:0">
+    <div class="card" style="flex:1"><h3>Funil de novos alunos</h3>
+     <div class="fn">
+      <div class="r"><span>Leads</span><div class="bar"><i style="width:100%"></i></div><b>52</b></div>
+      <div class="r"><span>Experimental marcada</span><div class="bar"><i style="width:65%"></i></div><b>34 · 65%</b></div>
+      <div class="r"><span>Confirmada</span><div class="bar"><i style="width:54%"></i></div><b>28 · 82%</b></div>
+      <div class="r"><span>Compareceu</span><div class="bar"><i style="width:48%"></i></div><b>25 · 89%</b></div>
+      <div class="r"><span>Matriculou</span><div class="bar"><i style="width:23%"></i></div><b>12 · 48%</b></div>
+     </div>
+     <div style="margin-top:20px;font-size:12.5px"><div class="muted" style="font-weight:600;font-size:12px;margin-bottom:6px">MOTIVOS DE PERDA (após a experimental)</div>
+      <div class="sum" style="padding:3px 0"><span>Horário</span><span>5</span></div><div class="sum" style="padding:3px 0"><span>Preço</span><span>4</span></div><div class="sum" style="padding:3px 0"><span>Parou de responder</span><span>3</span></div><div class="sum" style="padding:3px 0"><span>Outro</span><span>1</span></div></div>
+    </div>
+    <div class="card" style="flex:1.15"><h3>Ocupação por faixa · Quadra 1</h3>
+     <div class="hm" id="hm"></div>
+     <div style="display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--s);margin-top:10px">0%<span style="width:120px;height:8px;border-radius:4px;background:linear-gradient(90deg,#eef7f3,#00A97E,#05573f)"></span>100%</div>
+    </div>
+    <div class="card" style="flex:1"><h3>Receita: prevista × recebida</h3>
+     <div class="bars" id="bars"></div>
+     <div class="bx"><span>Jul</span><span>Ago</span><span>Set</span><span>Out</span><span>Nov</span></div>
+     <div style="display:flex;gap:16px;font-size:12px;color:var(--s);margin-top:12px"><span><i style="display:inline-block;width:10px;height:10px;border-radius:3px;background:#b9ddd0;margin-right:6px"></i>Prevista</span><span><i style="display:inline-block;width:10px;height:10px;border-radius:3px;background:#00805F;margin-right:6px"></i>Recebida</span></div>
+    </div>
+   </div>
+  </div>
+ </div>
+</div>
+
+<!-- M6 PROFESSOR NO CELULAR -->
+<div class="frame phones" id="m6">
+ <div><div class="ph"><div class="scr">
+  <div class="sb"><span>9:41</span><span>●●● 5G</span></div>
+  <div class="app-h"><small>Prof. Francisco · Quadra 2</small><h2>Hoje, ter 01/12</h2><div class="who"><span class="on">Minhas aulas</span><span>Todas as quadras</span></div></div>
+  <div class="app-b">
+   <div class="ac"><div class="d"><div><b>16h · Felipe Rocha</b><div class="muted">Individual · em dia</div></div><span class="chip ok">Presente</span></div></div>
+   <div class="ac" style="opacity:.6"><div class="d"><div><b>16h30 · Livre</b><div class="muted">Desmarcada pelo aluno · lista avisada</div></div></div></div>
+   <div class="ac"><div class="d"><div><b>17h · Bianca Costa</b><div class="muted">Individual · em dia</div></div><span class="chip no">Faltou</span></div></div>
+   <div class="ac" style="border-color:#f5d9a8"><div class="d"><div><b>17h30 · Tiago + Lia</b><div class="muted">Experimental em dupla · aguardando</div></div></div>
+    <div style="display:flex;gap:6px;margin-top:9px"><span class="mini p">Presente</span><span class="mini">Faltou</span><span class="mini r">Desmarcar</span></div></div>
+   <div class="ac"><div class="d"><div><b>18h · Sérgio + Helena</b><div class="muted">Dupla · <span style="color:#B42318;font-weight:600">Helena pendente</span></div></div></div>
+    <div style="display:flex;gap:6px;margin-top:9px"><span class="mini p">Presente</span><span class="mini">Faltou</span><span class="mini r">Desmarcar</span></div></div>
+  </div>
+  <div class="tab"><div class="on"><div class="ic"></div>Hoje</div><div><div class="ic"></div>Agenda</div><div><div class="ic"></div>Alunos</div><div><div class="ic"></div>Avisos</div></div>
+ </div></div><div class="cap">Aulas do dia e presença</div></div>
+
+ <div><div class="ph"><div class="scr">
+  <div class="sb"><span>9:41</span><span>●●● 5G</span></div>
+  <div class="app-h"><small>Prof. Francisco</small><h2>Hoje, ter 01/12</h2></div>
+  <div class="app-b" style="position:relative">
+   <div class="ac"><div class="d"><div><b>18h · Sérgio + Helena</b><div class="muted">Dupla</div></div></div></div>
+   <div class="ac"><div class="d"><div><b>19h · Gustavo Melo</b><div class="muted">Individual · em dia</div></div></div></div>
+   <div style="position:absolute;left:0;right:0;top:-120px;bottom:0;background:rgba(14,38,32,.55)"></div>
+   <div style="flex:1"></div>
+   <div style="position:relative;z-index:2;background:#fff;border-radius:18px 18px 0 0;margin:0 -14px;padding:18px 18px 20px;font-size:13px">
+    <div style="width:40px;height:4px;border-radius:2px;background:#d5dfdb;margin:0 auto 14px"></div>
+    <b style="font-size:16px;color:var(--e)">Desmarcar aula</b>
+    <div class="muted" style="margin:4px 0 14px">Gustavo Melo · ter 01/12 · 19h · Quadra 2</div>
+    <div class="fl"><label>Motivo</label><div class="in">Professor indisponível<span class="c">▾</span></div></div>
+    <div class="ac" style="background:#E3F5EE;border-color:#bfe6d6;margin-top:12px"><b style="font-size:13px">O aluno ganha uma reposição</b><div class="muted" style="margin-top:3px">Desmarcação com mais de 3 h de antecedência. Válida até 08/12.</div></div>
+    <div class="muted" style="font-size:12px;margin:12px 0">O aluno é avisado no WhatsApp com o link do app, o Google Agenda é atualizado e a vaga vai para a lista de espera.</div>
+    <div style="display:flex;gap:8px"><span class="mini" style="flex:1;text-align:center;padding:10px">Voltar</span><span class="mini r" style="flex:1;text-align:center;padding:10px;background:#D64545;color:#fff;border-color:#D64545">Desmarcar</span></div>
+   </div>
+  </div>
+ </div></div><div class="cap">Desmarcação com crédito automático</div></div>
+
+ <div><div class="ph"><div class="scr">
+  <div class="sb"><span>9:41</span><span>●●● 5G</span></div>
+  <div class="app-h"><small>Prof. Francisco</small><h2>Meus alunos</h2><div class="who"><span class="on">Todos 24</span><span>Pendentes 2</span><span>Faltas 1</span></div></div>
+  <div class="app-b">
+   <div class="ac"><div class="d"><div><b>Bianca Costa</b><div class="muted">2x individual · ter e qui 17h</div></div><span class="chip ok">Em dia</span></div></div>
+   <div class="ac"><div class="d"><div><b>Felipe Rocha</b><div class="muted">3x individual · seg, ter, qui 16h</div></div><span class="chip ok">Em dia</span></div></div>
+   <div class="ac"><div class="d"><div><b>Helena Prado</b><div class="muted">Dupla com Sérgio · ter 18h</div></div><span class="chip no">Pendente</span></div></div>
+   <div class="ac"><div class="d"><div><b>Gustavo Melo</b><div class="muted">1x individual · ter 19h</div></div><span class="chip ok">Em dia</span></div></div>
+   <div class="ac" style="border-color:#f5d9a8"><div class="d"><div><b>Vitor Nunes</b><div class="muted">Faltou 2 semanas seguidas</div></div><span class="chip wait">Atenção</span></div></div>
+  </div>
+  <div class="tab"><div><div class="ic"></div>Hoje</div><div><div class="ic"></div>Agenda</div><div class="on"><div class="ic"></div>Alunos</div><div><div class="ic"></div>Avisos</div></div>
+ </div></div><div class="cap">Situação dos alunos, sem valores</div></div>
+</div>
+
+<!-- M7 PLANOS -->
+<div class="frame" id="m7" style="height:600px">
+ <div class="side">
+  <div class="logo"><img src="logo.png">Play Squash</div>
+  <div class="g">SOFIA</div><div class="i">Conversas</div><div class="i">Configuração</div><div class="i">Campanhas</div>
+  <div class="g">AGENDA</div><div class="i">Grade</div><div class="i">Experimentais</div><div class="i">Reposições</div>
+  <div class="g">ALUNOS</div><div class="i">Ativos e inativos</div><div class="i">Matrículas</div>
+  <div class="g">FINANCEIRO</div><div class="i on">Planos</div><div class="i">Cobranças</div><div class="i">Caixa</div>
+  <div class="g">INDICADORES</div><div class="i">Funil e ocupação</div>
+ </div>
+ <div class="main">
+  <div class="top"><h1>Planos</h1><div class="sp"></div><span class="btn">Duplicar</span><span class="btn p">+ Novo plano</span><div class="av">GU</div></div>
+  <div class="body">
+   <div class="card" style="width:400px;flex-shrink:0;padding:14px 16px">
+    <h3>Planos cadastrados</h3>
+    <div class="row"><div class="n"><b>1x individual · mensal</b><span>Individual · 1 mês · 14 contratos</span></div><span class="chip ok">Ativo</span></div>
+    <div class="row" style="background:#E3F5EE;margin:0 -16px;padding:10px 16px;box-shadow:inset 3px 0 0 var(--v)"><div class="n"><b>2x individual · trimestral</b><span>Novo plano · em edição</span></div><span class="chip info">Novo</span></div>
+    <div class="row"><div class="n"><b>3x individual · mensal</b><span>Individual · 1 mês · 6 contratos</span></div><span class="chip ok">Ativo</span></div>
+    <div class="row"><div class="n"><b>2x dupla · semestral</b><span>Dupla · 6 meses · 8 contratos</span></div><span class="chip ok">Ativo</span></div>
+    <div class="row"><div class="n"><b>Kids 2x · trimestral</b><span>Kids · 3 meses · 9 contratos</span></div><span class="chip ok">Ativo</span></div>
+    <div class="row"><div class="n"><b>Promo verão 2026</b><span>Individual · 2 meses · 3 contratos</span></div><span class="chip" style="background:#eef2f0;color:#5b6b66">Fora de venda</span></div>
+   </div>
+   <div class="card" style="flex:1">
+    <h3>Novo plano</h3>
+    <div class="fg">
+     <div class="fl"><label>Tipo de aula</label><div class="days"><span class="on" style="width:auto;padding:7px 12px">Individual</span><span style="width:auto;padding:7px 12px">Dupla</span><span style="width:auto;padding:7px 12px">Turma</span><span style="width:auto;padding:7px 12px">Kids</span></div><div class="muted" style="font-size:11.5px;margin-top:5px">30 min · 1 aluno por aula</div></div>
+     <div class="fl"><label>Nome</label><div class="in">2x individual · trimestral<span class="c">sugerido</span></div></div>
+     <div class="fl"><label>Aulas por semana</label><div class="days"><span>1</span><span class="on">2</span><span>3</span></div></div>
+     <div class="fl"><label>Vigência</label><div class="days"><span>1m</span><span class="on">3m</span><span>6m</span><span>12m</span><span style="width:auto;padding:7px 10px">outra</span></div></div>
+     <div class="fl"><label>Valor de referência (opcional)</label><div class="in">R$ 550,00 / mês<span class="c">ajustável no contrato</span></div></div>
+     <div class="fl"><label>Pagamento sugerido</label><div class="in">Parcelado · até 3x<span class="c">▾</span></div></div>
+     <div class="fl"><label>Modelo de contrato</label><div class="in">Contrato adulto<span class="c">▾</span></div></div>
+     <div class="fl"><label>Reposições por mês (opcional)</label><div class="in">2<span class="c">vazio = regra geral</span></div></div>
+    </div>
+    <div style="border-top:1px solid var(--l);margin:16px 0 12px"></div>
+    <div class="fg" style="grid-template-columns:repeat(4,1fr)">
+     <div class="fl"><label>Trancamento</label><div class="in">Permite<span class="c" style="color:#047857">●</span></div></div>
+     <div class="fl"><label>Dias na vigência</label><div class="in">7 dias</div></div>
+     <div class="fl"><label>Mínimo por pedido</label><div class="in">7 dias</div></div>
+     <div class="fl"><label>Aluno pode pedir no app</label><div class="in">Não<span class="c">só o admin</span></div></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;margin-top:16px">
+     <span style="width:38px;height:22px;border-radius:11px;background:var(--v);position:relative;display:inline-block"><i style="position:absolute;right:3px;top:3px;width:16px;height:16px;border-radius:50%;background:#fff"></i></span>
+     <span style="font-size:13.5px;font-weight:600">Ativo para venda</span>
+     <span class="muted" style="font-size:12.5px;margin-left:auto">Mudanças valem só para contratos novos</span>
+     <span class="btn p">Salvar plano</span>
+    </div>
+   </div>
+  </div>
+ </div>
+</div>
+
+<script>
+// QR ilustrativo
+(function(){const s=document.getElementById('qr');let h='<rect width="29" height="29" fill="#fff"/>';let x=12345;const r=()=>{x=(x*1103515245+12345)%2147483648;return x/2147483648};
+const f=(a,b)=>{h+=`<rect x="${a}" y="${b}" width="7" height="7" fill="#0E2620"/><rect x="${a+1}" y="${b+1}" width="5" height="5" fill="#fff"/><rect x="${a+2}" y="${b+2}" width="3" height="3" fill="#0E2620"/>`};
+for(let i=0;i<29;i++)for(let j=0;j<29;j++){const inF=(i<8&&j<8)||(i>20&&j<8)||(i<8&&j>20);if(!inF&&r()>.52)h+=`<rect x="${i}" y="${j}" width="1" height="1" fill="#0E2620"/>`}
+f(0,0);f(22,0);f(0,22);s.innerHTML=h})();
+// heatmap
+(function(){const hm=document.getElementById('hm');const d=['Seg','Ter','Qua','Qui','Sex','Sáb'];const hrs=['6h30','7h30','8h30','11h','16h','17h','18h','19h','20h'];
+const v=[[90,85,80,88,70,40],[75,70,72,68,60,55],[50,45,52,40,35,60],[30,35,25,40,20,0],[55,60,58,62,50,0],[85,92,88,95,80,0],[100,100,95,100,90,0],[95,100,92,98,85,0],[70,75,68,80,55,0]];
+let h='<div></div>'+d.map(x=>`<div class="h" style="justify-content:center;padding:0">${x}</div>`).join('');
+const c=p=>{if(p===0)return'#f3f6f5';const t=p/100;const a=[238,247,243],b=[0,169,126],e=[5,87,63];let r;if(t<.6){const k=t/.6;r=a.map((q,i)=>q+(b[i]-q)*k)}else{const k=(t-.6)/.4;r=b.map((q,i)=>q+(e[i]-q)*k)}return`rgb(${r.map(Math.round)})`};
+hrs.forEach((hr,i)=>{h+=`<div class="h">${hr}</div>`;v[i].forEach(p=>{h+=`<div style="background:${c(p)};color:${p>=80?'#fff':'#0E2620'}">${p?p+'%':'—'}</div>`})});hm.innerHTML=h})();
+// bars
+(function(){const b=document.getElementById('bars');const p=[29.1,29.8,30.2,30.6,31.2],r=[28.4,28.1,29.5,29.9,28.96];let h='';
+p.forEach((v,i)=>{h+=`<div class="g"><i style="height:${(v/32)*100}%;background:#b9ddd0"></i><i style="height:${(r[i]/32)*100}%;background:#00805F"></i></div>`});b.innerHTML=h})();
+</script>
+</body></html>

@@ -33,6 +33,16 @@ TMPDIR_R="$(mktemp -d -t ps-restauro-XXXX)"
 trap 'rm -rf "$TMPDIR_R"' EXIT
 gpg --batch --quiet --decrypt --passphrase-file "$CHAVE" -o "$TMPDIR_R/banco.dump" "$ARQUIVO"
 
+# Restaura via SQL, parando no primeiro erro. Ignora só os SET que um pg_dump mais novo grava e um
+# servidor mais antigo não conhece (ex.: transaction_timeout do PostgreSQL 17+), para a cópia
+# continuar restaurável mesmo com versões diferentes de cliente e servidor.
+restaurar_sql() { # <url> [opções extras do pg_restore]
+  local url="$1"; shift
+  pg_restore --no-owner "$@" -f - "$TMPDIR_R/banco.dump" \
+    | grep -vE '^SET (transaction_timeout) = ' \
+    | psql -q -X -v ON_ERROR_STOP=1 --single-transaction "$url" >/dev/null
+}
+
 # URL do mesmo servidor apontando para outro banco.
 url_com_banco() { node -e 'const u=new URL(process.argv[1]); u.pathname="/"+process.argv[2]; console.log(u.toString())' "$1" "$2"; }
 
@@ -41,7 +51,7 @@ if [[ "$MODO" == "--teste" ]]; then
   ADMIN_URL="${PS_ADMIN_URL:-$(url_com_banco "$DATABASE_URL" postgres)}"
   psql -q "$ADMIN_URL" -c "DROP DATABASE IF EXISTS \"$BANCO\";" -c "CREATE DATABASE \"$BANCO\";"
   ALVO="$(url_com_banco "$DATABASE_URL" "$BANCO")"
-  pg_restore --no-owner --exit-on-error -d "$ALVO" "$TMPDIR_R/banco.dump"
+  restaurar_sql "$ALVO"
   N="$(psql -tAq "$ALVO" -c 'SELECT count(*) FROM historico')"
   M="$(psql -tAq "$ALVO" -c 'SELECT count(*) FROM schema_migracao')"
   psql -q "$ADMIN_URL" -c "DROP DATABASE \"$BANCO\";"
@@ -56,7 +66,7 @@ read -r -p "Digite RESTAURAR $AMBIENTE para continuar: " OK
 [[ "$OK" == "RESTAURAR $AMBIENTE" ]] || { echo "Cancelado."; exit 1; }
 sudo -u playsquash "$RAIZ/infra/backup.sh" "$AMBIENTE" antes-de-restaurar
 systemctl stop "playsquash@$AMBIENTE"
-pg_restore --no-owner --clean --if-exists --exit-on-error -d "$DATABASE_URL" "$TMPDIR_R/banco.dump"
+restaurar_sql "$DATABASE_URL" --clean --if-exists
 systemctl start "playsquash@$AMBIENTE"
 sleep 3
 curl -fsS "http://127.0.0.1:${PORTA:-3000}/saude" >/dev/null && echo "Restaurado e no ar." || { echo "Restaurado, mas o painel não respondeu. Veja: journalctl -u playsquash@$AMBIENTE" >&2; exit 1; }

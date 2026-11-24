@@ -10,6 +10,7 @@ const http = require('http');
 const { URL } = require('url');
 const sessao = require('./auth/sessao');
 const { ROTAS } = require('./painel/rotas');
+const { ROTAS_AULAS } = require('./painel/rotas-aulas');
 const { paginaErro } = require('./painel/html');
 
 const LIMITE = 100 * 1024;
@@ -44,9 +45,9 @@ function mesmaOrigem(req) {
   try { return !!fonte && new URL(fonte).host === host; } catch (_) { return false; }
 }
 
-function criarServidor({ pool, segredo, log = console }) {
+function criarServidor({ pool, segredo, googleConfigurado = false, log = console }) {
   if (!segredo || segredo.length < 32) throw new Error('PAINEL_SEGREDO precisa de pelo menos 32 caracteres.');
-  const rotas = compilar(ROTAS);
+  const rotas = compilar([...ROTAS, ...ROTAS_AULAS]);
 
   return http.createServer(async (req, res) => {
     const url = new URL(req.url, 'http://local');
@@ -80,7 +81,7 @@ function criarServidor({ pool, segredo, log = console }) {
       const corpo = req.method === 'POST' ? await lerCorpo(req) : {};
       const ip = String(req.headers['x-forwarded-for'] || '').split(',')[0].trim() || req.socket.remoteAddress;
       const ctx = {
-        pool, segredo, usuario, corpo, params, https, ip,
+        pool, segredo, usuario, corpo, params, https, ip, googleConfigurado, res,
         query: Object.fromEntries(url.searchParams),
         html: (status, h) => enviar(status, 'text/html; charset=utf-8', h),
         redirecionar: (loc, extras = {}) => { res.writeHead(303, { Location: loc, 'Cache-Control': 'no-store', ...extras }); res.end(); },

@@ -17,6 +17,7 @@
     "criar-usuario": "node scripts/criar-usuario.js"
   },
   "dependencies": {
+    "google-auth-library": "^9.15.1",
     "pg": "^8.13.1"
   },
   "devDependencies": {

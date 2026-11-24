@@ -25,7 +25,10 @@ O dono escreve em português: **responda em português, em linguagem simples**.
 | Painel (Node `http`, HTML montado no servidor) | `src/servidor.js` (rotas, sessão, origem), `src/painel/rotas.js` (telas), `src/painel/html.js` (layout e visual) |
 | Login e sessão | `src/auth/senha.js` (scrypt), `src/auth/sessao.js` (cookie assinado + tabela `sessao`) |
 | Banco e histórico | `src/db.js` (transação), `src/historico.js` (registrar), `src/config.js` (regras com versão) |
-| Regras de negócio puras | `src/regras/` (permissões, disponibilidade, reposição, confirmação) |
+| Telas da etapa 1b | `src/painel/rotas-aulas.js` (nova aula, cancelar, contatos, anonimizar, exportar) |
+| Google Agenda | `src/agenda/google.js` (conta de serviço), `src/agenda/fila.js` (o que entra na fila), `src/agenda/sincronizar.js` (envio com nova tentativa), `src/agenda/evento.js` (título e cor) |
+| Rotinas automáticas | `src/rotinas.js` (feriados nacionais por dia, fila do Google a cada 30 s) |
+| Regras de negócio puras | `src/regras/` (permissões, disponibilidade, reposição, confirmação, feriados) |
 | "Agora" e "hoje" (Brasília) | `src/relogio.js` (fonte única, TST-06) |
 | Simuladores de WhatsApp, IA e Google | `testes/simuladores/` |
 | Testes | `testes/unidade/`, `testes/integracao/`, `testes/tela/` (ajuda comum em `testes/ajuda.js`) |

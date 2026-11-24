@@ -17,7 +17,7 @@ try { playwright = require('playwright'); } catch (_) {}
 const opc = { skip: !URL_TESTE ? 'sem DATABASE_URL_TESTE' : !playwright ? 'sem playwright' : false };
 
 // Telas do painel (TST-03): tela nova entra aqui.
-const TELAS = ['/grade?data=2026-12-01', '/cadastros', '/usuarios', '/historico'];
+const TELAS = ['/grade?data=2026-12-01', '/aulas/nova?data=2026-12-01', '/aulas/1', '/cadastros', '/contatos', '/usuarios', '/historico', '/exportar'];
 const TAMANHOS = [{ nome: 'computador', width: 1366, height: 900 }, { nome: 'celular', width: 390, height: 844 }];
 
 let pool, painel, navegador, pasta;

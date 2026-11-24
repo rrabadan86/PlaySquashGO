@@ -10,6 +10,7 @@ const sessao = require('../auth/sessao');
 const { pode, TELAS, TELAS_LIBERAVEIS, TELAS_PROFESSOR_PADRAO } = require('../regras/permissoes');
 const { hojeSP, somarDias, instanteSP, diaSemana, dataSP } = require('../relogio');
 const { esc, pagina, paginaLogin } = require('./html');
+const fila = require('../agenda/fila');
 
 const DIAS = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
 const CATEGORIAS = ['individual', 'dupla', 'turma', 'kids', 'experimental'];
@@ -109,7 +110,7 @@ async function getGrade(ctx) {
   const titulo = `${DIAS[diaSemana(data)]}, ${dataBR(data)}`;
   const nav = `<a class="btn" href="/grade?data=${somarDias(data, -1)}" aria-label="Dia anterior">‹</a>
     <form method="get" action="/grade"><input type="date" name="data" value="${data}" aria-label="Data" onchange="this.form.submit()"></form>
-    <a class="btn" href="/grade?data=${somarDias(data, 1)}" aria-label="Próximo dia">›</a><a class="btn" href="/grade">Hoje</a>`;
+    <a class="btn" href="/grade?data=${somarDias(data, 1)}" aria-label="Próximo dia">›</a><a class="btn" href="/grade">Hoje</a>${pode(ctx.usuario, 'aulas.criar') ? `<a class="btn p" href="/aulas/nova?data=${data}">+ Aula</a>` : ''}`;
   let corpo;
   if (!d.quadras.length) {
     corpo = `<div class="card"><h2>${esc(titulo)}</h2><p class="muted">Nenhuma quadra cadastrada. ${pode(ctx.usuario, 'cadastros.editar') ? '<a href="/cadastros">Cadastre as quadras e a grade</a>.' : 'Peça ao administrador para cadastrar.'}</p></div>`;
@@ -121,7 +122,7 @@ async function getGrade(ctx) {
       <span><i style="background:var(--exp)"></i>Experimental</span><span><i style="background:var(--rep)"></i>Reposição</span>
       <span><i style="background:#c4d2cc"></i>Livre</span><span><i style="background:#9aa6a2"></i>Bloqueado</span></div>`;
   }
-  ctx.html(200, pagina({ titulo: 'Grade', usuario: ctx.usuario, ativo: 'grade', acoes: nav, corpo }));
+  ctx.html(200, pagina({ titulo: 'Grade', usuario: ctx.usuario, ativo: 'grade', acoes: nav, corpo, aviso: ctx.aviso() }));
 }
 
 function montarGrade(data, d, intervalo) {
@@ -148,7 +149,7 @@ function montarGrade(data, d, intervalo) {
           const span = Math.max(1, Math.ceil((Math.min(aula.fim, fim) - Math.max(aula.inicio, s)) / passo));
           const cls = aula.origem === 'fixa' && aula.categoria === 'dupla' ? 'dupla' : aula.origem;
           const nome = { fixa: 'Aula', experimental: 'Experimental', reposicao: 'Reposição', avulsa: 'Avulsa' }[aula.origem];
-          h += `<div class="cel" style="grid-row:${r + 2}/span ${span};grid-column:${col}"><div class="ev ${cls}"><b>${esc(nome)} — ${esc(aula.alunos || 'sem aluno')}${aula.situacao === 'confirmada' ? ' ✓' : ''}</b>${esc(aula.tipo)} · ${esc(aula.professor)}</div></div>`;
+          h += `<div class="cel" style="grid-row:${r + 2}/span ${span};grid-column:${col}"><a class="ev ${cls}" href="/aulas/${aula.id}" style="display:block;text-decoration:none"><b>${esc(nome)} — ${esc(aula.alunos || 'sem aluno')}${aula.situacao === 'confirmada' ? ' ✓' : ''}</b>${esc(aula.tipo)} · ${esc(aula.professor)}</a></div>`;
           r += span - 1;
         }
         continue;
@@ -187,10 +188,14 @@ async function getCadastros(ctx) {
   const fmtTs = t => `${dataBR(isoDe(dataSP(new Date(t).getTime())))} ${hhmm(new Date(t).getTime())}`;
   const botao = (acao, rot, extra = '') => edita ? `<form method="post" action="${acao}" style="display:inline">${extra}<button class="btn r">${rot}</button></form>` : '';
 
-  const corpo = `
+  const g = await fila.situacao(p);
+  const avisoGoogle = !ctx.googleConfigurado
+    ? `<div class="aviso ok" style="background:#E8EEFC;color:#3651A8">Google Agenda ainda não configurado: as aulas ficam guardadas e vão para o Google quando a conta de serviço for ligada${g.pendentes ? ` (${g.pendentes} na fila)` : ''}.</div>`
+    : g.com_erro ? `<div class="aviso erro">${g.com_erro} envio(s) ao Google Agenda com erro; o sistema tenta de novo sozinho. Último erro: ${esc(g.ultimo_erro || '')}</div>` : '';
+  const corpo = `${edita ? avisoGoogle : ''}
 <div class="card"><h2>Quadras</h2><div class="tab-wrap"><table><tr><th>Quadra</th><th>Situação</th><th>Agenda Google</th><th></th></tr>
 ${quadras.map(q => `<tr><td>${esc(q.nome)}</td><td>${q.ativa ? '<span class="chip ok">Ativa</span>' : '<span class="chip no">Inativa</span>'}</td>
-<td class="muted">${esc(q.google_agenda_id || 'ligada na etapa 1b')}</td><td>${edita ? `<form method="post" action="/cadastros/quadra/${q.id}/ativa"><input type="hidden" name="ativa" value="${q.ativa ? '0' : '1'}"><button class="btn">${q.ativa ? 'Desativar' : 'Ativar'}</button></form>` : ''}</td></tr>`).join('') || '<tr><td colspan="4" class="muted">Nenhuma quadra.</td></tr>'}
+<td>${q.google_agenda_id ? '<span class="chip ok">Criada</span>' : ctx.googleConfigurado ? '<span class="chip wait">Criando…</span>' : '<span class="chip info">Google não configurado</span>'}</td><td>${edita ? `<form method="post" action="/cadastros/quadra/${q.id}/ativa"><input type="hidden" name="ativa" value="${q.ativa ? '0' : '1'}"><button class="btn">${q.ativa ? 'Desativar' : 'Ativar'}</button></form>` : ''}</td></tr>`).join('') || '<tr><td colspan="4" class="muted">Nenhuma quadra.</td></tr>'}
 </table></div>${edita ? `<br><form class="linha" method="post" action="/cadastros/quadra"><label>Nova quadra<input name="nome" required maxlength="60" placeholder="Quadra 3"></label><button class="btn p">Adicionar</button></form>` : ''}</div>
 
 <div class="card"><h2>Tipos de aula</h2><div class="tab-wrap"><table><tr><th>Tipo</th><th>Categoria</th><th>Duração</th><th>Alunos por aula</th></tr>
@@ -223,11 +228,12 @@ ${bloqueios.map(b => `<tr><td>${fmtTs(b.de)}</td><td>${fmtTs(b.ate)}</td><td>${e
 <label>Professor<select name="professor_id"><option value="">Todos</option>${opt(profs)}</select></label>
 <label>Motivo<input name="motivo" required maxlength="120"></label><button class="btn p">Bloquear</button></form>` : ''}</div>
 
-<div class="card"><h2>Feriados</h2><p class="muted" style="margin-top:-6px">Dia de feriado não tem horário livre na grade. A carga automática dos feriados entra na etapa 1b.</p>
+<div class="card"><h2>Feriados</h2><p class="muted" style="margin-top:-6px">Dia de feriado não tem horário livre na grade. Os feriados nacionais entram sozinhos; estaduais e municipais são cadastrados aqui. Feriado removido não volta.</p>
 <div class="tab-wrap"><table><tr><th>Data</th><th>Feriado</th><th>Abrangência</th><th></th></tr>
 ${feriados.map(f => `<tr><td>${dataBR(isoDe(f.data))}</td><td>${esc(f.nome)}</td><td>${esc(f.abrangencia)}</td><td>${botao('/cadastros/feriado/cancelar', 'Remover', `<input type="hidden" name="data" value="${isoDe(f.data)}">`)}</td></tr>`).join('') || '<tr><td colspan="4" class="muted">Nenhum feriado futuro.</td></tr>'}
 </table></div>${edita ? `<br><form class="linha" method="post" action="/cadastros/feriado"><label>Data<input type="date" name="data" required></label>
-<label>Nome<input name="nome" required maxlength="80"></label><label>Abrangência<select name="abrangencia"><option>nacional</option><option>estadual</option><option>municipal</option></select></label><button class="btn p">Adicionar</button></form>` : ''}</div>`;
+<label>Nome<input name="nome" required maxlength="80"></label><label>Abrangência<select name="abrangencia"><option>nacional</option><option>estadual</option><option>municipal</option></select></label><button class="btn p">Adicionar</button></form>
+<br><form method="post" action="/cadastros/feriados/carregar"><button class="btn">Carregar feriados nacionais (este ano e o próximo)</button></form>` : ''}</div>`;
   ctx.html(200, pagina({ titulo: 'Quadras e professores', usuario: ctx.usuario, ativo: 'cadastros', corpo, aviso: ctx.aviso() }));
 }
 
@@ -250,6 +256,8 @@ const postQuadra = mudanca('cadastros.editar', '/cadastros', async (ctx, c, ator
   const nome = texto(ctx.corpo.nome, 'Nome da quadra', 60);
   const { rows } = await c.query('INSERT INTO quadra (nome) VALUES ($1) RETURNING *', [nome]);
   await registrar(c, { ator, acao: 'quadra.criada', entidade: 'quadra', entidadeId: rows[0].id, depois: rows[0] });
+  await fila.quadraCriada(c, rows[0].id); // AGD-09: agenda da quadra no Google
+  await fila.conferirCompartilhamentos(c);
   return `Quadra "${nome}" adicionada.`;
 });
 
@@ -259,6 +267,8 @@ const postQuadraAtiva = mudanca('cadastros.editar', '/cadastros', async (ctx, c,
   const antes = (await c.query('SELECT * FROM quadra WHERE id = $1 FOR UPDATE', [id])).rows[0] || falha('Quadra não encontrada.');
   await c.query('UPDATE quadra SET ativa = $2 WHERE id = $1', [id, ativa]);
   await registrar(c, { ator, acao: ativa ? 'quadra.ativada' : 'quadra.desativada', entidade: 'quadra', entidadeId: id, antes: { ativa: antes.ativa }, depois: { ativa } });
+  if (ativa && !antes.google_agenda_id) await fila.quadraCriada(c, id);
+  await fila.conferirCompartilhamentos(c);
   return ativa ? 'Quadra ativada.' : 'Quadra desativada.';
 });
 
@@ -417,6 +427,7 @@ const postUsuarioNovo = mudanca('usuarios.editar', '/usuarios', async (ctx, c, a
     [nome, email, tel, admin, prof, senha.gerarHash(ctx.corpo.senha)]);
   if (prof && !admin) for (const t of TELAS_PROFESSOR_PADRAO) await c.query('INSERT INTO usuario_tela VALUES ($1,$2)', [rows[0].id, t]);
   await registrar(c, { ator, acao: 'usuario.criado', entidade: 'usuario', entidadeId: rows[0].id, depois: { nome, email, admin, prof } });
+  await fila.conferirCompartilhamentos(c); // AGD-09: agendas compartilhadas com quem é admin ou professor
   return `Usuário ${nome} criado.`;
 });
 
@@ -447,6 +458,7 @@ const postUsuario = mudanca('usuarios.editar', '/usuarios', async (ctx, c, ator)
     antes: { admin: u.eh_admin, prof: u.eh_professor, ativo: u.ativo, telas: antesTelas },
     depois: { admin, prof, ativo, telas: telas.sort(), senhaTrocada: !!novaSenha },
   });
+  await fila.conferirCompartilhamentos(c);
   return 'Usuário atualizado.';
 });
 

@@ -32,6 +32,7 @@ O dono escreve em português: **responda em português, em linguagem simples**.
 | "Agora" e "hoje" (Brasília) | `src/relogio.js` (fonte única, TST-06) |
 | Simuladores de WhatsApp, IA e Google | `testes/simuladores/` |
 | Testes | `testes/unidade/`, `testes/integracao/`, `testes/tela/` (ajuda comum em `testes/ajuda.js`) |
+| Infra da VPS | `infra/` (instalar, atualizar com volta automática, cópia e restauração, systemd, Caddy) — passo a passo em `infra/README.md` |
 | Skills e hooks do Claude | `.claude/skills/`, `.claude/hooks/` (ligados em `.claude/settings.json`) |
 
 A Sofia e o cliente de WhatsApp vêm do projeto SlimFit (`rrabadan86/SF-Chat_Experimental-Mensagens`,

@@ -1,0 +1,10 @@
+[Unit]
+Description=Play Squash — cópia diária do banco (%i)
+
+[Timer]
+OnCalendar=*-*-* 03:30:00 America/Sao_Paulo
+Persistent=true
+RandomizedDelaySec=300
+
+[Install]
+WantedBy=timers.target

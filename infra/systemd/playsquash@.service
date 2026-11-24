@@ -1,0 +1,21 @@
+# Painel + rotinas de um ambiente (producao ou homologacao). Reinicia sozinho se cair.
+[Unit]
+Description=Play Squash (%i)
+After=network-online.target postgresql.service
+Wants=network-online.target
+
+[Service]
+User=playsquash
+Group=playsquash
+EnvironmentFile=/etc/playsquash/%i.env
+WorkingDirectory=/srv/playsquash/%i/atual
+ExecStart=/usr/bin/node src/index.js
+Restart=always
+RestartSec=5
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=full
+ProtectHome=yes
+
+[Install]
+WantedBy=multi-user.target

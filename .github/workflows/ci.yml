@@ -58,6 +58,13 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci --no-audit --no-fund
+      - name: Cliente do PostgreSQL 16 (cópia e restauração do banco)
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq postgresql-client-16
+          echo "/usr/lib/postgresql/16/bin" >> "$GITHUB_PATH"
+      - name: Scripts de infra (shellcheck)
+        run: shellcheck -S warning infra/*.sh
       - name: Testes de integração
         env:
           DATABASE_URL_TESTE: postgres://teste:teste@localhost:5432/ps_teste
@@ -68,3 +75,18 @@ jobs:
         env:
           DATABASE_URL_TESTE: postgres://teste:teste@localhost:5432/ps_teste
         run: npm run test:telas
+
+  estavel:
+    name: Marcar versão estável
+    # Só na main e só com tudo ✓: a homologação baixa a marca "estavel" (DEP-02, DEP-08).
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [codigo, integracao]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Mover a marca estavel para este commit
+        run: |
+          git tag -f estavel "$GITHUB_SHA"
+          git push -f origin estavel

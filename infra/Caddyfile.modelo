@@ -1,0 +1,12 @@
+# HTTPS automático (Let's Encrypt). {DOMINIO_...} é trocado por infra/instalar-vps.sh.
+{DOMINIO_PRODUCAO} {
+	encode gzip
+	reverse_proxy 127.0.0.1:3000
+	header Strict-Transport-Security "max-age=31536000"
+}
+
+{DOMINIO_HOMOLOG} {
+	encode gzip
+	reverse_proxy 127.0.0.1:3001
+	header X-Robots-Tag "noindex, nofollow"
+}

@@ -16,16 +16,16 @@ Gerada por `npm run matriz` (não edite à mão, exceto a seção "Achados"). O 
 | App do aluno e reposição | 11 | 12 | 8 | 4 | 0 | 7 | 0 | 2 |
 | Planos e contratos | 12 | 18 | 0 | 0 | 0 | 12 | 0 | 5 |
 | Dados e segredos | 10 | 0 | 3 | 3 | 0 | 0 | 7 | 0 |
-| Publicar e atualizar | 7 | 0 | 0 | 0 | 0 | 0 | 7 | 0 |
+| Publicar e atualizar | 8 | 0 | 5 | 1 | 0 | 0 | 7 | 0 |
 | Cobrança e financeiro | 8 | 11 | 0 | 0 | 0 | 8 | 0 | 1 |
 | Indicadores | 6 | 6 | 0 | 0 | 0 | 6 | 0 | 1 |
 | WhatsApp, dados e operação | 9 | 10 | 6 | 4 | 0 | 5 | 0 | 0 |
 | Sofia, confirmação da experimental e lista de espera | 22 | 34 | 7 | 2 | 2 | 18 | 0 | 1 |
 | Testes | 8 | 0 | 8 | 3 | 0 | 0 | 5 | 0 |
 | Padrão visual | 6 | 0 | 1 | 1 | 0 | 0 | 5 | 0 |
-| **Total** | 114 | 112 | 70 | 29 | 2 | 59 | 24 | 13 |
+| **Total** | 115 | 112 | 75 | 30 | 2 | 59 | 24 | 13 |
 
-Testes: 70 no total, 70 ligados a uma regra.
+Testes: 75 no total, 75 ligados a uma regra.
 
 ## Regras
 
@@ -102,11 +102,12 @@ Testes: 70 no total, 70 ligados a uma regra.
 | Código | Regra | Casos | Testes escritos | Cobertura |
 |---|---|---|---|---|
 | DEP-01 | Toda mudança vai por branch de trabalho → PR para `main` → CI ✓ → squash merge (skill `subir-versao`). Nunca push direto na `main`. | 0 | — | processo |
-| DEP-02 | Dois ambientes na VPS: **homologação** (dados de teste) e **produção**. Produção só recebe versão testada na homologação e liberada pelo dono. | 0 | — | processo |
+| DEP-02 | Dois ambientes na VPS: **homologação** (dados de teste, porta 3001) e **produção** (porta 3000), cada um com banco, configuração (`/etc/playsquash/<ambiente>.env`) e serviço próprios. Homologação recebe a marca `estavel`; produção só recebe a versão que o dono liberou, informada por extenso (`infra/atualizar.sh producao <tag>`). | 0 | — | processo |
 | DEP-03 | Atualizar produção fora do horário de aulas e de envios (a Sofia e os avisos param durante o reinício). | 0 | — | processo |
-| DEP-04 | Migração de banco roda antes de subir o código novo, com cópia do banco feita antes. | 0 | — | processo |
+| DEP-04 | Atualizar (`infra/atualizar.sh`): instala a versão numa pasta nova, faz cópia do banco, aplica as migrações, troca a versão, reinicia e confere `/saude` por 30 s; se não responder, volta sozinho para a anterior. | 0 | — | processo |
 | DEP-05 | Mudança que o dono ou os professores vão notar → item em "Novidades" (página de novidades do painel, a criar na etapa 1). | 0 | — | processo |
-| DEP-06 | Cópia diária do banco criptografada fora do servidor (30 diárias + 12 mensais) e teste de restauração uma vez por mês (OPR-06). | 0 | — | processo |
+| DEP-06 | Cópia diária do banco criptografada (AES-256, chave só no servidor) às 3h30, enviada para fora do servidor (rclone, `BACKUP_REMOTO`), guardando 30 diárias + 12 mensais (`scripts/rotacao-backups.js`); teste de restauração automático no dia 1º de cada mês num banco separado (OPR-06). | 0 | `backup.test.js` › DEP-06 cópia do banco sai criptografada, com nome por data, e não abre sem a chave<br>`backup.test.js` › DEP-06 teste de restauração recria o banco num banco separado e confere migrações e histórico<br>`rotacao-backups.test.js` › DEP-06 guarda a última cópia de cada um dos 30 dias mais recentes<br>`rotacao-backups.test.js` › DEP-06 guarda a primeira cópia de cada um dos 12 meses mais recentes<br>`rotacao-backups.test.js` › DEP-06 cópia feita antes de atualizar vale 30 dias; arquivo estranho nunca é apagado | ✅ |
+| DEP-08 | O CI move a marca `estavel` para o commit da `main` quando todos os jobs passam; é ela que a homologação baixa. | 0 | — | processo |
 | DEP-07 | Hooks do Claude ligados em `.claude/settings.json`: `bloquear-segredos.js` (antes de commit/push) e `limpar-restos-teste.js` (fim da sessão). | 0 | — | processo |
 
 ### Cobrança e financeiro

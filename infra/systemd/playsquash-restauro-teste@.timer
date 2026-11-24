@@ -1,0 +1,9 @@
+[Unit]
+Description=Play Squash — teste mensal de restauração (%i)
+
+[Timer]
+OnCalendar=*-*-01 04:30:00 America/Sao_Paulo
+Persistent=true
+
+[Install]
+WantedBy=timers.target

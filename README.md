@@ -32,4 +32,6 @@ DATABASE_URL=postgres://... SENHA_NOVA='...' npm run criar-usuario -- --nome "Gu
 DATABASE_URL=postgres://... PAINEL_SEGREDO=... PORTA=3000 npm run iniciar
 ```
 
+Servidor (VPS): passo a passo em `infra/README.md`.
+
 Leia `CLAUDE.md` para a organização do projeto e as regras de trabalho.

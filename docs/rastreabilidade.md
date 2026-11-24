@@ -12,20 +12,20 @@ Gerada por `npm run matriz` (não edite à mão, exceto a seção "Achados"). O 
 
 | Área | Regras | Casos planejados | Testes escritos | ✅ | parcial | ❌ | processo | ⏳ kickoff |
 |---|---|---|---|---|---|---|---|---|
-| Agenda, grade, Google Agenda e perfis | 14 | 19 | 3 | 2 | 0 | 12 | 0 | 3 |
+| Agenda, grade, Google Agenda e perfis | 14 | 19 | 25 | 9 | 1 | 4 | 0 | 3 |
 | App do aluno e reposição | 11 | 12 | 8 | 4 | 0 | 7 | 0 | 2 |
 | Planos e contratos | 12 | 18 | 0 | 0 | 0 | 12 | 0 | 5 |
 | Dados e segredos | 9 | 0 | 3 | 3 | 0 | 0 | 6 | 0 |
 | Publicar e atualizar | 7 | 0 | 0 | 0 | 0 | 0 | 7 | 0 |
 | Cobrança e financeiro | 8 | 11 | 0 | 0 | 0 | 8 | 0 | 1 |
 | Indicadores | 6 | 6 | 0 | 0 | 0 | 6 | 0 | 1 |
-| WhatsApp, dados e operação | 9 | 10 | 2 | 2 | 0 | 7 | 0 | 0 |
-| Sofia, confirmação da experimental e lista de espera | 22 | 34 | 6 | 2 | 1 | 19 | 0 | 1 |
+| WhatsApp, dados e operação | 9 | 10 | 3 | 2 | 0 | 7 | 0 | 0 |
+| Sofia, confirmação da experimental e lista de espera | 22 | 34 | 7 | 2 | 2 | 18 | 0 | 1 |
 | Testes | 8 | 0 | 8 | 3 | 0 | 0 | 5 | 0 |
-| Padrão visual | 6 | 0 | 0 | 0 | 0 | 0 | 6 | 0 |
-| **Total** | 112 | 110 | 30 | 16 | 1 | 71 | 24 | 13 |
+| Padrão visual | 6 | 0 | 1 | 1 | 0 | 0 | 5 | 0 |
+| **Total** | 112 | 110 | 55 | 24 | 3 | 62 | 23 | 13 |
 
-Testes: 30 no total, 30 ligados a uma regra.
+Testes: 55 no total, 55 ligados a uma regra.
 
 ## Regras
 
@@ -33,20 +33,20 @@ Testes: 30 no total, 30 ligados a uma regra.
 
 | Código | Regra | Casos | Testes escritos | Cobertura |
 |---|---|---|---|---|
-| AGD-01 ⏳ | Cadastros de quadras, professores, tipos de aula (duração, alunos por aula) e grade. | 1 | — | ❌ |
-| AGD-02 | Só administradores alteram grade, quadras, professores e bloqueios. | 1 | — | ❌ |
-| AGD-03 ⏳ | Feriados automáticos + bloqueios manuais; bloqueio sobre aulas avisa alunos e aplica AGD-08. | 2 | — | ❌ |
-| AGD-04 | Aula maior que o intervalo base ocupa blocos seguidos. | 1 | `banco.test.js` › AGD-04 aula de 60 min bloqueia o meio-horário seguinte na mesma quadra | ✅ |
-| AGD-05 | Horário livre = existe na grade, sem bloqueio, com vaga e professor livre. | 2 | — | ❌ |
+| AGD-01 ⏳ | Cadastros de quadras, professores, tipos de aula (duração, alunos por aula) e grade. | 1 | `painel.test.js` › AGD-01 admin cadastra quadra, tipo de aula e faixa da grade, e a grade do dia mostra o horário livre | ✅ |
+| AGD-02 | Só administradores alteram grade, quadras, professores e bloqueios. | 1 | `painel.test.js` › AGD-02 professor não altera a grade nem com a tela de cadastros liberada (servidor recusa)<br>`permissoes.test.js` › AGD-02 só administrador altera grade e cadastros, mesmo com a tela liberada | ✅ |
+| AGD-03 ⏳ | Feriados automáticos + bloqueios manuais; bloqueio sobre aulas avisa alunos e aplica AGD-08. | 2 | `painel.test.js` › AGD-03 feriado tira o dia da grade e bloqueio aparece como bloqueado | parcial |
+| AGD-04 | Aula maior que o intervalo base ocupa blocos seguidos. | 1 | `banco.test.js` › AGD-04 aula de 60 min bloqueia o meio-horário seguinte na mesma quadra<br>`disponibilidade.test.js` › AGD-04 aula de 60 min precisa de dois blocos livres seguidos e não passa do fim da faixa | ✅ |
+| AGD-05 | Horário livre = existe na grade, sem bloqueio, com vaga e professor livre. | 2 | `painel.test.js` › AGD-05 professor não pode ter duas faixas no mesmo horário em quadras diferentes<br>`disponibilidade.test.js` › AGD-05 horário livre existe na grade, no dia e no tipo certos<br>`disponibilidade.test.js` › AGD-05 feriado, bloqueio e aula ocupada tiram o horário<br>`disponibilidade.test.js` › AGD-05 professor em outra quadra no mesmo horário não aparece livre<br>`disponibilidade.test.js` › AGD-05 aula de dupla com 1 aluno ainda tem 1 vaga; com 2 está cheia | ✅ |
 | AGD-06 | Horário fixo semanal; aulas geradas 4 semanas à frente, renovadas semanalmente. | 1 | — | ❌ |
-| AGD-07 | Contrato ligado a atividade + horário; troca de professor na grade mantém os alunos. | 1 | — | ❌ |
+| AGD-07 | Contrato ligado a atividade + horário; troca de professor na grade mantém os alunos. | 1 | `painel.test.js` › AGD-07 trocar o professor da faixa mantém a faixa (e os alunos) e fica no histórico | ✅ |
 | AGD-08 | Professor desmarca aula: apaga evento, avisa aluno, gera crédito se respeitar a antecedência, registra motivo. | 2 | `reposicao.test.js` › AGD-08 professor desmarca com 5 h de antecedência: aluno ganha crédito<br>`reposicao.test.js` › AGD-08 professor desmarca com 1 h: sem crédito e a aula não conta como dada para o aluno | ✅ |
 | AGD-09 | Google Agenda: uma agenda por quadra, só Sistema → Google, compartilhada só leitura, fila com nova tentativa. | 2 | — | ❌ |
 | AGD-10 | Presença: professor marca presente/falta; sem marcação = presença; 2 semanas de faltas avisam o professor. | 2 | — | ❌ |
 | AGD-11 | Resumo diário às 6h para cada professor. | 1 | — | ❌ |
-| PER-01 | Administrador vê e faz tudo; vários admins; um usuário pode ser admin e professor. | 1 | — | ❌ |
-| PER-02 ⏳ | Professor: vê todas as quadras, desmarca, marca presença, vê situação dos seus alunos, sem valores; telas liberadas pelo admin. | 1 | — | ❌ |
-| PER-03 | Permissões verificadas no servidor. | 1 | — | ❌ |
+| PER-01 | Administrador vê e faz tudo; vários admins; um usuário pode ser admin e professor. | 1 | `painel.test.js` › PER-01 administrador e professor ao mesmo tempo vê o painel completo<br>`painel.test.js` › PER-01 administrador não pode tirar o próprio acesso de admin<br>`permissoes.test.js` › PER-01 administrador pode todas as ações | ✅ |
+| PER-02 ⏳ | Professor: vê todas as quadras, desmarca, marca presença, vê situação dos seus alunos, sem valores; telas liberadas pelo admin. | 1 | `painel.test.js` › PER-02 professor vê só as telas liberadas; o menu não mostra o resto<br>`permissoes.test.js` › PER-02 professor vê só as telas liberadas e nunca valores, usuários ou histórico | ✅ |
+| PER-03 | Permissões verificadas no servidor. | 1 | `painel.test.js` › PER-03 sem login a tela manda para o login e senha errada é recusada<br>`painel.test.js` › PER-03 envio sem origem do próprio painel é recusado<br>`painel.test.js` › PER-03 sessão encerrada pelo admin ou usuário desativado perde o acesso na hora<br>`permissoes.test.js` › PER-03 sem usuário nada é permitido e ação desconhecida é erro<br>`permissoes.test.js` › PER-03 senha só como hash e cookie de sessão não pode ser forjado<br>`permissoes.test.js` › PER-03 envio de formulário só aceito vindo do próprio painel | ✅ |
 
 ### App do aluno e reposição
 
@@ -141,7 +141,7 @@ Testes: 30 no total, 30 ligados a uma regra.
 | OPR-04 | Aviso ao admin quando a conexão cair. | 1 | — | ❌ |
 | OPR-05 | Anonimização de contato pelo admin. | 1 | — | ❌ |
 | OPR-06 | Backup diário fora do servidor; exportação Excel. | 1 | — | ❌ |
-| OPR-07 | Auditoria de ações e de mudanças de regra (quem, quando, antes e depois). | 1 | `banco.test.js` › OPR-07 histórico só recebe inclusões: alterar e apagar são barrados | ✅ |
+| OPR-07 | Auditoria de ações e de mudanças de regra (quem, quando, antes e depois). | 1 | `banco.test.js` › OPR-07 histórico só recebe inclusões: alterar e apagar são barrados<br>`painel.test.js` › OPR-07 cada mudança no painel grava quem fez, quando, antes e depois | ✅ |
 | OPR-08 | Instância exclusiva em VPS Hostinger; fuso America/Sao_Paulo. | 1 | `relogio.test.js` › OPR-08 18h em Brasília continua 18h, qualquer que seja o fuso do servidor | ✅ |
 | OPR-09 | Convite a ex-alunos (30/60/90 dias) e mensagem de aniversário. | 1 | — | ❌ |
 
@@ -152,7 +152,7 @@ Testes: 30 no total, 30 ligados a uma regra.
 | SOF-01 | Atender só leads novos; aluno ativo ou responsável recebe a mensagem fixa e a IA não é chamada. | 3 | — | ❌ |
 | SOF-02 | Qualificar: nome, já jogou squash, adulto/kids (data de nascimento), individual/dupla, dias e período. | 1 | — | ❌ |
 | SOF-03 ⏳ | Quem já jogou: informar valor da experimental e chave Pix antes de marcar. | 2 | — | ❌ |
-| SOF-04 | Oferecer até 3 horários livres próximos da preferência, com o professor; sem pré-reserva. | 2 | — | ❌ |
+| SOF-04 | Oferecer até 3 horários livres próximos da preferência, com o professor; sem pré-reserva. | 2 | `disponibilidade.test.js` › SOF-04 antecedência mínima de 3 h tira os horários próximos | parcial |
 | SOF-05 | Travar a vaga no banco ao escolher, criar aula e evento no Google; se a vaga foi tomada, oferecer outras. | 2 | `banco.test.js` › SOF-05 duas aulas ativas na mesma quadra e horário são recusadas pelo banco | parcial |
 | SOF-06 | 1 experimental por participante (nome + data de nascimento); exceção liberada pelo admin. | 2 | — | ❌ |
 | SOF-07 | Experimental em dupla: coletar nome e telefone do parceiro; os dois consomem a experimental; só juntos. | 1 | — | ❌ |
@@ -178,7 +178,7 @@ Testes: 30 no total, 30 ligados a uma regra.
 |---|---|---|---|---|
 | TST-01 | Teste nunca toca dado real: banco só por `DATABASE_URL_TESTE`; WhatsApp, IA e Google só pelos simuladores de `testes/simuladores/` (nada sai para a rede). | 0 | — | processo |
 | TST-02 | Regra nova ou alterada → teste cujo título **começa pelo código** da regra (ex.: `REP-03 validade conta da data da aula`; mais de um: `REP-01/REP-02 ...`). Os casos planejados ficam em `docs/casos-de-teste.md`; `npm run matriz` atualiza a matriz. `matriz.test.js` falha se um teste cita código que não existe nas regras ou se a matriz está velha. | 0 | `matriz.test.js` › TST-02 título de teste: códigos no começo, um ou vários<br>`matriz.test.js` › TST-02 nenhum teste ou caso cita código que não existe nas regras<br>`matriz.test.js` › TST-02 a matriz docs/rastreabilidade.md está em dia | ✅ |
-| TST-03 | Tela nova → entra na lista de telas do teste de telas (computador 1366 px e celular 390 px). | 0 | — | processo |
+| TST-03 | Tela nova → entra em `TELAS` de `testes/tela/telas.test.js` (computador 1366 px e celular 390 px). O teste reprova erro de JavaScript, texto "undefined/NaN/null", código interno de regra aparecendo na tela e rolagem lateral da página (tabela larga rola dentro do cartão). | 0 | — | processo |
 | TST-04 | Teste instável: achar e corrigir a causa; nunca repetir a rodada até passar nem desligar o teste. | 0 | — | processo |
 | TST-05 | Bateria completa antes de cada PR, e o CI (`.github/workflows/ci.yml`) precisa ficar ✓. | 0 | — | processo |
 | TST-06 | "Agora" e "hoje" vêm só de `src/relogio.js`. Em teste, fixe com `NODE_ENV=test` + `PS_AGORA` (ISO) ou passe o horário como parâmetro; fora de teste `PS_AGORA` é ignorado. Datas difíceis: 1º do mês, fim de fevereiro, 1º de janeiro, domingo, virada do dia em Brasília. | 0 | `relogio.test.js` › TST-06 PS_AGORA fixa o relógio só em teste<br>`relogio.test.js` › TST-06 datas difíceis: fim de fevereiro em ano bissexto e domingo | ✅ |
@@ -194,7 +194,7 @@ Testes: 30 no total, 30 ligados a uma regra.
 | VIS-03 | Fonte Inter; títulos 600; números grandes em 25 px/600; legenda 12 px suave. | 0 | — | processo |
 | VIS-04 | Painel: menu lateral escuro com grupos (Sofia, Agenda, Alunos, Financeiro, Indicadores), barra superior branca com título e ações à direita, conteúdo em cartões brancos com borda `#E3E9E6` e canto 12 px. | 0 | — | processo |
 | VIS-05 | App do aluno e do professor: celular primeiro (390 px), cabeçalho com saudação + título, cartões de 14 px de canto, barra de abas embaixo, botões de ação curtos ("Desmarcar", "Usar"). | 0 | — | processo |
-| VIS-06 | Toda tela funciona em 1366 px e 390 px sem rolagem lateral (TST-03). | 0 | — | processo |
+| VIS-06 | Toda tela funciona em 1366 px e 390 px sem rolagem lateral (TST-03). | 0 | `telas.test.js` › VIS-06 telas do painel no ${tam.nome} (${tam.width} px): sem erro, sem rolagem lateral, sem "undefined" | ✅ |
 
 ## Achados
 

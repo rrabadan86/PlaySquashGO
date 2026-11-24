@@ -22,10 +22,13 @@ O dono escreve em português: **responda em português, em linguagem simples**.
 | Matriz regra → teste | `docs/rastreabilidade.md` (gerada por `npm run matriz`) |
 | Modelo de dados e histórico | `docs/modelo-de-dados.md`, `db/migrations/` |
 | Padrão visual e mockups | `.claude/rules/visual.md`, `docs/design/mockups.html` |
-| Regras de negócio puras | `src/regras/` |
+| Painel (Node `http`, HTML montado no servidor) | `src/servidor.js` (rotas, sessão, origem), `src/painel/rotas.js` (telas), `src/painel/html.js` (layout e visual) |
+| Login e sessão | `src/auth/senha.js` (scrypt), `src/auth/sessao.js` (cookie assinado + tabela `sessao`) |
+| Banco e histórico | `src/db.js` (transação), `src/historico.js` (registrar), `src/config.js` (regras com versão) |
+| Regras de negócio puras | `src/regras/` (permissões, disponibilidade, reposição, confirmação) |
 | "Agora" e "hoje" (Brasília) | `src/relogio.js` (fonte única, TST-06) |
 | Simuladores de WhatsApp, IA e Google | `testes/simuladores/` |
-| Testes | `testes/unidade/`, `testes/integracao/` |
+| Testes | `testes/unidade/`, `testes/integracao/`, `testes/tela/` (ajuda comum em `testes/ajuda.js`) |
 | Skills e hooks do Claude | `.claude/skills/`, `.claude/hooks/` (ligados em `.claude/settings.json`) |
 
 A Sofia e o cliente de WhatsApp vêm do projeto SlimFit (`rrabadan86/SF-Chat_Experimental-Mensagens`,
@@ -59,6 +62,6 @@ Regras marcadas com **⏳ kickoff** dependem de resposta do cliente: não implem
 
 ## Antes de cada commit
 1. `node --check` em cada `.js` mexido.
-2. `npm test` e, se mexeu em banco ou integração, `npm run test:integracao` (com `DATABASE_URL_TESTE`).
+2. `npm test`; se mexeu em banco ou rota, `npm run test:integracao`; se mexeu em tela, `npm run test:telas` (os dois com `DATABASE_URL_TESTE`).
 3. Regra nova/alterada → teste com o código no título (TST-02) e `npm run matriz`.
 4. Branch de trabalho → PR → CI ✓ → squash merge (skill `subir-versao`, DEP-01).

@@ -4,9 +4,9 @@ Agenda das quadras, atendimento pela Sofia no WhatsApp, app do aluno e do profes
 cobrança por Pix da Play Squash.
 
 ## Situação
-**Fase 0 — estrutura.** Ainda não há telas nem integrações: este repositório tem as regras com
-código, o catálogo de casos de teste, a matriz de rastreabilidade, o modelo do banco (primeira
-migração), as regras puras de reposição e confirmação com seus testes, os simuladores e o CI.
+**Etapa 1a — painel base.** Login com perfis (administrador e professor), grade do dia,
+cadastros de quadras, tipos de aula, grade de horários, bloqueios e feriados, usuários e
+histórico de tudo o que muda. A ligação com o Google Agenda vem na etapa 1b.
 
 Etapas seguintes (proposta de 24/11/2026): 1. Base · 2. Sofia · 3. Alunos e app · 4. Financeiro e indicadores.
 
@@ -21,7 +21,13 @@ npm test                      # testes de unidade
 npm run matriz                # reescreve docs/rastreabilidade.md
 npm run matriz:conferir       # confere se a matriz está em dia (usado no CI)
 DATABASE_URL_TESTE=postgres://... npm run test:integracao   # banco de TESTE (é apagado e recriado)
+DATABASE_URL_TESTE=postgres://... npm run test:telas        # telas no computador e no celular (Playwright)
 DATABASE_URL=postgres://... npm run migrar                  # aplica as migrações
+
+# Primeiro acesso: criar o administrador (a senha vai pela variável, nunca na linha de comando)
+DATABASE_URL=postgres://... SENHA_NOVA='...' npm run criar-usuario -- --nome "Guilherme" --email email@exemplo.com --admin --professor
+# Subir o painel (PAINEL_SEGREDO: texto aleatório com 32+ caracteres, guardado só no .env)
+DATABASE_URL=postgres://... PAINEL_SEGREDO=... PORTA=3000 npm run iniciar
 ```
 
 Leia `CLAUDE.md` para a organização do projeto e as regras de trabalho.

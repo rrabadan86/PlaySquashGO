@@ -38,7 +38,7 @@ jobs:
         run: node scripts/matriz.js --resumo >> "$GITHUB_STEP_SUMMARY"
 
   integracao:
-    name: Integração (PostgreSQL)
+    name: Integração e telas (PostgreSQL)
     runs-on: ubuntu-latest
     timeout-minutes: 10
     services:
@@ -62,3 +62,9 @@ jobs:
         env:
           DATABASE_URL_TESTE: postgres://teste:teste@localhost:5432/ps_teste
         run: npm run test:integracao
+      - name: Navegador para os testes de tela
+        run: npx playwright install --with-deps chromium
+      - name: Testes de tela (computador 1366 px e celular 390 px)
+        env:
+          DATABASE_URL_TESTE: postgres://teste:teste@localhost:5432/ps_teste
+        run: npm run test:telas

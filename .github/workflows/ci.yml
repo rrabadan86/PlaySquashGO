@@ -1,0 +1,64 @@
+# CI da Play Squash: roda em cada PR e na main. O merge só acontece com ✓ (DEP-01, TST-05).
+# Nada aqui usa dado real nem envia mensagem: WhatsApp, IA e Google são simuladores (TST-01).
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  codigo:
+    name: Código, unidade e matriz
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - name: Sintaxe de todos os .js
+        run: |
+          falhou=0
+          while IFS= read -r f; do node --check "$f" || { echo "::error file=$f::erro de sintaxe"; falhou=1; }; done < <(git ls-files '*.js')
+          exit $falhou
+      - name: Testes de unidade
+        run: npm test
+      - name: Matriz em dia
+        run: npm run matriz:conferir
+      - name: Resumo da matriz
+        if: always()
+        run: node scripts/matriz.js --resumo >> "$GITHUB_STEP_SUMMARY"
+
+  integracao:
+    name: Integração (PostgreSQL)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: teste
+          POSTGRES_PASSWORD: teste
+          POSTGRES_DB: ps_teste
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U teste" --health-interval 5s --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - name: Testes de integração
+        env:
+          DATABASE_URL_TESTE: postgres://teste:teste@localhost:5432/ps_teste
+        run: npm run test:integracao

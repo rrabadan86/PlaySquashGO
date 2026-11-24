@@ -6,13 +6,14 @@
  *
  *   node scripts/rotacao-backups.js /var/backups/playsquash/producao [AAAA-MM-DD]
  *
- * Nome dos arquivos: <ambiente>-AAAA-MM-DD_HHMM[-motivo].dump.gpg
+ * Nome dos arquivos: <ambiente>-AAAA-MM-DD_HHMMSS[-motivo].dump.gpg (com segundos: duas cópias no
+ * mesmo minuto não se sobrescrevem)
  */
 const fs = require('fs');
 
 const DIAS = 30;
 const MESES = 12;
-const RE = /^[a-z]+-(\d{4}-\d{2}-\d{2})_(\d{4})(-[a-z0-9-]+)?\.dump\.gpg$/;
+const RE = /^[a-z]+-(\d{4}-\d{2}-\d{2})_(\d{6})(-[a-z0-9-]+)?\.dump\.gpg$/;
 
 function diasEntre(a, b) { return Math.round((Date.parse(b + 'T12:00:00Z') - Date.parse(a + 'T12:00:00Z')) / 86400000); }
 

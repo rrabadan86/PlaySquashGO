@@ -41,9 +41,11 @@ const rodar = (script, args) => execFileSync('bash', [path.join(RAIZ, 'infra', s
 
 test('DEP-06 cópia do banco sai criptografada, com nome por data, e não abre sem a chave', opc, () => {
   const saida = rodar('backup.sh', ['producao']);
-  assert.match(saida, /Cópia criada: .*producao-\d{4}-\d{2}-\d{2}_\d{4}\.dump\.gpg/);
+  // duas cópias seguidas não se sobrescrevem
+  rodar('backup.sh', ['producao', 'antes-de-atualizar']);
+  assert.match(saida, /Cópia criada: .*producao-\d{4}-\d{2}-\d{2}_\d{6}\.dump\.gpg/);
   const arqs = fs.readdirSync(path.join(pasta, 'backups', 'producao'));
-  assert.equal(arqs.length, 1);
+  assert.equal(arqs.length, 2);
   const bruto = fs.readFileSync(path.join(pasta, 'backups', 'producao', arqs[0]));
   assert.ok(!bruto.includes(Buffer.from('teste.backup')), 'conteúdo não pode estar legível');
   assert.ok(!bruto.subarray(0, 5).equals(Buffer.from('PGDMP')), 'não pode ser um dump aberto');

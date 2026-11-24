@@ -2,16 +2,16 @@ const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const { paraApagar } = require('../../scripts/rotacao-backups');
 
-const nome = (dia, hora = '0330', motivo = '') => `producao-${dia}_${hora}${motivo ? '-' + motivo : ''}.dump.gpg`;
+const nome = (dia, hora = '033000', motivo = '') => `producao-${dia}_${hora}${motivo ? '-' + motivo : ''}.dump.gpg`;
 const somar = (iso, d) => { const x = new Date(iso + 'T12:00:00Z'); x.setUTCDate(x.getUTCDate() + d); return x.toISOString().slice(0, 10); };
 
 test('DEP-06 guarda a última cópia de cada um dos 30 dias mais recentes', () => {
   const hoje = '2027-06-15';
   const nomes = [];
   for (let i = 0; i < 40; i++) nomes.push(nome(somar(hoje, -i)));
-  nomes.push(nome(hoje, '0100')); // duas no mesmo dia: fica a mais recente
+  nomes.push(nome(hoje, '010000')); // duas no mesmo dia: fica a mais recente
   const apagar = paraApagar(nomes, hoje);
-  assert.ok(apagar.includes(nome(hoje, '0100')));
+  assert.ok(apagar.includes(nome(hoje, '010000')));
   assert.ok(!apagar.includes(nome(hoje)));
   assert.ok(!apagar.includes(nome(somar(hoje, -29))));
   assert.ok(apagar.includes(nome(somar(hoje, -30))));
@@ -36,6 +36,6 @@ test('DEP-06 guarda a primeira cópia de cada um dos 12 meses mais recentes', ()
 
 test('DEP-06 cópia feita antes de atualizar vale 30 dias; arquivo estranho nunca é apagado', () => {
   const hoje = '2027-06-15';
-  const apagar = paraApagar([nome('2027-06-01', '2200', 'antes-de-atualizar'), nome('2027-04-01', '2200', 'antes-de-atualizar'), 'leia-me.txt'], hoje);
-  assert.deepEqual(apagar, [nome('2027-04-01', '2200', 'antes-de-atualizar')]);
+  const apagar = paraApagar([nome('2027-06-01', '220000', 'antes-de-atualizar'), nome('2027-04-01', '220000', 'antes-de-atualizar'), 'leia-me.txt'], hoje);
+  assert.deepEqual(apagar, [nome('2027-04-01', '220000', 'antes-de-atualizar')]);
 });

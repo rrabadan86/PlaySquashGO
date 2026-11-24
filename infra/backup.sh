@@ -29,7 +29,7 @@ BACKUP_REMOTO="$(grep -E '^BACKUP_REMOTO=' "$ENV_ARQ" | cut -d= -f2- || true)"
 PASTA="$PS_BACKUPS/$AMBIENTE"
 mkdir -p "$PASTA"
 chmod 700 "$PASTA"
-NOME="$AMBIENTE-$(TZ=America/Sao_Paulo date +%F_%H%M)${MOTIVO:+-$MOTIVO}.dump.gpg"
+NOME="$AMBIENTE-$(TZ=America/Sao_Paulo date +%F_%H%M%S)${MOTIVO:+-$MOTIVO}.dump.gpg"
 TMP="$PASTA/.$NOME.parcial"
 trap 'rm -f "$TMP"' EXIT
 

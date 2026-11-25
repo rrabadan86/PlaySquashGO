@@ -75,13 +75,14 @@ function menu(u, ativo) {
     ['CONFIGURAÇÕES', [['usuarios', '/usuarios', 'Usuários'], ['historico', '/historico', 'Histórico'], ['exportar', '/exportar', 'Exportar dados']]],
   ];
   let h = '<nav class="side"><a class="marca" href="/grade">Play Squash</a>';
+  const fim = `<div class="g">AJUDA</div><a class="i${ativo === 'novidades' ? ' on' : ''}" href="/novidades">Novidades</a>`;
   for (const [grupo, links] of itens) {
     const vis = links.filter(([tela]) => temTela(u, tela));
     if (!vis.length) continue;
     h += `<div class="g">${grupo}</div>`;
     for (const [tela, href, nome] of vis) h += `<a class="i${tela === ativo ? ' on' : ''}" href="${href}">${esc(nome)}</a>`;
   }
-  return h + '</nav>';
+  return h + fim + '</nav>';
 }
 
 function pagina({ titulo, usuario, ativo, corpo, acoes = '', aviso = null }) {

@@ -118,3 +118,5 @@ Tipos: **Unitário** (regra pura, sem banco), **Integração** (banco de teste e
 | CT-110 | OPR-09 | Integração | Dado um ex-aluno inativo há 30 dias, quando o agendador roda, então recebe o convite com os horários livres do momento. |
 | CT-111 | AGD-12 | Integração | Dado um horário livre na grade, quando o admin marca uma aula avulsa pelo painel, então ela é gravada e o evento aparece na agenda da quadra certa no Google. |
 | CT-112 | AGD-12 | Integração | Dada uma aula marcada, quando o admin cancela com motivo, então o evento sai do Google, o horário volta a ficar livre e o histórico guarda o motivo. |
+| CT-113 | DEP-09 | Integração | Dado um banco vazio, quando a demonstração é gerada, então há professores, quadras, grade e aulas fictícias; quando rodada de novo, é recusada sem mexer no banco. |
+| CT-114 | DEP-05 | Unidade | Dado um professor, quando abre Novidades, então não vê os itens só de administrador. |

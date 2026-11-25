@@ -12,9 +12,9 @@ Gerada por `npm run matriz` (não edite à mão, exceto a seção "Achados"). O 
 
 | Área | Regras | Casos planejados | Testes escritos | ✅ | parcial | ❌ | processo | ⏳ kickoff |
 |---|---|---|---|---|---|---|---|---|
-| Agenda, grade, Google Agenda e perfis | 15 | 21 | 37 | 12 | 0 | 3 | 0 | 3 |
+| Agenda, grade, Google Agenda e perfis | 15 | 23 | 41 | 13 | 0 | 2 | 0 | 3 |
 | App do aluno e reposição | 11 | 12 | 8 | 4 | 0 | 7 | 0 | 2 |
-| Planos e contratos | 12 | 18 | 0 | 0 | 0 | 12 | 0 | 5 |
+| Planos e contratos | 12 | 20 | 5 | 1 | 3 | 8 | 0 | 5 |
 | Dados e segredos | 10 | 0 | 4 | 4 | 0 | 0 | 6 | 0 |
 | Publicar e atualizar | 9 | 2 | 8 | 3 | 0 | 0 | 6 | 0 |
 | Cobrança e financeiro | 8 | 11 | 0 | 0 | 0 | 8 | 0 | 1 |
@@ -23,9 +23,9 @@ Gerada por `npm run matriz` (não edite à mão, exceto a seção "Achados"). O 
 | Sofia, confirmação da experimental e lista de espera | 22 | 40 | 33 | 14 | 2 | 6 | 0 | 1 |
 | Testes | 8 | 0 | 9 | 3 | 0 | 0 | 5 | 0 |
 | Padrão visual | 6 | 0 | 1 | 1 | 0 | 0 | 5 | 0 |
-| **Total** | 118 | 123 | 122 | 51 | 2 | 43 | 22 | 13 |
+| **Total** | 118 | 127 | 131 | 53 | 5 | 38 | 22 | 13 |
 
-Testes: 122 no total, 122 ligados a uma regra.
+Testes: 131 no total, 131 ligados a uma regra.
 
 ## Regras
 
@@ -37,15 +37,15 @@ Testes: 122 no total, 122 ligados a uma regra.
 | AGD-02 | Só administradores alteram grade, quadras, professores e bloqueios. | 1 | `painel.test.js` › AGD-02 professor não altera a grade nem com a tela de cadastros liberada (servidor recusa)<br>`permissoes.test.js` › AGD-02 só administrador altera grade e cadastros, mesmo com a tela liberada | ✅ |
 | AGD-03 ⏳ | Feriados nacionais carregados automaticamente (fixos + Sexta-feira Santa; o admin pode remover um e ele não volta) + feriados e bloqueios manuais; bloqueio sobre aulas avisa alunos e aplica AGD-08. | 2 | `agenda.test.js` › AGD-03 feriados nacionais entram sozinhos, sem duplicar, e o removido pelo admin não volta<br>`painel.test.js` › AGD-03 feriado tira o dia da grade e bloqueio aparece como bloqueado<br>`agenda-google.test.js` › AGD-03 feriados nacionais fixos e Sexta-feira Santa calculada pela Páscoa | ✅ |
 | AGD-04 | Aula maior que o intervalo base ocupa blocos seguidos. | 1 | `banco.test.js` › AGD-04 aula de 60 min bloqueia o meio-horário seguinte na mesma quadra<br>`disponibilidade.test.js` › AGD-04 aula de 60 min precisa de dois blocos livres seguidos e não passa do fim da faixa | ✅ |
-| AGD-05 | Horário livre = existe na grade, sem bloqueio, com vaga e professor livre. | 2 | `painel.test.js` › AGD-05 professor não pode ter duas faixas no mesmo horário em quadras diferentes<br>`disponibilidade.test.js` › AGD-05 horário livre existe na grade, no dia e no tipo certos<br>`disponibilidade.test.js` › AGD-05 feriado, bloqueio e aula ocupada tiram o horário<br>`disponibilidade.test.js` › AGD-05 professor em outra quadra no mesmo horário não aparece livre<br>`disponibilidade.test.js` › AGD-05 aula de dupla com 1 aluno ainda tem 1 vaga; com 2 está cheia | ✅ |
-| AGD-06 | Horário fixo semanal; aulas geradas 4 semanas à frente, renovadas semanalmente. | 1 | — | ❌ |
-| AGD-07 | Contrato ligado a atividade + horário; troca de professor na grade mantém os alunos. | 1 | `painel.test.js` › AGD-07 trocar o professor da faixa mantém a faixa (e os alunos) e fica no histórico | ✅ |
+| AGD-05 | Horário livre = existe na grade, sem bloqueio, com vaga e professor livre. | 3 | `contratos.test.js` › AGD-05 CON-04 horário fixo individual não aceita segundo aluno; dupla junta dois contratos na mesma aula<br>`painel.test.js` › AGD-05 professor não pode ter duas faixas no mesmo horário em quadras diferentes<br>`disponibilidade.test.js` › AGD-05 horário livre existe na grade, no dia e no tipo certos<br>`disponibilidade.test.js` › AGD-05 feriado, bloqueio e aula ocupada tiram o horário<br>`disponibilidade.test.js` › AGD-05 professor em outra quadra no mesmo horário não aparece livre<br>`disponibilidade.test.js` › AGD-05 aula de dupla com 1 aluno ainda tem 1 vaga; com 2 está cheia | ✅ |
+| AGD-06 | Horário fixo semanal; aulas geradas 4 semanas à frente, renovadas semanalmente. | 1 | `horario-fixo.test.js` › AGD-06 AGD-05 horários fixos livres respeitam grade, vaga e aulas de outro tipo | ✅ |
+| AGD-07 | Contrato ligado a atividade + horário; troca de professor na grade mantém os alunos. | 2 | `contratos.test.js` › AGD-07 trocar o professor da faixa troca o das aulas futuras; os alunos ficam<br>`painel.test.js` › AGD-07 trocar o professor da faixa mantém a faixa (e os alunos) e fica no histórico | ✅ |
 | AGD-08 | Professor desmarca aula: apaga evento, avisa aluno, gera crédito se respeitar a antecedência, registra motivo. | 2 | `reposicao.test.js` › AGD-08 professor desmarca com 5 h de antecedência: aluno ganha crédito<br>`reposicao.test.js` › AGD-08 professor desmarca com 1 h: sem crédito e a aula não conta como dada para o aluno | ✅ |
 | AGD-09 | Google Agenda: uma agenda por quadra criada por uma **conta de serviço** do Google (decisão do dono, 24/11/2026), compartilhada só para leitura com os administradores e professores ativos; só Sistema → Google; toda mudança passa pela fila `fila_google`, com nova tentativa se o Google falhar. | 2 | `agenda.test.js` › AGD-09 quadra nova vira uma agenda no Google, compartilhada só leitura com admin e professores<br>`agenda.test.js` › AGD-09 professor desativado perde o acesso à agenda; novo professor ganha<br>`agenda.test.js` › AGD-09 Google fora do ar: o envio fica na fila, tenta de novo depois e chega<br>`agenda-google.test.js` › AGD-09 conta de serviço: cria agenda da quadra no fuso de Brasília e compartilha só para leitura<br>`agenda-google.test.js` › AGD-09 evento vai com horário de Brasília, cor e id da aula; apagar o que já não existe não é erro<br>`agenda-google.test.js` › AGD-09 título padrão e cor por tipo de aula; experimental confirmada ganha ✓<br>`agenda-google.test.js` › AGD-09 nova tentativa espera cada vez mais e nunca desiste | ✅ |
 | AGD-10 | Presença: professor marca presente/falta; sem marcação = presença; 2 semanas de faltas avisam o professor. | 2 | — | ❌ |
 | AGD-11 | Resumo diário às 6h para cada professor. | 1 | — | ❌ |
 | PER-01 | Administrador vê e faz tudo; vários admins; um usuário pode ser admin e professor. | 1 | `painel.test.js` › PER-01 administrador e professor ao mesmo tempo vê o painel completo<br>`painel.test.js` › PER-01 administrador não pode tirar o próprio acesso de admin<br>`permissoes.test.js` › PER-01 administrador pode todas as ações | ✅ |
-| PER-02 ⏳ | Professor: vê todas as quadras, desmarca, marca presença, vê situação dos seus alunos, sem valores; telas liberadas pelo admin. | 1 | `painel.test.js` › PER-02 professor vê só as telas liberadas; o menu não mostra o resto<br>`permissoes.test.js` › PER-02 professor vê só as telas liberadas e nunca valores, usuários ou histórico | ✅ |
+| PER-02 ⏳ | Professor: vê todas as quadras, desmarca, marca presença, vê situação dos seus alunos, sem valores; telas liberadas pelo admin. | 1 | `contratos.test.js` › PER-02 PER-03 professor não vê planos, alunos nem contratos (valores)<br>`painel.test.js` › PER-02 professor vê só as telas liberadas; o menu não mostra o resto<br>`permissoes.test.js` › PER-02 professor vê só as telas liberadas e nunca valores, usuários ou histórico | ✅ |
 | PER-03 | Permissões verificadas no servidor. | 1 | `painel.test.js` › PER-03 sem login a tela manda para o login e senha errada é recusada<br>`painel.test.js` › PER-03 envio sem origem do próprio painel é recusado<br>`painel.test.js` › PER-03 sessão encerrada pelo admin ou usuário desativado perde o acesso na hora<br>`permissoes.test.js` › PER-03 sem usuário nada é permitido e ação desconhecida é erro<br>`permissoes.test.js` › PER-03 senha só como hash e cookie de sessão não pode ser forjado<br>`permissoes.test.js` › PER-03 envio de formulário só aceito vindo do próprio painel | ✅ |
 | AGD-12 | Administrador cria aula avulsa ou experimental pelo painel num horário livre da grade e cancela aula com motivo; a mudança vai para o Google pela fila (AGD-09). | 2 | `agenda.test.js` › AGD-12 admin marca aula avulsa num horário livre e ela aparece na agenda da quadra certa<br>`agenda.test.js` › AGD-12 o mesmo horário não pode ser marcado duas vezes, e professor não marca aula<br>`agenda.test.js` › AGD-12 cancelar aula com motivo apaga o evento do Google e libera o horário | ✅ |
 
@@ -69,17 +69,17 @@ Testes: 122 no total, 122 ligados a uma regra.
 
 | Código | Regra | Casos | Testes escritos | Cobertura |
 |---|---|---|---|---|
-| CON-01 | Plano: criado pelo admin (Novo/Duplicar) com nome, tipo, aulas/semana, vigência, valor de referência opcional, pagamento sugerido, modelo de contrato, reposições/mês, trancamento, ativo para venda. | 2 | — | ❌ |
+| CON-01 | Plano: criado pelo admin (Novo/Duplicar) com nome, tipo, aulas/semana, vigência, valor de referência opcional, pagamento sugerido, modelo de contrato, reposições/mês, trancamento, ativo para venda. | 2 | `contratos.test.js` › CON-01 CON-01a plano criado, editado e duplicado; contrato guarda o retrato do plano | parcial |
 | CON-01a | Alterar plano vale só para contratos novos; plano com contratos só é desativado; mudanças auditadas. | 2 | — | ❌ |
-| CON-02 | Contrato: aluno, plano, horário fixo, início, valor, forma de pagamento, vencimento, desconto com motivo, trancamento. | 2 | — | ❌ |
+| CON-02 | Contrato: aluno, plano, horário fixo, início, valor, forma de pagamento, vencimento, desconto com motivo, trancamento. | 3 | `contratos.test.js` › CON-02 AGD-06 contrato gera 4 semanas de aulas fixas sem duplicar, pula feriado e manda para o Google<br>`horario-fixo.test.js` › CON-02 fim da vigência: véspera do mesmo dia N meses depois | parcial |
 | CON-03 ⏳ | Proporcional do 1º mês calculado e exibido antes de salvar. | 1 | — | ❌ |
 | CON-04 | Aluno com vários contratos ativos. | 1 | — | ❌ |
 | CON-05 ⏳ | Dupla: dois contratos no mesmo horário; desmarcação independente. | 1 | — | ❌ |
 | CON-06 | Kids: modelo próprio; responsável recebe as mensagens. | 1 | — | ❌ |
 | CON-07 ⏳ | Aceite no app com data e hora; texto do contrato definido pelo admin. | 1 | — | ❌ |
-| CON-08 | Renovação assistida: detectar contrato anterior e pré-preencher horário e dados. | 1 | — | ❌ |
+| CON-08 | Renovação assistida: detectar contrato anterior e pré-preencher horário e dados. | 1 | `contratos.test.js` › CON-08 renovação: novo contrato traz plano, valor e horários do anterior | ✅ |
 | CON-09 | Aviso de fim de vigência ao admin e ao aluno (10 dias); sem renovação, horário liberado. | 2 | — | ❌ |
-| CON-10 ⏳ | Encerramento só pelo admin, com motivo; horário liberado na hora. | 1 | — | ❌ |
+| CON-10 ⏳ | Encerramento só pelo admin, com motivo; horário liberado na hora. | 2 | `contratos.test.js` › CON-10 encerramento libera o horário na hora e tira o aluno das próximas aulas | parcial |
 | CON-11 ⏳ | Trancamento: mínimo e saldo; aulas canceladas sem crédito; vigência estendida; volta antecipada devolve saldo. | 3 | — | ❌ |
 
 ### Dados e segredos
@@ -211,3 +211,5 @@ Erro, contradição ou lacuna de regra de negócio encontrado no desenvolvimento
 3. **SOF-06 com responsável:** "1 experimental por participante" permite que um responsável marque uma para cada filho (CT-012); por isso um mesmo lead pode ter mais de uma experimental marcada, e a remarcação pergunta qual.
 4. **Cópia de segurança dos anexos da Sofia:** ~~ficavam fora da cópia~~ — resolvido: o dono pediu (25/11/2026) e a cópia diária leva os anexos junto (DEP-06).
 5. **Liberação de experimental na anonimização:** a liberação guarda nome + nascimento; o dono decidiu (25/11/2026) que a anonimização apaga isso também (DAD-07).
+6. **Ordem das etapas (decisão do dono, 25/11/2026):** a parte básica de planos e contratos (CON-01, CON-01a, CON-02, CON-04, CON-06, CON-08, CON-10 sem multa) foi antecipada para a etapa 3, porque o app do aluno depende das aulas fixas. Cobrança, régua, bloqueio e as partes ⏳ kickoff de contrato continuam na etapa 4.
+7. **Fim da vigência:** o contrato vai até a véspera do mesmo dia N meses depois (01/12 + 3 meses → 28/02). Confirmar no kickoff junto com o proporcional (CON-03).

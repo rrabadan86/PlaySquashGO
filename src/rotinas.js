@@ -2,7 +2,8 @@
  * Rotinas que rodam sozinhas no servidor:
  * - carga dos feriados nacionais do ano atual e do próximo (AGD-03), uma vez por dia;
  * - envio da fila do Google Agenda (AGD-09), a cada 30 s;
- * - confirmação da experimental e contato pós-aula (CNF-01, CNF-06), a cada 30 s.
+ * - confirmação da experimental e contato pós-aula (CNF-01, CNF-06), a cada 30 s;
+ * - aulas fixas das próximas 4 semanas (AGD-06), uma vez por dia.
  */
 const { tx } = require('./db');
 const { feriadosNacionais } = require('./regras/feriados');
@@ -12,6 +13,7 @@ const { hojeSP } = require('./relogio');
 const { processarUm } = require('./whatsapp/envio');
 const { receberMensagem } = require('./whatsapp/recebimento');
 const { processarConfirmacoes, processarPosAula } = require('./sofia/confirmacao');
+const { gerarAulasFixas } = require('./agenda/aulas-fixas');
 
 const SISTEMA = { tipo: 'sistema', id: null };
 
@@ -42,6 +44,8 @@ function iniciarRotinas({ pool, google, log = console, intervaloMs = 30000 }) {
         const ano = Number(hoje.slice(0, 4));
         const n = await tx(pool, async c => (await carregarFeriados(c, ano)) + (await carregarFeriados(c, ano + 1)));
         if (n) log.log(`[rotinas] ${n} feriado(s) nacional(is) carregado(s).`);
+        const fixas = await gerarAulasFixas({ pool, log });
+        if (fixas) log.log(`[rotinas] ${fixas} aula(s) fixa(s) gerada(s).`);
         ultimoDiaFeriados = hoje;
       }
       await processarConfirmacoes({ pool, log });

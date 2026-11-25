@@ -7,6 +7,17 @@ const { esc, pagina } = require('./html');
 
 const NOVIDADES = [
   {
+    data: '2026-11-25', titulo: 'Planos, alunos e contratos', para: 'admin', itens: [
+      'Nova tela "Planos": crie, edite e duplique planos. Mudar um plano vale só para contratos novos.',
+      'Nova tela "Alunos": cadastro (com responsável para kids), ficha com contratos, horários e próximas aulas.',
+      '"Novo contrato": escolha o plano, o início e os horários fixos — só aparecem horários com vaga. Na renovação, plano, valor e horários do contrato anterior já vêm marcados.',
+      'As aulas fixas entram sozinhas na grade e no Google Agenda, sempre 4 semanas à frente (feriado é pulado).',
+      'Encerrar contrato (com motivo) libera o horário na hora e tira o aluno das próximas aulas.',
+      'Trocar o professor de uma faixa da grade troca também o das aulas futuras dela.',
+      'A cobrança por Pix desses contratos entra na próxima etapa.',
+    ],
+  },
+  {
     data: '2026-11-25', titulo: 'Confirmação da experimental e pós-aula', para: 'admin', itens: [
       'Na véspera, às 19h, o lead recebe o pedido de confirmação; sem resposta, recebe de novo 3 h antes e a aula é cancelada 90 min antes (tudo editável na tela Sofia).',
       'A Sofia entende "sim" e "não vou": confirmada, a aula ganha ✓ no Google; desistiu, o horário fica livre e ela oferece outra data.',

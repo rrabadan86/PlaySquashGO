@@ -34,3 +34,5 @@ O banco é a fonte da verdade; o Google Agenda é só espelho (AGD-09). Esquema 
 7. **Cópias** (DEP-06): cópia diária criptografada fora do servidor (30 diárias + 12 mensais) e teste de restauração mensal.
 
 Volume esperado: ~70 alunos → ~15 mil aulas e ~1 mil parcelas por ano. Não há necessidade de partição.
+
+**Aulas fixas (AGD-06):** `horario_fixo` (contrato, quadra, dia da semana, hora) gera as aulas das próximas `grade.semanas_geradas` (4) semanas; a aula guarda `horario_fixo_id` e o participante, `contrato_id`. Aula desmarcada ou cancelada não é gerada de novo; dia pulado (feriado, bloqueio, horário ocupado) fica no histórico como `aula.fixa_pulada`.

@@ -15,6 +15,7 @@ const { ROTAS_NOVIDADES } = require('./painel/novidades');
 const { ROTAS_WHATSAPP } = require('./painel/rotas-whatsapp');
 const { ROTAS_SOFIA } = require('./painel/rotas-sofia');
 const { ROTAS_EXPERIMENTAIS } = require('./painel/rotas-experimentais');
+const { ROTAS_CONTRATOS } = require('./painel/rotas-contratos');
 const { paginaErro } = require('./painel/html');
 
 const LIMITE = 100 * 1024;
@@ -82,7 +83,7 @@ function mesmaOrigem(req) {
 
 function criarServidor({ pool, segredo, googleConfigurado = false, log = console }) {
   if (!segredo || segredo.length < 32) throw new Error('PAINEL_SEGREDO precisa de pelo menos 32 caracteres.');
-  const rotas = compilar([...ROTAS, ...ROTAS_AULAS, ...ROTAS_NOVIDADES, ...ROTAS_WHATSAPP, ...ROTAS_SOFIA, ...ROTAS_EXPERIMENTAIS]);
+  const rotas = compilar([...ROTAS, ...ROTAS_AULAS, ...ROTAS_NOVIDADES, ...ROTAS_WHATSAPP, ...ROTAS_SOFIA, ...ROTAS_EXPERIMENTAIS, ...ROTAS_CONTRATOS]);
 
   return http.createServer(async (req, res) => {
     const url = new URL(req.url, 'http://local');

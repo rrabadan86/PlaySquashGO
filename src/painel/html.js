@@ -37,7 +37,7 @@ a{color:inherit}
 table{width:100%;border-collapse:collapse;font-size:13px}
 th{text-align:left;color:var(--s);font-weight:500;font-size:12px;padding:7px 8px;border-bottom:1px solid var(--l)}
 td{padding:8px;border-bottom:1px solid #eef2f0;vertical-align:top}
-form.linha{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end}
+form.linha,div.linha{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end}
 label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--s);font-weight:500}
 input,select,textarea{border:1px solid #d5dfdb;border-radius:8px;padding:8px 10px;font:14px Inter,system-ui,sans-serif;background:#fff;color:var(--t);min-width:0}
 .checks{display:flex;flex-wrap:wrap;gap:10px;font-size:13px;color:var(--t)}
@@ -71,7 +71,7 @@ input,select,textarea{border:1px solid #d5dfdb;border-radius:8px;padding:8px 10p
 function menu(u, ativo) {
   const itens = [
     ['AGENDA', [['grade', '/grade', 'Grade do dia'], ['experimentais', '/experimentais', 'Experimentais'], ['cadastros', '/cadastros', 'Quadras e professores']]],
-    ['ALUNOS', [['contatos', '/contatos', 'Contatos']]],
+    ['ALUNOS', [['alunos', '/alunos', 'Alunos'], ['planos', '/planos', 'Planos'], ['contatos', '/contatos', 'Contatos']]],
     ['WHATSAPP', [['conversas', '/conversas', 'Conversas'], ['sofia', '/sofia', 'Sofia'], ['whatsapp', '/whatsapp', 'Conexão e mensagens']]],
     ['CONFIGURAÇÕES', [['usuarios', '/usuarios', 'Usuários'], ['historico', '/historico', 'Histórico'], ['exportar', '/exportar', 'Exportar dados']]],
   ];

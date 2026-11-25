@@ -17,7 +17,7 @@ try { playwright = require('playwright'); } catch (_) {}
 const opc = { skip: !URL_TESTE ? 'sem DATABASE_URL_TESTE' : !playwright ? 'sem playwright' : false };
 
 // Telas do painel (TST-03): tela nova entra aqui.
-const TELAS = ['/grade?data=2026-12-01', '/aulas/nova?data=2026-12-01', '/aulas/1', '/cadastros', '/contatos', '/usuarios', '/historico', '/exportar', '/novidades', '/whatsapp', '/conversas', '/conversas/1', '/sofia', '/experimentais', '/experimentais?filtro=passadas'];
+const TELAS = ['/grade?data=2026-12-01', '/aulas/nova?data=2026-12-01', '/aulas/1', '/cadastros', '/contatos', '/usuarios', '/historico', '/exportar', '/novidades', '/whatsapp', '/conversas', '/conversas/1', '/sofia', '/experimentais', '/experimentais?filtro=passadas', '/planos', '/planos?editar=1', '/alunos', '/alunos/1', '/contratos/novo?aluno=1'];
 const TAMANHOS = [{ nome: 'computador', width: 1366, height: 900 }, { nome: 'celular', width: 390, height: 844 }];
 
 let pool, painel, navegador, pasta;
@@ -57,6 +57,13 @@ before(async () => {
     VALUES ($1,$2,$3,tstzrange(now() - interval '2 days', now() - interval '2 days' + interval '1 hour'),'experimental',$4) RETURNING id`, [q2, f, te, ex])).rows[0].id;
   await pool.query(`INSERT INTO aula_participante (aula_id, contato_id, presenca) VALUES ($1,$2,'presente')`, [pas, ex]);
   await pool.query(`INSERT INTO lead_resultado (contato_id, resultado, motivo_perda, registrado_por) VALUES ($1,'perdido','Horário não serviu',$2)`, [ex, g]);
+  // Aluno com contrato e horário fixo; plano à venda.
+  const pl = (await pool.query(`INSERT INTO plano (nome, tipo_aula_id, aulas_semana, vigencia_meses, valor_referencia, parcelas_max) VALUES ('Individual 1x por semana',$1,1,3,320,3) RETURNING id`, [t])).rows[0].id;
+  const al = (await pool.query(`INSERT INTO aluno (contato_id) VALUES ($1) RETURNING id`, [ct])).rows[0].id;
+  const k = (await pool.query(`INSERT INTO contrato (aluno_id, plano_id, plano_retrato, regras_retrato, inicio, fim, valor_mensal, desconto_valor, desconto_motivo, forma, parcelas, dia_vencimento, situacao)
+    VALUES ($1,$2,'{}','{}','2026-11-01','2027-01-31',320,20,'Irmã também treina','parcelado',3,10,'ativo') RETURNING id`, [al, pl])).rows[0].id;
+  await pool.query(`INSERT INTO horario_fixo (contrato_id, quadra_id, dia_semana, hora, desde) VALUES ($1,$2,2,'16:00','2026-11-01')`, [k, q1]);
+  await pool.query(`UPDATE aula_participante SET contrato_id = $1 WHERE contato_id = $2`, [k, ct]);
   painel = await subirPainel(pool);
   navegador = await playwright.chromium.launch();
   pasta = fs.mkdtempSync(path.join(os.tmpdir(), 'ps-telas-'));

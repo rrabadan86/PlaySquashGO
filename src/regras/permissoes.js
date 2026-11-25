@@ -8,6 +8,8 @@
 const TELAS = {
   grade: 'Grade do dia',
   cadastros: 'Quadras e professores',
+  alunos: 'Alunos',
+  planos: 'Planos',
   contatos: 'Contatos',
   whatsapp: 'WhatsApp',
   experimentais: 'Experimentais',
@@ -39,6 +41,11 @@ const ACOES = {
   'valores.ver': u => !!u.eh_admin, // PER-02
   'aulas.criar': u => !!u.eh_admin, // AGD-12
   'aulas.cancelar': u => !!u.eh_admin, // AGD-12 (professor desmarca pelo app na etapa 3, AGD-08)
+  'alunos.ver': u => !!u.eh_admin, // PER-02 ⏳ kickoff: o que o professor vê dos "seus alunos" (app do professor)
+  'alunos.editar': u => !!u.eh_admin,
+  'planos.ver': u => !!u.eh_admin, // CON-01 (valores: só admin, PER-02)
+  'planos.editar': u => !!u.eh_admin,
+  'contratos.editar': u => !!u.eh_admin, // CON-02, CON-10
   'contatos.ver': u => !!u.eh_admin,
   'contatos.anonimizar': u => !!u.eh_admin, // OPR-05
   'exportar': u => !!u.eh_admin, // OPR-06

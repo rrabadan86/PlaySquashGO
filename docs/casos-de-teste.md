@@ -129,3 +129,7 @@ Tipos: **Unitário** (regra pura, sem banco), **Integração** (banco de teste e
 | CT-121 | CNF-01 | Integração | Dado o pedido de confirmação desligado, quando chega a hora do cancelamento, então a aula não é cancelada (só cancela quem foi perguntado). |
 | CT-122 | CNF-06 | Integração | Dado um lead que faltou à experimental, quando chega o contato pós-aula, então recebe o convite para remarcar e não recebe o contato de +2 dias. |
 | CT-123 | LES-02 | Integração | Dados dois leads avisados da mesma vaga, quando o primeiro marca, então o segundo recebe "vaga já preenchida" e continua na lista. |
+| CT-124 | CON-02 | Integração | Dado um plano de 2 aulas por semana, quando o admin escolhe 1 horário ou dá desconto sem motivo, então o contrato é recusado com a explicação. |
+| CT-125 | AGD-05 | Integração | Dado um horário fixo individual já contratado, quando outro aluno tenta o mesmo horário, então ele não aparece e o salvamento é recusado; na dupla, os dois contratos dividem a mesma aula. |
+| CT-126 | AGD-07 | Integração | Dada uma faixa com aulas futuras, quando o admin troca o professor, então as aulas futuras daquela faixa passam para o novo professor e vão para o Google. |
+| CT-127 | CON-10 | Integração | Dado um contrato encerrado, quando o admin abre um novo contrato para outro aluno, então o horário liberado aparece de novo. |

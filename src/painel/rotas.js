@@ -323,10 +323,19 @@ const postFaixaProfessor = mudanca('cadastros.editar', '/cadastros', async (ctx,
     `SELECT 1 FROM grade_faixa WHERE professor_id = $1 AND dia_semana = $2 AND id <> $5 AND cancelada_em IS NULL
         AND (vigente_ate IS NULL OR vigente_ate >= current_date) AND inicio < $4 AND $3 < fim`, [prof, f.dia_semana, f.inicio, f.fim, id]);
   if (ocupado.rowCount) falha('Esse professor já tem faixa nesse horário em outra quadra.');
-  // AGD-07: os alunos ficam no horário; só o professor da faixa (e das aulas futuras dela, etapa 3) muda.
+  // AGD-07: os alunos ficam no horário; só o professor da faixa e das aulas futuras dentro dela muda.
   await c.query('UPDATE grade_faixa SET professor_id = $2 WHERE id = $1', [id, prof]);
-  await registrar(c, { ator, acao: 'grade.professor_trocado', entidade: 'grade_faixa', entidadeId: id, antes: { professor: f.professor_id }, depois: { professor: prof } });
-  return 'Professor da faixa trocado. Os alunos continuam no mesmo horário.';
+  const futuras = (await c.query(
+    `UPDATE aula a SET professor_id = $2
+      WHERE a.quadra_id = $1 AND a.situacao <> 'cancelada' AND a.professor_id = $3 AND lower(a.periodo) > now()
+        AND extract(dow FROM lower(a.periodo) AT TIME ZONE 'America/Sao_Paulo') = $4
+        AND (lower(a.periodo) AT TIME ZONE 'America/Sao_Paulo')::time >= $5::time
+        AND (upper(a.periodo) AT TIME ZONE 'America/Sao_Paulo')::time <= $6::time
+        AND (lower(a.periodo) AT TIME ZONE 'America/Sao_Paulo')::date >= (SELECT vigente_desde FROM grade_faixa WHERE id = $7)
+     RETURNING a.id`, [f.quadra_id, prof, f.professor_id, f.dia_semana, f.inicio, f.fim, id])).rows;
+  for (const a of futuras) await fila.aulaMudou(c, a.id, 'atualizar');
+  await registrar(c, { ator, acao: 'grade.professor_trocado', entidade: 'grade_faixa', entidadeId: id, antes: { professor: f.professor_id }, depois: { professor: prof, aulas_futuras: futuras.length } });
+  return `Professor da faixa trocado (${futuras.length} aula(s) futura(s)). Os alunos continuam no mesmo horário.`;
 });
 
 const postFaixaEncerrar = mudanca('cadastros.editar', '/cadastros', async (ctx, c, ator) => {

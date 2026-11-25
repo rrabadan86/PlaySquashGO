@@ -1,0 +1,10 @@
+# Cópia diária do banco de um ambiente (DEP-06).
+[Unit]
+Description=Play Squash — cópia do banco (%i)
+After=postgresql.service
+
+[Service]
+Type=oneshot
+User=playsquash
+Group=playsquash
+ExecStart=/srv/playsquash/%i/atual/infra/backup.sh %i

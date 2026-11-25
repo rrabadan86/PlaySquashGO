@@ -8,8 +8,10 @@
 const TELAS = {
   grade: 'Grade do dia',
   cadastros: 'Quadras e professores',
+  contatos: 'Contatos',
   usuarios: 'Usuários',
   historico: 'Histórico',
+  exportar: 'Exportar dados',
 };
 const TELAS_PROFESSOR_PADRAO = ['grade'];
 // Telas que o admin pode liberar a um professor (as outras são só de admin).
@@ -18,6 +20,7 @@ const TELAS_LIBERAVEIS = ['grade', 'cadastros'];
 function temTela(u, tela) {
   if (!u) return false;
   if (u.eh_admin) return true;
+  if (!TELAS_LIBERAVEIS.includes(tela)) return false;
   return !!u.eh_professor && Array.isArray(u.telas) && u.telas.includes(tela);
 }
 
@@ -30,6 +33,11 @@ const ACOES = {
   'usuarios.editar': u => !!u.eh_admin, // PER-01
   'historico.ver': u => !!u.eh_admin,
   'valores.ver': u => !!u.eh_admin, // PER-02
+  'aulas.criar': u => !!u.eh_admin, // AGD-12
+  'aulas.cancelar': u => !!u.eh_admin, // AGD-12 (professor desmarca pelo app na etapa 3, AGD-08)
+  'contatos.ver': u => !!u.eh_admin,
+  'contatos.anonimizar': u => !!u.eh_admin, // OPR-05
+  'exportar': u => !!u.eh_admin, // OPR-06
 };
 
 function pode(u, acao) {

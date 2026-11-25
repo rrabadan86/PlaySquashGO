@@ -12,20 +12,20 @@ Gerada por `npm run matriz` (não edite à mão, exceto a seção "Achados"). O 
 
 | Área | Regras | Casos planejados | Testes escritos | ✅ | parcial | ❌ | processo | ⏳ kickoff |
 |---|---|---|---|---|---|---|---|---|
-| Agenda, grade, Google Agenda e perfis | 14 | 19 | 25 | 9 | 1 | 4 | 0 | 3 |
+| Agenda, grade, Google Agenda e perfis | 15 | 21 | 37 | 12 | 0 | 3 | 0 | 3 |
 | App do aluno e reposição | 11 | 12 | 8 | 4 | 0 | 7 | 0 | 2 |
 | Planos e contratos | 12 | 18 | 0 | 0 | 0 | 12 | 0 | 5 |
-| Dados e segredos | 9 | 0 | 3 | 3 | 0 | 0 | 6 | 0 |
-| Publicar e atualizar | 7 | 0 | 0 | 0 | 0 | 0 | 7 | 0 |
+| Dados e segredos | 10 | 0 | 3 | 3 | 0 | 0 | 7 | 0 |
+| Publicar e atualizar | 8 | 0 | 5 | 1 | 0 | 0 | 7 | 0 |
 | Cobrança e financeiro | 8 | 11 | 0 | 0 | 0 | 8 | 0 | 1 |
 | Indicadores | 6 | 6 | 0 | 0 | 0 | 6 | 0 | 1 |
-| WhatsApp, dados e operação | 9 | 10 | 3 | 2 | 0 | 7 | 0 | 0 |
+| WhatsApp, dados e operação | 9 | 10 | 6 | 4 | 0 | 5 | 0 | 0 |
 | Sofia, confirmação da experimental e lista de espera | 22 | 34 | 7 | 2 | 2 | 18 | 0 | 1 |
 | Testes | 8 | 0 | 8 | 3 | 0 | 0 | 5 | 0 |
 | Padrão visual | 6 | 0 | 1 | 1 | 0 | 0 | 5 | 0 |
-| **Total** | 112 | 110 | 55 | 24 | 3 | 62 | 23 | 13 |
+| **Total** | 115 | 112 | 75 | 30 | 2 | 59 | 24 | 13 |
 
-Testes: 55 no total, 55 ligados a uma regra.
+Testes: 75 no total, 75 ligados a uma regra.
 
 ## Regras
 
@@ -35,18 +35,19 @@ Testes: 55 no total, 55 ligados a uma regra.
 |---|---|---|---|---|
 | AGD-01 ⏳ | Cadastros de quadras, professores, tipos de aula (duração, alunos por aula) e grade. | 1 | `painel.test.js` › AGD-01 admin cadastra quadra, tipo de aula e faixa da grade, e a grade do dia mostra o horário livre | ✅ |
 | AGD-02 | Só administradores alteram grade, quadras, professores e bloqueios. | 1 | `painel.test.js` › AGD-02 professor não altera a grade nem com a tela de cadastros liberada (servidor recusa)<br>`permissoes.test.js` › AGD-02 só administrador altera grade e cadastros, mesmo com a tela liberada | ✅ |
-| AGD-03 ⏳ | Feriados automáticos + bloqueios manuais; bloqueio sobre aulas avisa alunos e aplica AGD-08. | 2 | `painel.test.js` › AGD-03 feriado tira o dia da grade e bloqueio aparece como bloqueado | parcial |
+| AGD-03 ⏳ | Feriados nacionais carregados automaticamente (fixos + Sexta-feira Santa; o admin pode remover um e ele não volta) + feriados e bloqueios manuais; bloqueio sobre aulas avisa alunos e aplica AGD-08. | 2 | `agenda.test.js` › AGD-03 feriados nacionais entram sozinhos, sem duplicar, e o removido pelo admin não volta<br>`painel.test.js` › AGD-03 feriado tira o dia da grade e bloqueio aparece como bloqueado<br>`agenda-google.test.js` › AGD-03 feriados nacionais fixos e Sexta-feira Santa calculada pela Páscoa | ✅ |
 | AGD-04 | Aula maior que o intervalo base ocupa blocos seguidos. | 1 | `banco.test.js` › AGD-04 aula de 60 min bloqueia o meio-horário seguinte na mesma quadra<br>`disponibilidade.test.js` › AGD-04 aula de 60 min precisa de dois blocos livres seguidos e não passa do fim da faixa | ✅ |
 | AGD-05 | Horário livre = existe na grade, sem bloqueio, com vaga e professor livre. | 2 | `painel.test.js` › AGD-05 professor não pode ter duas faixas no mesmo horário em quadras diferentes<br>`disponibilidade.test.js` › AGD-05 horário livre existe na grade, no dia e no tipo certos<br>`disponibilidade.test.js` › AGD-05 feriado, bloqueio e aula ocupada tiram o horário<br>`disponibilidade.test.js` › AGD-05 professor em outra quadra no mesmo horário não aparece livre<br>`disponibilidade.test.js` › AGD-05 aula de dupla com 1 aluno ainda tem 1 vaga; com 2 está cheia | ✅ |
 | AGD-06 | Horário fixo semanal; aulas geradas 4 semanas à frente, renovadas semanalmente. | 1 | — | ❌ |
 | AGD-07 | Contrato ligado a atividade + horário; troca de professor na grade mantém os alunos. | 1 | `painel.test.js` › AGD-07 trocar o professor da faixa mantém a faixa (e os alunos) e fica no histórico | ✅ |
 | AGD-08 | Professor desmarca aula: apaga evento, avisa aluno, gera crédito se respeitar a antecedência, registra motivo. | 2 | `reposicao.test.js` › AGD-08 professor desmarca com 5 h de antecedência: aluno ganha crédito<br>`reposicao.test.js` › AGD-08 professor desmarca com 1 h: sem crédito e a aula não conta como dada para o aluno | ✅ |
-| AGD-09 | Google Agenda: uma agenda por quadra, só Sistema → Google, compartilhada só leitura, fila com nova tentativa. | 2 | — | ❌ |
+| AGD-09 | Google Agenda: uma agenda por quadra criada por uma **conta de serviço** do Google (decisão do dono, 24/11/2026), compartilhada só para leitura com os administradores e professores ativos; só Sistema → Google; toda mudança passa pela fila `fila_google`, com nova tentativa se o Google falhar. | 2 | `agenda.test.js` › AGD-09 quadra nova vira uma agenda no Google, compartilhada só leitura com admin e professores<br>`agenda.test.js` › AGD-09 professor desativado perde o acesso à agenda; novo professor ganha<br>`agenda.test.js` › AGD-09 Google fora do ar: o envio fica na fila, tenta de novo depois e chega<br>`agenda-google.test.js` › AGD-09 conta de serviço: cria agenda da quadra no fuso de Brasília e compartilha só para leitura<br>`agenda-google.test.js` › AGD-09 evento vai com horário de Brasília, cor e id da aula; apagar o que já não existe não é erro<br>`agenda-google.test.js` › AGD-09 título padrão e cor por tipo de aula; experimental confirmada ganha ✓<br>`agenda-google.test.js` › AGD-09 nova tentativa espera cada vez mais e nunca desiste | ✅ |
 | AGD-10 | Presença: professor marca presente/falta; sem marcação = presença; 2 semanas de faltas avisam o professor. | 2 | — | ❌ |
 | AGD-11 | Resumo diário às 6h para cada professor. | 1 | — | ❌ |
 | PER-01 | Administrador vê e faz tudo; vários admins; um usuário pode ser admin e professor. | 1 | `painel.test.js` › PER-01 administrador e professor ao mesmo tempo vê o painel completo<br>`painel.test.js` › PER-01 administrador não pode tirar o próprio acesso de admin<br>`permissoes.test.js` › PER-01 administrador pode todas as ações | ✅ |
 | PER-02 ⏳ | Professor: vê todas as quadras, desmarca, marca presença, vê situação dos seus alunos, sem valores; telas liberadas pelo admin. | 1 | `painel.test.js` › PER-02 professor vê só as telas liberadas; o menu não mostra o resto<br>`permissoes.test.js` › PER-02 professor vê só as telas liberadas e nunca valores, usuários ou histórico | ✅ |
 | PER-03 | Permissões verificadas no servidor. | 1 | `painel.test.js` › PER-03 sem login a tela manda para o login e senha errada é recusada<br>`painel.test.js` › PER-03 envio sem origem do próprio painel é recusado<br>`painel.test.js` › PER-03 sessão encerrada pelo admin ou usuário desativado perde o acesso na hora<br>`permissoes.test.js` › PER-03 sem usuário nada é permitido e ação desconhecida é erro<br>`permissoes.test.js` › PER-03 senha só como hash e cookie de sessão não pode ser forjado<br>`permissoes.test.js` › PER-03 envio de formulário só aceito vindo do próprio painel | ✅ |
+| AGD-12 | Administrador cria aula avulsa ou experimental pelo painel num horário livre da grade e cancela aula com motivo; a mudança vai para o Google pela fila (AGD-09). | 2 | `agenda.test.js` › AGD-12 admin marca aula avulsa num horário livre e ela aparece na agenda da quadra certa<br>`agenda.test.js` › AGD-12 o mesmo horário não pode ser marcado duas vezes, e professor não marca aula<br>`agenda.test.js` › AGD-12 cancelar aula com motivo apaga o evento do Google e libera o horário | ✅ |
 
 ### App do aluno e reposição
 
@@ -91,8 +92,9 @@ Testes: 55 no total, 55 ligados a uma regra.
 | DAD-04 | A tabela `historico` só recebe inclusões: `UPDATE` e `DELETE` são barrados por trava no banco. Toda ação de usuário, Sofia ou sistema grava quem, por onde, quando, o quê, antes/depois e o motivo (OPR-07). | 0 | — | processo |
 | DAD-05 | Contrato guarda um retrato do plano e das regras do momento (`plano_retrato`, `regras_retrato`): mudar plano ou regra nunca altera o passado (CON-01a). | 0 | — | processo |
 | DAD-06 | Regras configuráveis mudam por nova versão com data (`regra_config`), nunca editando a versão antiga. | 0 | `banco.test.js` › DAD-06 regra configurável muda por nova versão, nunca editando a antiga | ✅ |
-| DAD-07 | Anonimização (OPR-05) apaga nome, telefone, e-mail e data de nascimento do contato e marca `anonimizado_em`; IDs, aulas e parcelas continuam. | 0 | — | processo |
+| DAD-07 | Anonimização (OPR-05) apaga nome, telefone, e-mail e data de nascimento do contato e marca `anonimizado_em`; IDs, aulas e parcelas continuam. Por isso o histórico guarda **IDs, não dados pessoais** (nome, telefone, e-mail) de alunos e leads. | 0 | — | processo |
 | DAD-08 | Mudança de banco só por migração nova em `db/migrations/` (número seguinte), aplicada primeiro na homologação; nunca editar migração já aplicada. | 0 | `banco.test.js` › DAD-08 migrações aplicam do zero e não reaplicam | ✅ |
+| DAD-10 | A chave da conta de serviço do Google fica num arquivo fora do repositório (`GOOGLE_CONTA_SERVICO_ARQUIVO`), legível só pelo usuário do sistema. | 0 | — | processo |
 | DAD-09 | Dados da Play Squash (alunos, conversas, comprovantes) nunca vão para serviço de terceiros além dos combinados (Anthropic para a Sofia, Google Agenda, WhatsApp). | 0 | — | processo |
 
 ### Publicar e atualizar
@@ -100,11 +102,12 @@ Testes: 55 no total, 55 ligados a uma regra.
 | Código | Regra | Casos | Testes escritos | Cobertura |
 |---|---|---|---|---|
 | DEP-01 | Toda mudança vai por branch de trabalho → PR para `main` → CI ✓ → squash merge (skill `subir-versao`). Nunca push direto na `main`. | 0 | — | processo |
-| DEP-02 | Dois ambientes na VPS: **homologação** (dados de teste) e **produção**. Produção só recebe versão testada na homologação e liberada pelo dono. | 0 | — | processo |
+| DEP-02 | Dois ambientes na VPS: **homologação** (dados de teste, porta 3001) e **produção** (porta 3000), cada um com banco, configuração (`/etc/playsquash/<ambiente>.env`) e serviço próprios. Homologação recebe a marca `estavel`; produção só recebe a versão que o dono liberou, informada por extenso (`infra/atualizar.sh producao <tag>`). | 0 | — | processo |
 | DEP-03 | Atualizar produção fora do horário de aulas e de envios (a Sofia e os avisos param durante o reinício). | 0 | — | processo |
-| DEP-04 | Migração de banco roda antes de subir o código novo, com cópia do banco feita antes. | 0 | — | processo |
+| DEP-04 | Atualizar (`infra/atualizar.sh`): instala a versão numa pasta nova, faz cópia do banco, aplica as migrações, troca a versão, reinicia e confere `/saude` por 30 s; se não responder, volta sozinho para a anterior. | 0 | — | processo |
 | DEP-05 | Mudança que o dono ou os professores vão notar → item em "Novidades" (página de novidades do painel, a criar na etapa 1). | 0 | — | processo |
-| DEP-06 | Cópia diária do banco criptografada fora do servidor (30 diárias + 12 mensais) e teste de restauração uma vez por mês (OPR-06). | 0 | — | processo |
+| DEP-06 | Cópia diária do banco criptografada (AES-256, chave só no servidor) às 3h30, enviada para fora do servidor (rclone, `BACKUP_REMOTO`), guardando 30 diárias + 12 mensais (`scripts/rotacao-backups.js`); teste de restauração automático no dia 1º de cada mês num banco separado (OPR-06). | 0 | `backup.test.js` › DEP-06 cópia do banco sai criptografada, com nome por data, e não abre sem a chave<br>`backup.test.js` › DEP-06 teste de restauração recria o banco num banco separado e confere migrações e histórico<br>`rotacao-backups.test.js` › DEP-06 guarda a última cópia de cada um dos 30 dias mais recentes<br>`rotacao-backups.test.js` › DEP-06 guarda a primeira cópia de cada um dos 12 meses mais recentes<br>`rotacao-backups.test.js` › DEP-06 cópia feita antes de atualizar vale 30 dias; arquivo estranho nunca é apagado | ✅ |
+| DEP-08 | O CI move a marca `estavel` para o commit da `main` quando todos os jobs passam; é ela que a homologação baixa. | 0 | — | processo |
 | DEP-07 | Hooks do Claude ligados em `.claude/settings.json`: `bloquear-segredos.js` (antes de commit/push) e `limpar-restos-teste.js` (fim da sessão). | 0 | — | processo |
 
 ### Cobrança e financeiro
@@ -139,8 +142,8 @@ Testes: 55 no total, 55 ligados a uma regra.
 | OPR-02 | Ritmo de envio: intervalo aleatório, limite por hora/dia, janela de campanhas, não enviar a quem está conversando. | 2 | — | ❌ |
 | OPR-03 | 'SAIR' remove das campanhas na hora. | 1 | — | ❌ |
 | OPR-04 | Aviso ao admin quando a conexão cair. | 1 | — | ❌ |
-| OPR-05 | Anonimização de contato pelo admin. | 1 | — | ❌ |
-| OPR-06 | Backup diário fora do servidor; exportação Excel. | 1 | — | ❌ |
+| OPR-05 | Anonimização de contato pelo admin. | 1 | `agenda.test.js` › OPR-05 anonimizar apaga os dados pessoais e mantém aulas e histórico | ✅ |
+| OPR-06 | Backup diário fora do servidor; exportação Excel. | 1 | `agenda.test.js` › OPR-06 exportação para Excel só para o admin e fica registrada<br>`agenda-google.test.js` › OPR-06 exportação em CSV do Excel: ";" , acento e fórmula neutralizada | ✅ |
 | OPR-07 | Auditoria de ações e de mudanças de regra (quem, quando, antes e depois). | 1 | `banco.test.js` › OPR-07 histórico só recebe inclusões: alterar e apagar são barrados<br>`painel.test.js` › OPR-07 cada mudança no painel grava quem fez, quando, antes e depois | ✅ |
 | OPR-08 | Instância exclusiva em VPS Hostinger; fuso America/Sao_Paulo. | 1 | `relogio.test.js` › OPR-08 18h em Brasília continua 18h, qualquer que seja o fuso do servidor | ✅ |
 | OPR-09 | Convite a ex-alunos (30/60/90 dias) e mensagem de aniversário. | 1 | — | ❌ |

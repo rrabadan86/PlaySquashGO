@@ -4,9 +4,11 @@ Agenda das quadras, atendimento pela Sofia no WhatsApp, app do aluno e do profes
 cobrança por Pix da Play Squash.
 
 ## Situação
-**Etapa 1a — painel base.** Login com perfis (administrador e professor), grade do dia,
-cadastros de quadras, tipos de aula, grade de horários, bloqueios e feriados, usuários e
-histórico de tudo o que muda. A ligação com o Google Agenda vem na etapa 1b.
+**Etapa 1 — base.** Login com perfis (administrador e professor), grade do dia, cadastros de
+quadras, tipos de aula, grade de horários, bloqueios e feriados (nacionais automáticos), aula
+avulsa ou experimental marcada e cancelada pelo painel, espelho no Google Agenda por conta de
+serviço (uma agenda por quadra, com fila e nova tentativa), contatos com anonimização,
+exportação para Excel e histórico de tudo o que muda.
 
 Etapas seguintes (proposta de 24/11/2026): 1. Base · 2. Sofia · 3. Alunos e app · 4. Financeiro e indicadores.
 
@@ -29,5 +31,7 @@ DATABASE_URL=postgres://... SENHA_NOVA='...' npm run criar-usuario -- --nome "Gu
 # Subir o painel (PAINEL_SEGREDO: texto aleatório com 32+ caracteres, guardado só no .env)
 DATABASE_URL=postgres://... PAINEL_SEGREDO=... PORTA=3000 npm run iniciar
 ```
+
+Servidor (VPS): passo a passo em `infra/README.md`.
 
 Leia `CLAUDE.md` para a organização do projeto e as regras de trabalho.

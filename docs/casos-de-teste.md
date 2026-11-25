@@ -116,3 +116,5 @@ Tipos: **Unitário** (regra pura, sem banco), **Integração** (banco de teste e
 | CT-108 | OPR-07 | Integração | Dada a mudança de uma regra de 3 h para 4 h, quando salva, então a auditoria guarda quem, quando, 3 h e 4 h. |
 | CT-109 | OPR-08 | Unitário | Dada uma aula às 18h de Brasília, quando gravada e lida, então o horário não muda com o fuso do servidor. |
 | CT-110 | OPR-09 | Integração | Dado um ex-aluno inativo há 30 dias, quando o agendador roda, então recebe o convite com os horários livres do momento. |
+| CT-111 | AGD-12 | Integração | Dado um horário livre na grade, quando o admin marca uma aula avulsa pelo painel, então ela é gravada e o evento aparece na agenda da quadra certa no Google. |
+| CT-112 | AGD-12 | Integração | Dada uma aula marcada, quando o admin cancela com motivo, então o evento sai do Google, o horário volta a ficar livre e o histórico guarda o motivo. |

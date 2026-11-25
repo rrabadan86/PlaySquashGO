@@ -6,6 +6,9 @@ const { Pool, types } = require('pg');
 
 // bigint (ids, contagens) como número: os ids da Play Squash cabem com folga em Number.
 types.setTypeParser(20, v => (v == null ? v : Number(v)));
+// bigint[] (ex.: array_agg de ids) também como lista de números.
+const listaTexto = types.getTypeParser(1016);
+types.setTypeParser(1016, v => (v == null ? v : listaTexto(v).map(x => (x == null ? x : Number(x)))));
 
 function criarPool(url = process.env.DATABASE_URL) {
   if (!url) throw new Error('Defina DATABASE_URL.');

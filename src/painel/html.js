@@ -71,7 +71,8 @@ input,select{border:1px solid #d5dfdb;border-radius:8px;padding:8px 10px;font:14
 function menu(u, ativo) {
   const itens = [
     ['AGENDA', [['grade', '/grade', 'Grade do dia'], ['cadastros', '/cadastros', 'Quadras e professores']]],
-    ['CONFIGURAÇÕES', [['usuarios', '/usuarios', 'Usuários'], ['historico', '/historico', 'Histórico']]],
+    ['ALUNOS', [['contatos', '/contatos', 'Contatos']]],
+    ['CONFIGURAÇÕES', [['usuarios', '/usuarios', 'Usuários'], ['historico', '/historico', 'Histórico'], ['exportar', '/exportar', 'Exportar dados']]],
   ];
   let h = '<nav class="side"><a class="marca" href="/grade">Play Squash</a>';
   for (const [grupo, links] of itens) {

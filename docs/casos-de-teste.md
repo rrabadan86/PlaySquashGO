@@ -126,3 +126,6 @@ Tipos: **Unitário** (regra pura, sem banco), **Integração** (banco de teste e
 | CT-118 | SOF-06 | Integração | Dado um responsável, quando marca pela conversa uma experimental para cada filho, então as duas são aceitas e a remarcação pede qual aula trocar. |
 | CT-119 | SOF-09 | Integração | Dada a IA fora do ar, quando o lead escreve, então nada é respondido e os administradores recebem um aviso por dia por conversa. |
 | CT-120 | SOF-10 | Integração | Dado um arquivo que não é JPG, PNG nem PDF, quando o admin tenta cadastrar como anexo, então é recusado. |
+| CT-121 | CNF-01 | Integração | Dado o pedido de confirmação desligado, quando chega a hora do cancelamento, então a aula não é cancelada (só cancela quem foi perguntado). |
+| CT-122 | CNF-06 | Integração | Dado um lead que faltou à experimental, quando chega o contato pós-aula, então recebe o convite para remarcar e não recebe o contato de +2 dias. |
+| CT-123 | LES-02 | Integração | Dados dois leads avisados da mesma vaga, quando o primeiro marca, então o segundo recebe "vaga já preenchida" e continua na lista. |

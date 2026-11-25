@@ -7,6 +7,20 @@ const { esc, pagina } = require('./html');
 
 const NOVIDADES = [
   {
+    data: '2026-11-25', titulo: 'Confirmação da experimental e pós-aula', para: 'admin', itens: [
+      'Na véspera, às 19h, o lead recebe o pedido de confirmação; sem resposta, recebe de novo 3 h antes e a aula é cancelada 90 min antes (tudo editável na tela Sofia).',
+      'A Sofia entende "sim" e "não vou": confirmada, a aula ganha ✓ no Google; desistiu, o horário fica livre e ela oferece outra data.',
+      'Quem estava na lista de espera daquele horário é avisado; o primeiro que marcar leva, e os outros recebem "vaga já preenchida".',
+      'Nova tela "Experimentais": próximas e recentes, com botões de confirmou/não vai, presença e resultado (matriculou ou perdido, com o motivo).',
+      'Depois da aula, a Sofia manda uma mensagem no mesmo dia e outra 2 dias depois, até você registrar o resultado.',
+    ],
+  },
+  {
+    data: '2026-11-25', titulo: 'Experimental confirmada ou cancelada', para: 'todos', itens: [
+      'Você recebe no WhatsApp quando o lead confirma, desiste ou a experimental é cancelada por falta de confirmação.',
+    ],
+  },
+  {
     data: '2026-11-25', titulo: 'Sofia atendendo no WhatsApp', para: 'admin', itens: [
       'A Sofia responde quem é novo: pergunta o nome, se já jogou, quem vai fazer a aula, dias e período, e oferece até 3 horários livres com o professor.',
       'Quando a pessoa escolhe, a aula experimental entra na grade e no Google Agenda, e o professor recebe um aviso no WhatsApp.',

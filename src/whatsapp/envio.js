@@ -20,7 +20,7 @@ const PRIORIDADE = `CASE f.tipo WHEN 'sofia' THEN 0 WHEN 'fixa' THEN 0 WHEN 'avi
  * Põe uma mensagem na fila. Devolve o id, ou null se não entrou (chave repetida,
  * campanha para quem pediu SAIR, contato anonimizado).
  */
-async function enfileirar(c, { contatoId = null, usuarioId = null, tipo, texto, chaveUnica = null, agendadoPara = null }) {
+async function enfileirar(c, { contatoId = null, usuarioId = null, tipo, texto, chaveUnica = null, agendadoPara = null, anexoId = null }) {
   if (!texto || !String(texto).trim()) throw new Error('mensagem vazia');
   if (contatoId) {
     const ct = (await c.query('SELECT sem_campanha, anonimizado_em FROM contato WHERE id = $1', [contatoId])).rows[0];
@@ -28,9 +28,9 @@ async function enfileirar(c, { contatoId = null, usuarioId = null, tipo, texto, 
     if (tipo === 'campanha' && ct.sem_campanha) return null; // OPR-03
   }
   const r = await c.query(
-    `INSERT INTO fila_envio (contato_id, usuario_id, tipo, texto, chave_unica, agendado_para)
-     VALUES ($1,$2,$3,$4,$5,COALESCE($6::timestamptz, now())) ON CONFLICT (chave_unica) DO NOTHING RETURNING id`,
-    [contatoId, usuarioId, tipo, String(texto), chaveUnica, agendadoPara ? new Date(agendadoPara).toISOString() : null]);
+    `INSERT INTO fila_envio (contato_id, usuario_id, tipo, texto, chave_unica, agendado_para, anexo_id)
+     VALUES ($1,$2,$3,$4,$5,COALESCE($6::timestamptz, now()),$7) ON CONFLICT (chave_unica) DO NOTHING RETURNING id`,
+    [contatoId, usuarioId, tipo, String(texto), chaveUnica, agendadoPara ? new Date(agendadoPara).toISOString() : null, anexoId]);
   return r.rows[0] ? r.rows[0].id : null;
 }
 
@@ -51,8 +51,10 @@ async function processarUm({ pool, wa, agora = Date.now, aleatorio = Math.random
     if (ultima && t - ultima < cfg.intervaloMinS * 1000) return { esperarMs: cfg.intervaloMinS * 1000 - (t - ultima) + 500 };
     const cand = (await c.query(
       `SELECT f.*, ct.telefone AS tel_contato, ct.sem_campanha, ct.anonimizado_em, u.telefone AS tel_usuario,
+              ax.arquivo AS anexo_arquivo, ax.tipo_mime AS anexo_mime,
               (SELECT extract(epoch FROM max(m.em))*1000 FROM mensagem m WHERE m.contato_id = f.contato_id AND m.direcao = 'entrada') AS ultima_conversa
          FROM fila_envio f LEFT JOIN contato ct ON ct.id = f.contato_id LEFT JOIN usuario u ON u.id = f.usuario_id
+              LEFT JOIN sofia_anexo ax ON ax.id = f.anexo_id
         WHERE f.enviado_em IS NULL AND f.cancelado_em IS NULL AND f.enviando_em IS NULL AND f.agendado_para <= to_timestamp($1/1000.0)
         ORDER BY ${PRIORIDADE}, f.agendado_para, f.id LIMIT 20 FOR UPDATE OF f SKIP LOCKED`, [t])).rows;
     for (const f of cand) {
@@ -78,7 +80,10 @@ async function processarUm({ pool, wa, agora = Date.now, aleatorio = Math.random
   const { item, tel, cfg } = sel;
   let res;
   try {
-    res = await wa.enviar(tel, item.texto);
+    // SOF-10: anexo vai com o texto como legenda.
+    res = item.anexo_id
+      ? await wa.enviarArquivo(tel, { arquivo: item.anexo_arquivo, tipoMime: item.anexo_mime, legenda: item.texto })
+      : await wa.enviar(tel, item.texto);
   } catch (e) {
     // Falhou antes de sair (desconectado, número sem WhatsApp…): volta para a fila com espera.
     await pool.query(
@@ -92,7 +97,7 @@ async function processarUm({ pool, wa, agora = Date.now, aleatorio = Math.random
     await c.query('UPDATE fila_envio SET enviado_em = now(), erro = NULL WHERE id = $1', [item.id]);
     await c.query(
       `INSERT INTO mensagem (contato_id, usuario_id, direcao, texto, motivo, situacao, fila_envio_id)
-       VALUES ($1,$2,'saida',$3,$4,'enviada',$5)`, [item.contato_id, item.usuario_id, item.texto, item.tipo, item.id]);
+       VALUES ($1,$2,'saida',$3,$4,'enviada',$5)`, [item.contato_id, item.usuario_id, item.anexo_id ? `[anexo] ${item.texto}` : item.texto, item.tipo, item.id]);
   });
   return { enviado: true, id: res && res.id, esperarMs: ritmo.intervalo(cfg, aleatorio) };
 }

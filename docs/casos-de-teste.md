@@ -123,3 +123,6 @@ Tipos: **Unitário** (regra pura, sem banco), **Integração** (banco de teste e
 | CT-115 | OPR-10 | Integração | Dado um item marcado como enviando há 10 min sem confirmação (o sistema caiu), quando o envio roda, então ele não é reenviado e aparece "a conferir" para o admin. |
 | CT-116 | OPR-10 | Integração | Dado um item a conferir, quando o admin confirma ou pede reenvio na tela WhatsApp, então a mensagem é registrada ou volta para a fila, com histórico. |
 | CT-117 | OPR-11 | Unidade | Dado um número com ou sem o 9, quando normalizado, então fica com o 9 e é procurado pelas duas formas. |
+| CT-118 | SOF-06 | Integração | Dado um responsável, quando marca pela conversa uma experimental para cada filho, então as duas são aceitas e a remarcação pede qual aula trocar. |
+| CT-119 | SOF-09 | Integração | Dada a IA fora do ar, quando o lead escreve, então nada é respondido e os administradores recebem um aviso por dia por conversa. |
+| CT-120 | SOF-10 | Integração | Dado um arquivo que não é JPG, PNG nem PDF, quando o admin tenta cadastrar como anexo, então é recusado. |

@@ -9,6 +9,8 @@ const { criarServidor } = require('./servidor');
 const { googleDoAmbiente } = require('./agenda/google');
 const { iniciarRotinas, iniciarWhatsapp } = require('./rotinas');
 const { criarClienteWhatsapp } = require('./whatsapp/cliente');
+const { iaDoAmbiente } = require('./sofia/ia');
+const { criarSofia } = require('./sofia/sofia');
 
 async function main() {
   const pool = criarPool();
@@ -20,7 +22,11 @@ async function main() {
   // WhatsApp (OPR-01): só liga com WHATSAPP_LIGADO=1; sem isso as mensagens ficam na fila.
   if (process.env.WHATSAPP_LIGADO === '1') {
     const wa = criarClienteWhatsapp();
-    iniciarWhatsapp({ pool, wa });
+    // Sofia (SOF-*): só responde com a chave da Anthropic no ambiente (ANTHROPIC_API_KEY, DAD-01).
+    const ia = iaDoAmbiente();
+    const sofia = ia ? criarSofia({ pool, ia }) : null;
+    if (!sofia) console.log('Sofia sem chave da Anthropic (ANTHROPIC_API_KEY): leads ficam registrados sem resposta automática.');
+    iniciarWhatsapp({ pool, wa, aoLead: sofia ? r => sofia.aoLead(r) : undefined });
     wa.iniciar();
   } else {
     console.log('WhatsApp desligado (WHATSAPP_LIGADO): as mensagens ficam na fila até ligar.');

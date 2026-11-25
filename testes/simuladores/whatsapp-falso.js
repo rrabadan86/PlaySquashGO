@@ -25,6 +25,12 @@ function criarWhatsappFalso({ conectado = true } = {}) {
       enviadas.push(msg);
       return { id: msg.id };
     },
+    async enviarArquivo(para, { arquivo, tipoMime, legenda = '' }) {
+      if (!online) throw new Error('WhatsApp desconectado');
+      const msg = { id: `falso-${++seq}`, para, texto: legenda, arquivo, tipoMime, em: Date.now() };
+      enviadas.push(msg);
+      return { id: msg.id };
+    },
     aoReceber(f) { ouvintes.push(f); },
     receber(de, texto, em = Date.now()) { ouvintes.forEach(f => f({ tipo: 'mensagem', de, texto, em })); },
     para(telefone) { return enviadas.filter(m => m.para === telefone); },

@@ -17,6 +17,7 @@
     "criar-usuario": "node scripts/criar-usuario.js"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "1.14.0",
     "google-auth-library": "^9.15.1",
     "pg": "^8.13.1",
     "qrcode": "^1.5.4",

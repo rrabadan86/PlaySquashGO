@@ -7,6 +7,21 @@ const { esc, pagina } = require('./html');
 
 const NOVIDADES = [
   {
+    data: '2026-11-25', titulo: 'Sofia atendendo no WhatsApp', para: 'admin', itens: [
+      'A Sofia responde quem é novo: pergunta o nome, se já jogou, quem vai fazer a aula, dias e período, e oferece até 3 horários livres com o professor.',
+      'Quando a pessoa escolhe, a aula experimental entra na grade e no Google Agenda, e o professor recebe um aviso no WhatsApp.',
+      'Cada pessoa faz uma experimental (nome + data de nascimento). Para liberar mais uma, abra a conversa e use "Liberar nova aula experimental".',
+      'Nova tela "Conversas": veja o que cada lead escreveu, assuma a conversa, responda e devolva à Sofia.',
+      'Nova tela "Sofia": ligue ou desligue, escreva as informações da escola que ela pode passar, cadastre fotos e PDFs e acompanhe o custo da IA por dia.',
+      'A Sofia não fala de valores nem cobra a experimental: isso fica para combinarmos no kickoff.',
+    ],
+  },
+  {
+    data: '2026-11-25', titulo: 'Avisos de aula experimental', para: 'todos', itens: [
+      'Quando a Sofia marca uma experimental no seu horário, você recebe no WhatsApp o nome, o contato, o dia, a hora e a quadra.',
+    ],
+  },
+  {
     data: '2026-11-25', titulo: 'WhatsApp da Play Squash no painel', para: 'admin', itens: [
       'Nova tela "WhatsApp": conecte o número lendo o QR e acompanhe tudo o que entrou e saiu.',
       'As mensagens saem com intervalo e limites para proteger o número; campanhas só em horário comercial.',

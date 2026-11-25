@@ -66,6 +66,18 @@ sudo -u playsquash rclone config        # crie um remoto "drive" (Google Drive d
 Em cada `/etc/playsquash/<ambiente>.env`: `BACKUP_REMOTO=drive:playsquash-backups`.
 As cópias rodam todo dia às 3h30; no dia 1º de cada mês, um teste restaura a cópia mais recente num banco separado.
 
+## 6. WhatsApp da Play Squash (só na produção)
+
+Um número só pode estar conectado num lugar. Por isso a homologação fica com o WhatsApp desligado.
+
+1. Em `/etc/playsquash/producao.env`: `WHATSAPP_LIGADO=1`
+2. `sudo systemctl restart playsquash@producao`
+3. Abra o painel → **WhatsApp → Conexão e mensagens** e leia o QR com o celular da Play Squash
+   (WhatsApp → Aparelhos conectados → Conectar aparelho). A sessão fica guardada; não precisa ler de novo.
+
+Se o QR parar de funcionar depois de uma mudança do WhatsApp, fixe uma versão do WhatsApp Web em
+`WA_WEB_VERSION_URL` (um `.html` do repositório `wppconnect-team/wa-version`) e reinicie.
+
 ## Atualizar
 
 ```bash

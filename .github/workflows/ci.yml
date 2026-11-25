@@ -8,6 +8,10 @@ on:
     branches: [main]
   workflow_dispatch:
 
+env:
+  # O Chrome do WhatsApp Web não é usado nos testes (simulador): não baixar no CI.
+  PUPPETEER_SKIP_DOWNLOAD: "1"
+
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true

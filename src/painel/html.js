@@ -72,6 +72,7 @@ function menu(u, ativo) {
   const itens = [
     ['AGENDA', [['grade', '/grade', 'Grade do dia'], ['cadastros', '/cadastros', 'Quadras e professores']]],
     ['ALUNOS', [['contatos', '/contatos', 'Contatos']]],
+    ['WHATSAPP', [['whatsapp', '/whatsapp', 'Conexão e mensagens']]],
     ['CONFIGURAÇÕES', [['usuarios', '/usuarios', 'Usuários'], ['historico', '/historico', 'Histórico'], ['exportar', '/exportar', 'Exportar dados']]],
   ];
   let h = '<nav class="side"><a class="marca" href="/grade">Play Squash</a>';
@@ -86,7 +87,10 @@ function menu(u, ativo) {
 }
 
 function pagina({ titulo, usuario, ativo, corpo, acoes = '', aviso = null }) {
-  const av = aviso ? `<div class="aviso ${aviso.tipo === 'erro' ? 'erro' : 'ok'}" role="status">${esc(aviso.texto)}</div>` : '';
+  const av = (aviso ? `<div class="aviso ${aviso.tipo === 'erro' ? 'erro' : 'ok'}" role="status">${esc(aviso.texto)}</div>` : '')
+    // OPR-04: WhatsApp fora do ar há mais de 10 min → aviso em todas as telas do admin.
+    + (usuario && usuario.eh_admin && require('../whatsapp/estado').precisaAviso()
+      ? '<div class="aviso erro" role="alert">O WhatsApp da Play Squash está desconectado. As mensagens estão guardadas na fila. <a href="/whatsapp">Reconectar</a></div>' : '');
   return `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${esc(titulo)} · Play Squash</title><style>${CSS}</style></head><body><div class="app">${menu(usuario, ativo)}
 <div class="main"><div class="top"><h1>${esc(titulo)}</h1><div class="sp"></div>${acoes}

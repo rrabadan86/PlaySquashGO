@@ -9,6 +9,7 @@ const TELAS = {
   grade: 'Grade do dia',
   cadastros: 'Quadras e professores',
   contatos: 'Contatos',
+  whatsapp: 'WhatsApp',
   usuarios: 'Usuários',
   historico: 'Histórico',
   exportar: 'Exportar dados',
@@ -38,6 +39,8 @@ const ACOES = {
   'contatos.ver': u => !!u.eh_admin,
   'contatos.anonimizar': u => !!u.eh_admin, // OPR-05
   'exportar': u => !!u.eh_admin, // OPR-06
+  'whatsapp.ver': u => !!u.eh_admin, // OPR-01
+  'whatsapp.editar': u => !!u.eh_admin, // OPR-10
 };
 
 function pode(u, acao) {

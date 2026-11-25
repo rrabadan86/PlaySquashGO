@@ -1,5 +1,5 @@
 /**
- * WhatsApp falso (TST-01, TST-08): mesma interface do cliente real (src/whatsapp, etapa 2),
+ * WhatsApp falso (TST-01, TST-08): mesma interface do cliente real (src/whatsapp/cliente.js),
  * mas guarda tudo em memória. Nada sai para a rede.
  *
  *   const wa = criarWhatsappFalso();
@@ -15,6 +15,9 @@ function criarWhatsappFalso({ conectado = true } = {}) {
   return {
     enviadas,
     get conectado() { return online; },
+    async iniciar() { online = true; },
+    async parar() { online = false; },
+    conectar() { online = true; ouvintes.forEach(f => f({ tipo: 'pronto' })); },
     desconectar() { online = false; ouvintes.forEach(f => f({ tipo: 'desconectado' })); },
     async enviar(para, texto) {
       if (!online) throw new Error('WhatsApp desconectado');
@@ -23,7 +26,7 @@ function criarWhatsappFalso({ conectado = true } = {}) {
       return { id: msg.id };
     },
     aoReceber(f) { ouvintes.push(f); },
-    receber(de, texto) { ouvintes.forEach(f => f({ tipo: 'mensagem', de, texto })); },
+    receber(de, texto, em = Date.now()) { ouvintes.forEach(f => f({ tipo: 'mensagem', de, texto, em })); },
     para(telefone) { return enviadas.filter(m => m.para === telefone); },
     limpar() { enviadas.length = 0; },
   };

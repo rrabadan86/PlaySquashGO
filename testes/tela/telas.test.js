@@ -17,7 +17,7 @@ try { playwright = require('playwright'); } catch (_) {}
 const opc = { skip: !URL_TESTE ? 'sem DATABASE_URL_TESTE' : !playwright ? 'sem playwright' : false };
 
 // Telas do painel (TST-03): tela nova entra aqui.
-const TELAS = ['/grade?data=2026-12-01', '/aulas/nova?data=2026-12-01', '/aulas/1', '/cadastros', '/contatos', '/usuarios', '/historico', '/exportar', '/novidades', '/whatsapp', '/conversas', '/conversas/1', '/sofia'];
+const TELAS = ['/grade?data=2026-12-01', '/aulas/nova?data=2026-12-01', '/aulas/1', '/cadastros', '/contatos', '/usuarios', '/historico', '/exportar', '/novidades', '/whatsapp', '/conversas', '/conversas/1', '/sofia', '/experimentais', '/experimentais?filtro=passadas'];
 const TAMANHOS = [{ nome: 'computador', width: 1366, height: 900 }, { nome: 'celular', width: 390, height: 844 }];
 
 let pool, painel, navegador, pasta;
@@ -47,6 +47,16 @@ before(async () => {
     ($1,$2,'entrada','https://exemplo.com/um-link-bem-comprido-sem-espacos-para-testar-a-quebra-de-linha-no-celular-0123456789','recebida')`, [lead, cv]);
   await pool.query(`INSERT INTO custo_ia (conversa_id, modelo, tokens_entrada, tokens_saida, custo_usd) VALUES ($1,'claude-opus-5-5',3000,200,0.016)`, [cv]);
   await pool.query(`INSERT INTO sofia_anexo (nome, descricao, arquivo, tipo_mime) VALUES ('Fotos da quadra','quando pedirem para ver a escola','/nao/existe.png','image/png')`);
+  // Experimentais: uma próxima aguardando confirmação e uma passada com presença e resultado.
+  const te = (await pool.query(`INSERT INTO tipo_aula (nome, categoria, duracao_min) VALUES ('Experimental','experimental',60) RETURNING id`)).rows[0].id;
+  const fut = (await pool.query(`INSERT INTO aula (quadra_id, professor_id, tipo_aula_id, periodo, origem, marcada_por_contato_id, conf_pedido_em)
+    VALUES ($1,$2,$3,tstzrange(now() + interval '2 days', now() + interval '2 days 1 hour'),'experimental',$4, now()) RETURNING id`, [q2, f, te, lead])).rows[0].id;
+  await pool.query('INSERT INTO aula_participante (aula_id, contato_id) VALUES ($1,$2)', [fut, lead]);
+  const ex = (await pool.query(`INSERT INTO contato (nome, telefone, tipo) VALUES ('Paulo Passado','+5562900000010','lead') RETURNING id`)).rows[0].id;
+  const pas = (await pool.query(`INSERT INTO aula (quadra_id, professor_id, tipo_aula_id, periodo, origem, marcada_por_contato_id)
+    VALUES ($1,$2,$3,tstzrange(now() - interval '2 days', now() - interval '2 days' + interval '1 hour'),'experimental',$4) RETURNING id`, [q2, f, te, ex])).rows[0].id;
+  await pool.query(`INSERT INTO aula_participante (aula_id, contato_id, presenca) VALUES ($1,$2,'presente')`, [pas, ex]);
+  await pool.query(`INSERT INTO lead_resultado (contato_id, resultado, motivo_perda, registrado_por) VALUES ($1,'perdido','Horário não serviu',$2)`, [ex, g]);
   painel = await subirPainel(pool);
   navegador = await playwright.chromium.launch();
   pasta = fs.mkdtempSync(path.join(os.tmpdir(), 'ps-telas-'));

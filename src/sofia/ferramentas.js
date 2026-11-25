@@ -19,6 +19,7 @@ const { normalizar } = require('../whatsapp/telefone');
 const { agendaConfirmacao } = require('../regras/confirmacao');
 const { agora, dataSP, hojeSP, somarDias, diaSemana, instanteSP } = require('../relogio');
 const { chaveNome, dataValida, periodo, DIAS } = require('./texto');
+const confirmacao = require('./confirmacao');
 
 const SOFIA = { tipo: 'sofia', id: null };
 const ORIGEM = 'whatsapp';
@@ -86,6 +87,17 @@ const DEFINICOES = [
       properties: {
         codigo: { type: 'string' },
         aula_id: { type: 'integer', description: 'Qual experimental trocar (ver "Experimentais marcadas" no contexto).' },
+      },
+    },
+  },
+  {
+    name: 'registrar_confirmacao',
+    description: 'Registra a resposta do lead ao pedido de confirmação da experimental (CNF-02/03): "confirmou" ou "nao_vai". Use só quando a resposta for clara; se houver dúvida, pergunte de novo ou chame chamar_humano.',
+    input_schema: {
+      type: 'object', additionalProperties: false, required: ['aula_id', 'resposta'],
+      properties: {
+        aula_id: { type: 'integer', description: 'A aula (ver "Experimentais marcadas" no contexto).' },
+        resposta: { type: 'string', enum: ['confirmou', 'nao_vai'] },
       },
     },
   },
@@ -200,6 +212,7 @@ async function criarAula(c, { tipo, livre, lead, contatos, regras }) {
     await c.query('INSERT INTO aula_participante (aula_id, contato_id, confirmacao) VALUES ($1,$2,$3)', [aula.id, id, conf.nasceConfirmada ? 'confirmou' : null]);
   }
   await fila.aulaMudou(c, aula.id, 'criar');
+  await confirmacao.vagaPreenchida(c, { inicio: livre.inicio, marcouContatoIds: [lead.id, ...contatos] }); // LES-02
   return { aulaId: aula.id, nasceConfirmada: conf.nasceConfirmada };
 }
 
@@ -320,6 +333,9 @@ const EXECUTAR = {
     await fila.aulaMudou(c, velha.id, 'apagar');
     const livre = await confirmaLivre(c, tipo, lerCodigo(e.codigo), contatos.length, regras);
     const { aulaId, nasceConfirmada } = await criarAula(c, { tipo, livre, lead, contatos, regras });
+    if (livre.inicio !== Number(velha.inicio_ms) || livre.quadraId !== velha.quadra_id) {
+      await confirmacao.vagaLiberada(c, { quadraId: velha.quadra_id, inicio: Number(velha.inicio_ms) }); // LES-02
+    }
     await registrar(c, { ator: SOFIA, origem: ORIGEM, acao: 'aula.remarcada', entidade: 'aula', entidadeId: velha.id, antes: { situacao: velha.situacao }, depois: { situacao: 'cancelada', nova_aula: aulaId }, motivo: 'remarcada pelo lead' });
     await registrar(c, { ator: SOFIA, origem: ORIGEM, acao: 'aula.marcada', entidade: 'aula', entidadeId: aulaId, depois: { quadra: livre.quadraId, inicio: new Date(livre.inicio).toISOString(), tipo: tipo.id, origem: 'experimental', marcada_por: lead.id, participantes: contatos, remarcacao_de: velha.id } });
     const { quadras, profs } = await nomesDe(c);
@@ -331,6 +347,15 @@ const EXECUTAR = {
       texto: `${velha.professor_id === livre.professorId ? textoVelha + '\n' : ''}Nova aula experimental: ${quando(livre.inicio)}, ${quadras.get(livre.quadraId)}. ${nomes}.`,
     });
     return { ok: true, antes: quando(Number(velha.inicio_ms)), agora: quando(livre.inicio), quadra: quadras.get(livre.quadraId), professor: profs.get(livre.professorId), confirmada: nasceConfirmada };
+  },
+
+  async registrar_confirmacao(c, ctx, e) {
+    const aulaId = Number(e.aula_id) || 0;
+    const a = (await c.query(`SELECT id FROM aula WHERE id = $1 AND marcada_por_contato_id = $2 AND origem = 'experimental'`, [aulaId, ctx.contatoId])).rows[0];
+    if (!a) recusar('Aula não encontrada para este lead. Veja "Experimentais marcadas" no contexto.');
+    const r = await confirmacao.registrarResposta(c, { aulaId, resposta: e.resposta, ator: SOFIA });
+    if (!r.ok) recusar(r.motivo);
+    return r.resposta === 'nao_vai' ? { ok: true, cancelada: true, proximo_passo: 'Ofereça outra data com ver_horarios.' } : { ok: true, confirmada: true };
   },
 
   async entrar_lista_espera(c, ctx, e) {

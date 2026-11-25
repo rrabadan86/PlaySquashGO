@@ -34,16 +34,20 @@ async function sistemaDoMomento(c, contato) {
   const hora = new Date(t).toLocaleTimeString('pt-BR', { timeZone: 'America/Sao_Paulo', hour: '2-digit', minute: '2-digit' });
   const anexos = (await c.query('SELECT id, nome, descricao FROM sofia_anexo WHERE ativo ORDER BY id')).rows;
   const exps = (await c.query(
-    `SELECT a.id, extract(epoch FROM lower(a.periodo))*1000 i,
+    `SELECT a.id, a.situacao, a.conf_pedido_em, a.conf_reenvio_em, a.conf_resposta, extract(epoch FROM lower(a.periodo))*1000 i,
             (SELECT string_agg(ct.nome, ' e ' ORDER BY p.id) FROM aula_participante p JOIN contato ct ON ct.id = p.contato_id
               WHERE p.aula_id = a.id AND p.situacao = 'ativo') nomes
        FROM aula a WHERE a.marcada_por_contato_id = $1 AND a.origem = 'experimental'
         AND a.situacao <> 'cancelada' AND upper(a.periodo) > now() ORDER BY lower(a.periodo)`, [contato.id])).rows;
+  const vagas = (await c.query(
+    `SELECT extract(epoch FROM inicio)*1000 i FROM lista_espera WHERE contato_id = $1 AND tipo = 'experimental' AND saiu_em IS NULL
+        AND avisado_em IS NOT NULL AND preenchida_em IS NULL AND inicio > now() ORDER BY inicio`, [contato.id])).rows;
   const fmt = ms => new Date(ms).toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo', weekday: 'long', day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
   return [
     `Agora: ${DIAS[diaSemana(d)]}, ${d.split('-').reverse().join('/')} às ${hora} (horário de Brasília).`,
     `Lead: nome ${contato.nome ? `"${contato.nome}"` : 'ainda não informado'}; já jogou squash: ${contato.ja_jogou == null ? 'não informado' : contato.ja_jogou ? 'sim' : 'não'}.`,
-    exps.length ? `Experimentais marcadas por este lead (para trocar, use remarcar_experimental):\n${exps.map(x => `- aula_id ${x.id}: ${fmt(Number(x.i))} — ${x.nomes || ''}`).join('\n')}` : 'Este lead ainda não tem aula experimental marcada.',
+    exps.length ? `Experimentais marcadas por este lead (para trocar, use remarcar_experimental):\n${exps.map(x => `- aula_id ${x.id}: ${fmt(Number(x.i))} — ${x.nomes || ''}${x.situacao === 'confirmada' ? ' (confirmada)' : (x.conf_pedido_em || x.conf_reenvio_em) ? ' (AGUARDANDO CONFIRMAÇÃO: pedimos para o lead confirmar)' : ''}`).join('\n')}` : 'Este lead ainda não tem aula experimental marcada.',
+    ...(vagas.length ? [`Avisamos este lead que abriu vaga (lista de espera) em: ${vagas.map(v => fmt(Number(v.i))).join('; ')}. Se ele quiser, chame ver_horarios com a_partir_de nessa data e marque; se a vaga já tiver sido ocupada, explique e ofereça outras.`] : []),
     anexos.length ? `Anexos disponíveis:\n${anexos.map(a => `- id ${a.id}: ${a.nome} — ${a.descricao}`).join('\n')}` : 'Não há anexos cadastrados.',
   ].join('\n');
 }

@@ -10,6 +10,7 @@ const TELAS = {
   cadastros: 'Quadras e professores',
   contatos: 'Contatos',
   whatsapp: 'WhatsApp',
+  experimentais: 'Experimentais',
   conversas: 'Conversas',
   sofia: 'Sofia',
   usuarios: 'Usuários',
@@ -43,6 +44,8 @@ const ACOES = {
   'exportar': u => !!u.eh_admin, // OPR-06
   'whatsapp.ver': u => !!u.eh_admin, // OPR-01
   'whatsapp.editar': u => !!u.eh_admin, // OPR-10
+  'experimentais.ver': u => !!u.eh_admin, // CNF-03, CNF-06
+  'experimentais.editar': u => !!u.eh_admin, // CNF-06 (presença e resultado; professor marca presença pelo app na etapa 3)
   'conversas.ver': u => !!u.eh_admin, // SOF-09
   'conversas.editar': u => !!u.eh_admin, // SOF-09, SOF-06 (liberar nova experimental)
   'sofia.ver': u => !!u.eh_admin, // SOF-10, SOF-12

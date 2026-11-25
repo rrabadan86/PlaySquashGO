@@ -23,6 +23,17 @@ const falha = msg => { throw new ErroUsuario(msg); };
 const id = v => { const n = Number.parseInt(v, 10); if (!Number.isFinite(n) || n < 1) falha('Registro inválido.'); return n; };
 const quando = t => new Date(t).toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo', day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
 const usd = v => `US$ ${Number(v || 0).toFixed(2)}`;
+const simNao = v => `<option value="1"${v === false ? '' : ' selected'}>Sim</option><option value="0"${v === false ? ' selected' : ''}>Não</option>`;
+const TEXTOS_CONFIRMACAO = [
+  ['confirmacao.mensagem_pedido', 'Pedido de confirmação'],
+  ['confirmacao.mensagem_reenvio', 'Reenvio do pedido'],
+  ['confirmacao.mensagem_cancelada', 'Aviso de aula cancelada sem resposta'],
+  ['pos_aula.mensagem_dia', 'Pós-aula (mesmo dia)'],
+  ['pos_aula.mensagem_falta', 'Pós-aula de quem faltou'],
+  ['pos_aula.mensagem_2d', 'Pós-aula (2 dias depois)'],
+  ['lista_espera.mensagem_vaga', 'Lista de espera: abriu vaga'],
+  ['lista_espera.mensagem_preenchida', 'Lista de espera: vaga já preenchida'],
+];
 const pastaAnexos = () => process.env.SOFIA_ANEXOS_DIR || path.join(os.homedir(), '.playsquash-anexos');
 
 // Tipos aceitos nos anexos, conferidos pelo começo do arquivo (não só pelo nome).
@@ -178,6 +189,19 @@ ${editar ? `<form method="post" action="/sofia/config">
 <label>Informações da Play Squash para a Sofia (endereço, o que levar, valores se quiser que ela informe…)<textarea name="instrucoes" rows="8" maxlength="6000" style="width:100%">${esc(String(r['sofia.instrucoes'] || ''))}</textarea></label>
 <p class="muted">A Sofia só fala de valores e planos se estiverem aqui. O resto das regras (qualificação, horários, uma experimental por pessoa) já vem do sistema.</p>
 <label>Motivo da mudança<input name="motivo" maxlength="120" placeholder="opcional"></label> <button class="btn p">Salvar</button></form>` : ''}</div>
+<div class="card"><h2>Confirmação e pós-aula da experimental</h2>
+${editar ? `<form method="post" action="/sofia/confirmacao">
+<div class="linha"><label>Pedido na véspera às<input type="time" name="pedido_hora" value="${esc(String(r['confirmacao.pedido_hora'] || '19:00'))}" required></label>
+<label>Ligado<select name="pedido_ligado">${simNao(r['confirmacao.pedido_ligado'])}</select></label></div>
+<div class="linha"><label>Reenviar (minutos antes da aula)<input type="number" name="reenvio_min" min="30" max="720" value="${Number(r['confirmacao.reenvio_min'] ?? 180)}"></label>
+<label>Ligado<select name="reenvio_ligado">${simNao(r['confirmacao.reenvio_ligado'])}</select></label></div>
+<div class="linha"><label>Cancelar sem resposta (minutos antes)<input type="number" name="cancelamento_min" min="15" max="600" value="${Number(r['confirmacao.cancelamento_min'] ?? 90)}"></label>
+<label>Ligado<select name="cancelamento_ligado">${simNao(r['confirmacao.cancelamento_ligado'])}</select></label></div>
+<div class="linha"><label>Contato pós-aula (minutos depois do fim)<input type="number" name="contato_min" min="0" max="600" value="${Number(r['pos_aula.contato_min'] ?? 60)}"></label>
+<label>Segundo contato, 2 dias depois, às<input type="time" name="hora_2d" value="${esc(String(r['pos_aula.hora_2d'] || '10:00'))}" required></label></div>
+${TEXTOS_CONFIRMACAO.map(([chave, rot]) => `<label>${esc(rot)}<textarea name="${chave}" rows="2" maxlength="600" style="width:100%">${esc(String(r[chave] || ''))}</textarea></label>`).join('')}
+<p class="muted">Nos textos, {nome}, {quando}, {quadra} e {professor} são trocados pelos dados da aula.</p>
+<label>Motivo da mudança<input name="motivo" maxlength="120" placeholder="opcional"></label> <button class="btn p">Salvar</button></form>` : ''}</div>
 <div class="card"><h2>Anexos</h2><p class="muted" style="margin-top:-6px">Imagens (JPG/PNG) ou PDF que a Sofia manda quando o lead pede.</p>
 <div class="tab-wrap"><table><tr><th>Nome</th><th>Quando mandar</th><th>Tipo</th><th></th></tr>
 ${anexos.map(a => `<tr><td>${esc(a.nome)}</td><td>${esc(a.descricao)}</td><td>${a.tipo_mime === 'application/pdf' ? 'PDF' : 'Imagem'}</td><td>${a.ativo ? (editar ? `<form method="post" action="/sofia/anexos/${a.id}/desativar"><button class="btn r">Tirar</button></form>` : '') : '<span class="muted">tirado</span>'}</td></tr>`).join('') || '<tr><td colspan="4" class="muted">Nenhum anexo.</td></tr>'}
@@ -209,6 +233,32 @@ const postSofiaConfig = mudanca('sofia.editar', '/sofia', async (ctx, c, ator) =
     n++;
   }
   return n ? 'Configuração da Sofia salva.' : 'Nada mudou.';
+});
+
+const postConfirmacao = mudanca('sofia.editar', '/sofia', async (ctx, c, ator) => {
+  const r = await lerRegras(c);
+  const motivo = String(ctx.corpo.motivo || '').trim().slice(0, 120) || null;
+  const hora = v => (/^([01]\d|2[0-3]):[0-5]\d$/.test(String(v || '')) ? String(v) : falha('Horário inválido.'));
+  const num = (v, min, max, rot) => { const n = Number(v); if (!Number.isInteger(n) || n < min || n > max) falha(`${rot}: de ${min} a ${max}.`); return n; };
+  const novo = {
+    'confirmacao.pedido_hora': hora(ctx.corpo.pedido_hora),
+    'confirmacao.pedido_ligado': ctx.corpo.pedido_ligado !== '0',
+    'confirmacao.reenvio_min': num(ctx.corpo.reenvio_min, 30, 720, 'Reenvio'),
+    'confirmacao.reenvio_ligado': ctx.corpo.reenvio_ligado !== '0',
+    'confirmacao.cancelamento_min': num(ctx.corpo.cancelamento_min, 15, 600, 'Cancelamento'),
+    'confirmacao.cancelamento_ligado': ctx.corpo.cancelamento_ligado !== '0',
+    'pos_aula.contato_min': num(ctx.corpo.contato_min, 0, 600, 'Contato pós-aula'),
+    'pos_aula.hora_2d': hora(ctx.corpo.hora_2d),
+  };
+  if (novo['confirmacao.cancelamento_min'] >= novo['confirmacao.reenvio_min']) falha('O cancelamento tem que ser mais perto da aula que o reenvio.');
+  for (const [chave, rot] of TEXTOS_CONFIRMACAO) novo[chave] = String(ctx.corpo[chave] || '').replace(/\r\n/g, '\n').trim().slice(0, 600) || falha(`Escreva o texto: ${rot}.`);
+  let n = 0;
+  for (const [chave, valor] of Object.entries(novo)) {
+    if (JSON.stringify(r[chave]) === JSON.stringify(valor)) continue;
+    await mudarRegra(c, { chave, valor, ator, motivo }); // DAD-06
+    n++;
+  }
+  return n ? 'Confirmação e pós-aula salvos.' : 'Nada mudou.';
 });
 
 const postAnexo = mudanca('sofia.editar', '/sofia', async (ctx, c, ator) => {
@@ -244,6 +294,7 @@ module.exports = {
     ['POST', '/conversas/:id/liberar', postLiberar, true],
     ['GET', '/sofia', getSofia, true],
     ['POST', '/sofia/config', postSofiaConfig, true],
+    ['POST', '/sofia/confirmacao', postConfirmacao, true],
     ['POST', '/sofia/anexos', postAnexo, true],
     ['POST', '/sofia/anexos/:id/desativar', postAnexoDesativar, true],
   ],

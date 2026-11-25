@@ -70,7 +70,7 @@ input,select,textarea{border:1px solid #d5dfdb;border-radius:8px;padding:8px 10p
 // Menu lateral só com o que o usuário pode abrir (PER-02; o servidor confere de novo, PER-03).
 function menu(u, ativo) {
   const itens = [
-    ['AGENDA', [['grade', '/grade', 'Grade do dia'], ['cadastros', '/cadastros', 'Quadras e professores']]],
+    ['AGENDA', [['grade', '/grade', 'Grade do dia'], ['experimentais', '/experimentais', 'Experimentais'], ['cadastros', '/cadastros', 'Quadras e professores']]],
     ['ALUNOS', [['contatos', '/contatos', 'Contatos']]],
     ['WHATSAPP', [['conversas', '/conversas', 'Conversas'], ['sofia', '/sofia', 'Sofia'], ['whatsapp', '/whatsapp', 'Conexão e mensagens']]],
     ['CONFIGURAÇÕES', [['usuarios', '/usuarios', 'Usuários'], ['historico', '/historico', 'Histórico'], ['exportar', '/exportar', 'Exportar dados']]],

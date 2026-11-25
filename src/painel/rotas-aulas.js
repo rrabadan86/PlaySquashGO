@@ -9,6 +9,7 @@ const { registrar, atorDoUsuario } = require('../historico');
 const { pode } = require('../regras/permissoes');
 const { livresDoDia } = require('../agenda/livres');
 const { chaveNome } = require('../sofia/texto');
+const { vagaLiberada } = require('../sofia/confirmacao');
 const { hojeSP, dataSP } = require('../relogio');
 const fila = require('../agenda/fila');
 const { carregarFeriados } = require('../rotinas');
@@ -134,10 +135,11 @@ ${g.com_erro ? `<p class="muted">Há ${g.com_erro} envio(s) ao Google com erro; 
 const postAulaCancelar = mudanca('aulas.cancelar', ctx => `/aulas/${encodeURIComponent(ctx.params.id)}`, async (ctx, c, ator) => {
   const aulaId = id(ctx.params.id);
   const motivo = String(ctx.corpo.motivo || '').trim() || falha('Informe o motivo.');
-  const a = (await c.query('SELECT situacao FROM aula WHERE id = $1 FOR UPDATE', [aulaId])).rows[0] || falha('Aula não encontrada.');
+  const a = (await c.query(`SELECT situacao, quadra_id, extract(epoch FROM lower(periodo))*1000 ini FROM aula WHERE id = $1 FOR UPDATE`, [aulaId])).rows[0] || falha('Aula não encontrada.');
   if (a.situacao === 'cancelada') falha('A aula já estava cancelada.');
   await c.query(`UPDATE aula SET situacao = 'cancelada', cancelada_motivo = $2 WHERE id = $1`, [aulaId, motivo.slice(0, 120)]);
   await fila.aulaMudou(c, aulaId, 'apagar');
+  await vagaLiberada(c, { quadraId: a.quadra_id, inicio: Number(a.ini) }); // LES-02: avisa a lista de espera
   // Aviso aos alunos e crédito de reposição entram com o WhatsApp e o app (etapas 2 e 3, AGD-08).
   await registrar(c, { ator, acao: 'aula.cancelada', entidade: 'aula', entidadeId: aulaId, antes: { situacao: a.situacao }, depois: { situacao: 'cancelada' }, motivo });
   return 'Aula cancelada. O horário voltou a ficar livre.';

@@ -20,12 +20,12 @@ Gerada por `npm run matriz` (não edite à mão, exceto a seção "Achados"). O 
 | Cobrança e financeiro | 8 | 11 | 0 | 0 | 0 | 8 | 0 | 1 |
 | Indicadores | 6 | 6 | 0 | 0 | 0 | 6 | 0 | 1 |
 | WhatsApp, dados e operação | 11 | 13 | 23 | 10 | 0 | 1 | 0 | 0 |
-| Sofia, confirmação da experimental e lista de espera | 22 | 37 | 26 | 12 | 1 | 9 | 0 | 1 |
+| Sofia, confirmação da experimental e lista de espera | 22 | 40 | 33 | 14 | 2 | 6 | 0 | 1 |
 | Testes | 8 | 0 | 9 | 3 | 0 | 0 | 5 | 0 |
 | Padrão visual | 6 | 0 | 1 | 1 | 0 | 0 | 5 | 0 |
-| **Total** | 118 | 120 | 115 | 49 | 1 | 46 | 22 | 13 |
+| **Total** | 118 | 123 | 122 | 51 | 2 | 43 | 22 | 13 |
 
-Testes: 115 no total, 115 ligados a uma regra.
+Testes: 122 no total, 122 ligados a uma regra.
 
 ## Regras
 
@@ -167,14 +167,14 @@ Testes: 115 no total, 115 ligados a uma regra.
 | SOF-10 | Anexos configuráveis (imagem/PDF) enviados quando pedidos. | 2 | `sofia.test.js` › SOF-10 admin cadastra anexo no painel e a Sofia manda o arquivo quando pedem<br>`sofia.test.js` › SOF-10 SOF-12 tela Sofia: admin muda instruções com versão e vê o custo | ✅ |
 | SOF-11 | Lead em horário cheio entra na lista de espera. | 1 | `sofia.test.js` › SOF-11 LES-03 lead entra na lista de espera e sai dela ao marcar a experimental | ✅ |
 | SOF-12 | Registrar custo da IA por conversa e por dia. | 1 | `sofia.test.js` › SOF-12 custo da IA registrado por chamada, com tokens e valor<br>`sofia.test.js` › SOF-12 custo da IA por modelo, com cache de leitura e escrita | ✅ |
-| CNF-01 | Pedido na véspera 19h, reenvio 3 h antes, cancelamento sem resposta 90 min antes (editáveis e desligáveis). | 3 | `confirmacao.test.js` › CNF-01 experimental amanhã 18h: pedido hoje 19h, reenvio 15h, cancelamento 16h30<br>`confirmacao.test.js` › CNF-01 cancelamento desligado: nada é cancelado<br>`confirmacao.test.js` › CNF-01 véspera no 1º do mês (aula em 01/01 → pedido em 31/12) | ✅ |
-| CNF-02 | Classificar respostas livres em confirmou / não vai / dúvida (dúvida = transbordo). | 1 | — | ❌ |
-| CNF-03 | Confirmou: status e ✓ no evento. Não vai: apaga evento, libera vaga, oferece outra data. | 1 | — | ❌ |
-| CNF-04 | Marcada depois do horário do pedido de confirmação nasce confirmada, sem cancelamento automático. | 1 | `confirmacao.test.js` › CNF-04 marcada às 21h da véspera nasce confirmada, sem cancelamento automático<br>`confirmacao.test.js` › CNF-04 marcada no próprio dia nasce confirmada | ✅ |
+| CNF-01 | Pedido na véspera 19h, reenvio 3 h antes, cancelamento sem resposta 90 min antes (editáveis e desligáveis). | 4 | `confirmacao.test.js` › CNF-01 CNF-05 pedido na véspera, reenvio 3 h antes e cancelamento sem resposta 90 min antes<br>`confirmacao.test.js` › CNF-01 pedido desligado: sem pedido não há cancelamento automático<br>`confirmacao.test.js` › CNF-01 CNF-03 painel: admin registra resposta e muda horários e textos da confirmação com versão<br>`confirmacao.test.js` › CNF-01 experimental amanhã 18h: pedido hoje 19h, reenvio 15h, cancelamento 16h30<br>`confirmacao.test.js` › CNF-01 cancelamento desligado: nada é cancelado<br>`confirmacao.test.js` › CNF-01 véspera no 1º do mês (aula em 01/01 → pedido em 31/12) | ✅ |
+| CNF-02 | Classificar respostas livres em confirmou / não vai / dúvida (dúvida = transbordo). | 1 | `confirmacao.test.js` › CNF-02 CNF-03 CNF-05 lead confirma pela conversa: aula confirmada, ✓ no Google, professor avisado, sem reenvio | ✅ |
+| CNF-03 | Confirmou: status e ✓ no evento. Não vai: apaga evento, libera vaga, oferece outra data. | 1 | `confirmacao.test.js` › CNF-03 LES-02 LES-03 "não vai" libera a vaga: a lista é avisada, o primeiro que marca leva e o outro recebe "preenchida" | ✅ |
+| CNF-04 | Marcada depois do horário do pedido de confirmação nasce confirmada, sem cancelamento automático. | 1 | `confirmacao.test.js` › CNF-04 marcada depois das 19h da véspera nasce confirmada e não recebe pedido nem cancelamento<br>`confirmacao.test.js` › CNF-04 marcada às 21h da véspera nasce confirmada, sem cancelamento automático<br>`confirmacao.test.js` › CNF-04 marcada no próprio dia nasce confirmada | ✅ |
 | CNF-05 | Professor avisado em todos os desfechos. | 1 | — | ❌ |
-| CNF-06 | Pós-aula: presença, contato no mesmo dia e +2 dias; sem matrícula, admin escolhe o motivo de perda. | 2 | — | ❌ |
+| CNF-06 | Pós-aula: presença, contato no mesmo dia e +2 dias; sem matrícula, admin escolhe o motivo de perda. | 3 | `confirmacao.test.js` › CNF-06 pós-aula: contato no mesmo dia e +2 dias; quem faltou recebe convite para remarcar; resultado encerra os contatos | parcial |
 | LES-01 | Entram leads (Sofia) e alunos com crédito de reposição (app). | 1 | — | ❌ |
-| LES-02 | Vaga liberada com antecedência suficiente: avisar todos; o primeiro que confirmar leva; demais recebem 'vaga já preenchida'. | 2 | — | ❌ |
+| LES-02 | Vaga liberada com antecedência suficiente: avisar todos; o primeiro que confirmar leva; demais recebem 'vaga já preenchida'. | 3 | — | ❌ |
 | LES-03 | Lead sai de todas as listas ao marcar experimental; aluno sai ao conseguir o horário ou quando o crédito vence. | 2 | — | ❌ |
 | LES-04 | Avisos: professor recebe nome, telefone, tipo, dia, hora, quadra; a pessoa recebe os dados do professor. | 1 | — | ❌ |
 

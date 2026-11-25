@@ -1,7 +1,8 @@
 /**
  * Cliente real do WhatsApp (OPR-01): whatsapp-web.js pelo QR, isolado neste arquivo — o resto
  * do sistema só conhece a interface (a mesma do simulador testes/simuladores/whatsapp-falso.js):
- *   iniciar(), enviar(telefoneE164, texto) → { id }, aoReceber(fn), conectado, parar()
+ *   iniciar(), enviar(telefoneE164, texto) → { id }, enviarArquivo(telefoneE164, { arquivo, tipoMime, legenda }) → { id },
+ *   aoReceber(fn), conectado, parar()
  * Trocar pela API oficial da Meta no futuro = outro arquivo com a mesma interface.
  *
  * Aprendizados trazidos da SlimFit (wa-client.js):
@@ -24,7 +25,7 @@ function criarClienteWhatsapp({
   religarMs = 30000,
   log = console,
 } = {}) {
-  const { Client, LocalAuth } = lib || require('whatsapp-web.js');
+  const { Client, LocalAuth, MessageMedia } = lib || require('whatsapp-web.js');
   const ouvintes = [];
   let client = null, pronto = false, parado = false, timer = null;
 
@@ -90,22 +91,33 @@ function criarClienteWhatsapp({
     }
   }
 
-  async function enviar(telefone, texto) {
+  // Acha a forma do número que existe no WhatsApp (com ou sem o 9).
+  async function chatDe(telefone) {
     if (!pronto) throw new Error('WhatsApp desconectado');
-    // Acha a forma do número que existe no WhatsApp (com ou sem o 9).
-    let id = null;
     for (const v of variantes(telefone)) {
       const r = await client.getNumberId(v.replace(/\D/g, ''));
-      if (r) { id = r._serialized; break; }
+      if (r) return r._serialized;
     }
-    if (!id) throw new Error('número sem WhatsApp');
-    const m = await client.sendMessage(id, String(texto));
+    throw new Error('número sem WhatsApp');
+  }
+
+  async function enviar(telefone, texto) {
+    const m = await client.sendMessage(await chatDe(telefone), String(texto));
+    return { id: m && m.id ? m.id._serialized : null };
+  }
+
+  // SOF-10: imagem ou PDF da pasta de anexos (fora do Git), com legenda.
+  async function enviarArquivo(telefone, { arquivo, legenda = '' }) {
+    const id = await chatDe(telefone);
+    const media = MessageMedia.fromFilePath(arquivo);
+    const m = await client.sendMessage(id, media, { caption: String(legenda || '') });
     return { id: m && m.id ? m.id._serialized : null };
   }
 
   return {
     iniciar,
     enviar,
+    enviarArquivo,
     aoReceber(fn) { ouvintes.push(fn); },
     get conectado() { return pronto; },
     async parar() { parado = true; if (timer) clearTimeout(timer); timer = null; pronto = false; try { if (client) await client.destroy(); } catch (_) {} estado.mudar('desligado'); },

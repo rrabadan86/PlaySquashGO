@@ -39,7 +39,7 @@ th{text-align:left;color:var(--s);font-weight:500;font-size:12px;padding:7px 8px
 td{padding:8px;border-bottom:1px solid #eef2f0;vertical-align:top}
 form.linha{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end}
 label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--s);font-weight:500}
-input,select{border:1px solid #d5dfdb;border-radius:8px;padding:8px 10px;font:14px Inter,system-ui,sans-serif;background:#fff;color:var(--t);min-width:0}
+input,select,textarea{border:1px solid #d5dfdb;border-radius:8px;padding:8px 10px;font:14px Inter,system-ui,sans-serif;background:#fff;color:var(--t);min-width:0}
 .checks{display:flex;flex-wrap:wrap;gap:10px;font-size:13px;color:var(--t)}
 .checks label{flex-direction:row;align-items:center;color:var(--t)}
 .aviso{border-radius:10px;padding:10px 14px;font-size:13px}
@@ -72,7 +72,7 @@ function menu(u, ativo) {
   const itens = [
     ['AGENDA', [['grade', '/grade', 'Grade do dia'], ['cadastros', '/cadastros', 'Quadras e professores']]],
     ['ALUNOS', [['contatos', '/contatos', 'Contatos']]],
-    ['WHATSAPP', [['whatsapp', '/whatsapp', 'Conexão e mensagens']]],
+    ['WHATSAPP', [['conversas', '/conversas', 'Conversas'], ['sofia', '/sofia', 'Sofia'], ['whatsapp', '/whatsapp', 'Conexão e mensagens']]],
     ['CONFIGURAÇÕES', [['usuarios', '/usuarios', 'Usuários'], ['historico', '/historico', 'Histórico'], ['exportar', '/exportar', 'Exportar dados']]],
   ];
   let h = '<nav class="side"><a class="marca" href="/grade">Play Squash</a>';

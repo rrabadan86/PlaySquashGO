@@ -10,6 +10,8 @@ const TELAS = {
   cadastros: 'Quadras e professores',
   contatos: 'Contatos',
   whatsapp: 'WhatsApp',
+  conversas: 'Conversas',
+  sofia: 'Sofia',
   usuarios: 'Usuários',
   historico: 'Histórico',
   exportar: 'Exportar dados',
@@ -41,6 +43,10 @@ const ACOES = {
   'exportar': u => !!u.eh_admin, // OPR-06
   'whatsapp.ver': u => !!u.eh_admin, // OPR-01
   'whatsapp.editar': u => !!u.eh_admin, // OPR-10
+  'conversas.ver': u => !!u.eh_admin, // SOF-09
+  'conversas.editar': u => !!u.eh_admin, // SOF-09, SOF-06 (liberar nova experimental)
+  'sofia.ver': u => !!u.eh_admin, // SOF-10, SOF-12
+  'sofia.editar': u => !!u.eh_admin, // SOF-10
 };
 
 function pode(u, acao) {

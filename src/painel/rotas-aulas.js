@@ -6,10 +6,10 @@
  */
 const { tx } = require('../db');
 const { registrar, atorDoUsuario } = require('../historico');
-const { lerRegras } = require('../config');
 const { pode } = require('../regras/permissoes');
-const { horariosLivres } = require('../regras/disponibilidade');
-const { hojeSP, instanteSP, agora, dataSP } = require('../relogio');
+const { livresDoDia } = require('../agenda/livres');
+const { chaveNome } = require('../sofia/texto');
+const { hojeSP, dataSP } = require('../relogio');
 const fila = require('../agenda/fila');
 const { carregarFeriados } = require('../rotinas');
 const { esc, pagina } = require('./html');
@@ -46,32 +46,6 @@ function mudanca(permissao, destino, fn) {
 }
 
 // ───────────── Nova aula (AGD-12) ─────────────
-async function livresDoDia(c, data, tipo) {
-  const regras = await lerRegras(c);
-  const faixas = (await c.query(
-    `SELECT f.quadra_id, f.professor_id, f.dia_semana, to_char(f.inicio,'HH24:MI') inicio, to_char(f.fim,'HH24:MI') fim,
-            to_char(f.vigente_desde,'YYYY-MM-DD') vigente_desde, to_char(f.vigente_ate,'YYYY-MM-DD') vigente_ate,
-            array_agg(ft.tipo_aula_id) tipos
-       FROM grade_faixa f JOIN grade_faixa_tipo ft ON ft.grade_faixa_id = f.id JOIN quadra q ON q.id = f.quadra_id
-      WHERE f.cancelada_em IS NULL AND q.ativa GROUP BY f.id`)).rows
-    .map(f => ({ quadraId: f.quadra_id, professorId: f.professor_id, diaSemana: f.dia_semana, inicio: f.inicio, fim: f.fim, vigenteDesde: f.vigente_desde, vigenteAte: f.vigente_ate, tipos: f.tipos }));
-  const ini = instanteSP(data, '00:00'), fim = ini + 86400000;
-  const aulas = (await c.query(
-    `SELECT a.quadra_id, a.professor_id, a.tipo_aula_id, extract(epoch FROM lower(a.periodo))*1000 i, extract(epoch FROM upper(a.periodo))*1000 f,
-            (SELECT count(*)::int FROM aula_participante p WHERE p.aula_id = a.id AND p.situacao = 'ativo') n
-       FROM aula a WHERE a.situacao <> 'cancelada' AND a.periodo && tstzrange(to_timestamp($1/1000.0), to_timestamp($2/1000.0))`, [ini, fim])).rows
-    .map(a => ({ quadraId: a.quadra_id, professorId: a.professor_id, tipoId: a.tipo_aula_id, inicio: Number(a.i), fim: Number(a.f), participantes: a.n }));
-  const bloqueios = (await c.query(
-    `SELECT quadra_id, professor_id, extract(epoch FROM lower(periodo))*1000 i, extract(epoch FROM upper(periodo))*1000 f
-       FROM bloqueio WHERE cancelado_em IS NULL AND periodo && tstzrange(to_timestamp($1/1000.0), to_timestamp($2/1000.0))`, [ini, fim])).rows
-    .map(b => ({ quadraId: b.quadra_id, professorId: b.professor_id, inicio: Number(b.i), fim: Number(b.f) }));
-  const feriados = (await c.query('SELECT to_char(data,\'YYYY-MM-DD\') d FROM feriado WHERE cancelado_em IS NULL AND data = $1', [data])).rows.map(r => r.d);
-  return horariosLivres({
-    data, tipo, faixas, aulas, bloqueios, feriados,
-    intervaloMin: Number(regras['grade.intervalo_min'] || 30), agora: agora(), antecedenciaMin: 0,
-  });
-}
-
 async function getAulaNova(ctx) {
   if (!pode(ctx.usuario, 'aulas.criar')) return ctx.proibido();
   const data = /^\d{4}-\d{2}-\d{2}$/.test(ctx.query.data || '') ? ctx.query.data : hojeSP();
@@ -189,12 +163,20 @@ ${rows.map(c => `<tr><td>${c.anonimizado_em ? '<span class="muted">(anonimizado)
 const postAnonimizar = mudanca('contatos.anonimizar', '/contatos', async (ctx, c, ator) => {
   const cid = id(ctx.params.id);
   const motivo = String(ctx.corpo.motivo || '').trim() || falha('Informe o motivo.');
-  const r = await c.query(
+  const ct = (await c.query(`SELECT nome, to_char(data_nascimento,'YYYY-MM-DD') nasc FROM contato WHERE id = $1 AND anonimizado_em IS NULL FOR UPDATE`, [cid])).rows[0];
+  if (!ct) falha('Contato não encontrado ou já anonimizado.');
+  await c.query(
     `UPDATE contato SET nome = NULL, telefone = NULL, email = NULL, data_nascimento = NULL, sem_campanha = true, anonimizado_em = now()
-      WHERE id = $1 AND anonimizado_em IS NULL`, [cid]);
-  if (!r.rowCount) falha('Contato não encontrado ou já anonimizado.');
+      WHERE id = $1`, [cid]);
+  // Liberação de experimental (SOF-06) guarda nome + nascimento: some junto (decisão do dono, 25/11/2026).
+  let liberacoes = 0;
+  if (ct.nome && ct.nasc) {
+    liberacoes = (await c.query(
+      `UPDATE experimental_liberacao SET nome_chave = NULL, data_nascimento = NULL, anonimizado_em = now()
+        WHERE nome_chave = $1 AND data_nascimento = $2 AND anonimizado_em IS NULL`, [chaveNome(ct.nome), ct.nasc])).rowCount;
+  }
   // DAD-07: o histórico não guarda os dados apagados, só quais campos foram apagados.
-  await registrar(c, { ator, acao: 'contato.anonimizado', entidade: 'contato', entidadeId: cid, depois: { campos: ['nome', 'telefone', 'email', 'data_nascimento'] }, motivo: motivo.slice(0, 120) });
+  await registrar(c, { ator, acao: 'contato.anonimizado', entidade: 'contato', entidadeId: cid, depois: { campos: ['nome', 'telefone', 'email', 'data_nascimento'], liberacoes_experimental: liberacoes }, motivo: motivo.slice(0, 120) });
   return 'Contato anonimizado.';
 });
 

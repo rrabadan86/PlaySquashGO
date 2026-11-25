@@ -7,7 +7,8 @@
  *   node scripts/rotacao-backups.js /var/backups/playsquash/producao [AAAA-MM-DD]
  *
  * Nome dos arquivos: <ambiente>-AAAA-MM-DD_HHMMSS[-motivo].dump.gpg (com segundos: duas cópias no
- * mesmo minuto não se sobrescrevem)
+ * mesmo minuto não se sobrescrevem). Os anexos da Sofia da mesma cópia têm o mesmo nome com
+ * .anexos.tar.gpg e seguem o destino da cópia do banco (sem a cópia do banco, saem também).
  */
 const fs = require('fs');
 
@@ -37,7 +38,13 @@ function paraApagar(nomes, hoje) {
   porMes.forEach(n => fica.add(n));
   // Cópias "antes de atualizar": 30 dias.
   for (const c of copias) if (c.motivo && diasEntre(c.dia, hoje) < DIAS) fica.add(c.n);
-  return copias.map(c => c.n).filter(n => !fica.has(n));
+  const apagar = copias.map(c => c.n).filter(n => !fica.has(n));
+  // Anexos acompanham a cópia do banco de mesmo nome.
+  for (const n of nomes) {
+    const m = /^(.+)\.anexos\.tar\.gpg$/.exec(n);
+    if (m && RE.test(`${m[1]}.dump.gpg`) && !fica.has(`${m[1]}.dump.gpg`)) apagar.push(n);
+  }
+  return apagar;
 }
 
 if (require.main === module) {

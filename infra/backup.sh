@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Cópia do banco de um ambiente (DEP-06): pg_dump criptografado (AES-256, chave só no servidor),
-# rotação de 30 diárias + 12 mensais e envio para fora do servidor (rclone), se configurado.
+# junto com os anexos da Sofia (SOFIA_ANEXOS_DIR, mesmo nome + .anexos.tar.gpg), rotação de
+# 30 diárias + 12 mensais e envio para fora do servidor (rclone), se configurado.
 #
 #   sudo -u playsquash infra/backup.sh producao [motivo]
 #
@@ -24,6 +25,7 @@ CHAVE="$PS_ETC/backup.chave"
 
 DATABASE_URL="$(grep -E '^DATABASE_URL=' "$ENV_ARQ" | cut -d= -f2-)"
 BACKUP_REMOTO="$(grep -E '^BACKUP_REMOTO=' "$ENV_ARQ" | cut -d= -f2- || true)"
+ANEXOS_DIR="$(grep -E '^SOFIA_ANEXOS_DIR=' "$ENV_ARQ" | cut -d= -f2- || true)"
 [[ -n "$DATABASE_URL" ]] || { echo "DATABASE_URL vazio em $ENV_ARQ" >&2; exit 1; }
 
 PASTA="$PS_BACKUPS/$AMBIENTE"
@@ -31,13 +33,24 @@ mkdir -p "$PASTA"
 chmod 700 "$PASTA"
 NOME="$AMBIENTE-$(TZ=America/Sao_Paulo date +%F_%H%M%S)${MOTIVO:+-$MOTIVO}.dump.gpg"
 TMP="$PASTA/.$NOME.parcial"
-trap 'rm -f "$TMP"' EXIT
+NOME_ANEXOS="${NOME%.dump.gpg}.anexos.tar.gpg"
+TMP_ANEXOS="$PASTA/.$NOME_ANEXOS.parcial"
+trap 'rm -f "$TMP" "$TMP_ANEXOS"' EXIT
 
 pg_dump --format=custom --no-owner "$DATABASE_URL" \
   | gpg --batch --yes --quiet --symmetric --cipher-algo AES256 --passphrase-file "$CHAVE" -o "$TMP"
 mv "$TMP" "$PASTA/$NOME"
 chmod 600 "$PASTA/$NOME"
 echo "Cópia criada: $PASTA/$NOME ($(du -h "$PASTA/$NOME" | cut -f1))"
+
+# Anexos da Sofia (imagens/PDF cadastrados no painel, SOF-10): ficam fora do banco.
+if [[ -n "$ANEXOS_DIR" && -d "$ANEXOS_DIR" ]] && [[ -n "$(ls -A "$ANEXOS_DIR")" ]]; then
+  tar -C "$ANEXOS_DIR" -cf - . \
+    | gpg --batch --yes --quiet --symmetric --cipher-algo AES256 --passphrase-file "$CHAVE" -o "$TMP_ANEXOS"
+  mv "$TMP_ANEXOS" "$PASTA/$NOME_ANEXOS"
+  chmod 600 "$PASTA/$NOME_ANEXOS"
+  echo "Anexos da Sofia: $PASTA/$NOME_ANEXOS ($(find "$ANEXOS_DIR" -type f | wc -l) arquivo(s))"
+fi
 
 # Rotação: a regra fica em scripts/rotacao-backups.js (testada).
 while IFS= read -r velho; do

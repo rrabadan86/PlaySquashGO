@@ -17,7 +17,7 @@ try { playwright = require('playwright'); } catch (_) {}
 const opc = { skip: !URL_TESTE ? 'sem DATABASE_URL_TESTE' : !playwright ? 'sem playwright' : false };
 
 // Telas do painel (TST-03): tela nova entra aqui.
-const TELAS = ['/grade?data=2026-12-01', '/aulas/nova?data=2026-12-01', '/aulas/1', '/cadastros', '/contatos', '/usuarios', '/historico', '/exportar', '/novidades', '/whatsapp'];
+const TELAS = ['/grade?data=2026-12-01', '/aulas/nova?data=2026-12-01', '/aulas/1', '/cadastros', '/contatos', '/usuarios', '/historico', '/exportar', '/novidades', '/whatsapp', '/conversas', '/conversas/1', '/sofia'];
 const TAMANHOS = [{ nome: 'computador', width: 1366, height: 900 }, { nome: 'celular', width: 390, height: 844 }];
 
 let pool, painel, navegador, pasta;
@@ -39,6 +39,14 @@ before(async () => {
   await pool.query('INSERT INTO aula_participante (aula_id, contato_id) VALUES ($1,$2)', [a, ct]);
   await pool.query(`INSERT INTO bloqueio (quadra_id, periodo, motivo) VALUES ($1, tstzrange('2026-12-01 19:00-03','2026-12-01 20:00-03'), 'Manutenção')`, [q2]);
   await pool.query(`INSERT INTO historico (ator_tipo, ator_id, origem, acao, entidade, depois) VALUES ('admin',$1,'painel','quadra.criada','quadra','{"nome":"Quadra 1"}')`, [g]);
+  // Conversa da Sofia com mensagens, uma longa (sem rolagem lateral no celular) e custo.
+  const lead = (await pool.query(`INSERT INTO contato (nome, telefone, tipo, ja_jogou) VALUES ('Marina Lead','+5562900000009','lead',false) RETURNING id`)).rows[0].id;
+  const cv = (await pool.query(`INSERT INTO conversa (contato_id, estado, humano_desde, humano_motivo) VALUES ($1,'humano',now(),'pediu valores') RETURNING id`, [lead])).rows[0].id;
+  await pool.query(`INSERT INTO mensagem (contato_id, conversa_id, direcao, texto, motivo) VALUES ($1,$2,'entrada','Oi! Quero fazer uma aula experimental','recebida'),
+    ($1,$2,'saida','Oi, Marina! Que bom. Você já jogou squash antes? Me conta também quais dias e período ficam melhores para você.','sofia'),
+    ($1,$2,'entrada','https://exemplo.com/um-link-bem-comprido-sem-espacos-para-testar-a-quebra-de-linha-no-celular-0123456789','recebida')`, [lead, cv]);
+  await pool.query(`INSERT INTO custo_ia (conversa_id, modelo, tokens_entrada, tokens_saida, custo_usd) VALUES ($1,'claude-opus-5-5',3000,200,0.016)`, [cv]);
+  await pool.query(`INSERT INTO sofia_anexo (nome, descricao, arquivo, tipo_mime) VALUES ('Fotos da quadra','quando pedirem para ver a escola','/nao/existe.png','image/png')`);
   painel = await subirPainel(pool);
   navegador = await playwright.chromium.launch();
   pasta = fs.mkdtempSync(path.join(os.tmpdir(), 'ps-telas-'));

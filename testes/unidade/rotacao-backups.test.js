@@ -39,3 +39,17 @@ test('DEP-06 cópia feita antes de atualizar vale 30 dias; arquivo estranho nunc
   const apagar = paraApagar([nome('2027-06-01', '220000', 'antes-de-atualizar'), nome('2027-04-01', '220000', 'antes-de-atualizar'), 'leia-me.txt'], hoje);
   assert.deepEqual(apagar, [nome('2027-04-01', '220000', 'antes-de-atualizar')]);
 });
+
+test('DEP-06 SOF-10 anexos da Sofia seguem a cópia do banco de mesmo nome', () => {
+  const nomes = [
+    'producao-2025-10-10_033000.dump.gpg', 'producao-2025-10-10_033000.anexos.tar.gpg',
+    'producao-2026-11-20_033000.dump.gpg', 'producao-2026-11-20_033000.anexos.tar.gpg',
+    'producao-2026-11-21_033000.anexos.tar.gpg', // sem a cópia do banco
+    'outra-coisa.anexos.tar.gpg',
+  ];
+  const ap = paraApagar(nomes, '2026-12-01');
+  assert.ok(ap.includes('producao-2025-10-10_033000.anexos.tar.gpg'));
+  assert.ok(!ap.includes('producao-2026-11-20_033000.anexos.tar.gpg'));
+  assert.ok(ap.includes('producao-2026-11-21_033000.anexos.tar.gpg'));
+  assert.ok(!ap.includes('outra-coisa.anexos.tar.gpg'), 'arquivo estranho nunca é apagado');
+});

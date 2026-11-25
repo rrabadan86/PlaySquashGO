@@ -15,17 +15,17 @@ Gerada por `npm run matriz` (não edite à mão, exceto a seção "Achados"). O 
 | Agenda, grade, Google Agenda e perfis | 15 | 21 | 37 | 12 | 0 | 3 | 0 | 3 |
 | App do aluno e reposição | 11 | 12 | 8 | 4 | 0 | 7 | 0 | 2 |
 | Planos e contratos | 12 | 18 | 0 | 0 | 0 | 12 | 0 | 5 |
-| Dados e segredos | 10 | 0 | 3 | 3 | 0 | 0 | 7 | 0 |
-| Publicar e atualizar | 9 | 2 | 7 | 3 | 0 | 0 | 6 | 0 |
+| Dados e segredos | 10 | 0 | 4 | 4 | 0 | 0 | 6 | 0 |
+| Publicar e atualizar | 9 | 2 | 8 | 3 | 0 | 0 | 6 | 0 |
 | Cobrança e financeiro | 8 | 11 | 0 | 0 | 0 | 8 | 0 | 1 |
 | Indicadores | 6 | 6 | 0 | 0 | 0 | 6 | 0 | 1 |
-| WhatsApp, dados e operação | 11 | 13 | 22 | 10 | 0 | 1 | 0 | 0 |
-| Sofia, confirmação da experimental e lista de espera | 22 | 34 | 9 | 2 | 4 | 16 | 0 | 1 |
-| Testes | 8 | 0 | 8 | 3 | 0 | 0 | 5 | 0 |
+| WhatsApp, dados e operação | 11 | 13 | 23 | 10 | 0 | 1 | 0 | 0 |
+| Sofia, confirmação da experimental e lista de espera | 22 | 37 | 26 | 12 | 1 | 9 | 0 | 1 |
+| Testes | 8 | 0 | 9 | 3 | 0 | 0 | 5 | 0 |
 | Padrão visual | 6 | 0 | 1 | 1 | 0 | 0 | 5 | 0 |
-| **Total** | 118 | 117 | 94 | 38 | 4 | 53 | 23 | 13 |
+| **Total** | 118 | 120 | 115 | 49 | 1 | 46 | 22 | 13 |
 
-Testes: 94 no total, 94 ligados a uma regra.
+Testes: 115 no total, 115 ligados a uma regra.
 
 ## Regras
 
@@ -92,7 +92,7 @@ Testes: 94 no total, 94 ligados a uma regra.
 | DAD-04 | A tabela `historico` só recebe inclusões: `UPDATE` e `DELETE` são barrados por trava no banco. Toda ação de usuário, Sofia ou sistema grava quem, por onde, quando, o quê, antes/depois e o motivo (OPR-07). | 0 | — | processo |
 | DAD-05 | Contrato guarda um retrato do plano e das regras do momento (`plano_retrato`, `regras_retrato`): mudar plano ou regra nunca altera o passado (CON-01a). | 0 | — | processo |
 | DAD-06 | Regras configuráveis mudam por nova versão com data (`regra_config`), nunca editando a versão antiga. | 0 | `banco.test.js` › DAD-06 regra configurável muda por nova versão, nunca editando a antiga | ✅ |
-| DAD-07 | Anonimização (OPR-05) apaga nome, telefone, e-mail e data de nascimento do contato e marca `anonimizado_em`; IDs, aulas e parcelas continuam. Por isso o histórico guarda **IDs, não dados pessoais** (nome, telefone, e-mail) de alunos e leads. | 0 | — | processo |
+| DAD-07 | Anonimização (OPR-05) apaga nome, telefone, e-mail e data de nascimento do contato e marca `anonimizado_em`; apaga também o nome e o nascimento das liberações de experimental dessa pessoa (SOF-06, decisão do dono 25/11/2026); IDs, aulas e parcelas continuam. Por isso o histórico guarda **IDs, não dados pessoais** (nome, telefone, e-mail) de alunos e leads. | 0 | `sofia.test.js` › DAD-07 OPR-05 anonimizar o contato apaga também o nome e o nascimento da liberação de experimental | ✅ |
 | DAD-08 | Mudança de banco só por migração nova em `db/migrations/` (número seguinte), aplicada primeiro na homologação; nunca editar migração já aplicada. | 0 | `banco.test.js` › DAD-08 migrações aplicam do zero e não reaplicam | ✅ |
 | DAD-10 | A chave da conta de serviço do Google fica num arquivo fora do repositório (`GOOGLE_CONTA_SERVICO_ARQUIVO`), legível só pelo usuário do sistema. | 0 | — | processo |
 | DAD-09 | Dados da Play Squash (alunos, conversas, comprovantes) nunca vão para serviço de terceiros além dos combinados (Anthropic para a Sofia, Google Agenda, WhatsApp). | 0 | — | processo |
@@ -106,7 +106,7 @@ Testes: 94 no total, 94 ligados a uma regra.
 | DEP-03 | Atualizar produção fora do horário de aulas e de envios (a Sofia e os avisos param durante o reinício). | 0 | — | processo |
 | DEP-04 | Atualizar (`infra/atualizar.sh`): instala a versão numa pasta nova, faz cópia do banco, aplica as migrações, troca a versão, reinicia e confere `/saude` por 30 s; se não responder, volta sozinho para a anterior. | 0 | — | processo |
 | DEP-05 | Mudança que o dono ou os professores vão notar → item no topo de `NOVIDADES` em `src/painel/novidades.js` (tela "Novidades" do painel; item `para: 'admin'` não aparece para professor). | 1 | `novidades.test.js` › DEP-05 professor não vê as novidades só de administrador; a lista vem da mais nova para a mais velha | ✅ |
-| DEP-06 | Cópia diária do banco criptografada (AES-256, chave só no servidor) às 3h30, enviada para fora do servidor (rclone, `BACKUP_REMOTO`), guardando 30 diárias + 12 mensais (`scripts/rotacao-backups.js`); teste de restauração automático no dia 1º de cada mês num banco separado (OPR-06). | 0 | `backup.test.js` › DEP-06 cópia do banco sai criptografada, com nome por data, e não abre sem a chave<br>`backup.test.js` › DEP-06 teste de restauração recria o banco num banco separado e confere migrações e histórico<br>`rotacao-backups.test.js` › DEP-06 guarda a última cópia de cada um dos 30 dias mais recentes<br>`rotacao-backups.test.js` › DEP-06 guarda a primeira cópia de cada um dos 12 meses mais recentes<br>`rotacao-backups.test.js` › DEP-06 cópia feita antes de atualizar vale 30 dias; arquivo estranho nunca é apagado | ✅ |
+| DEP-06 | Cópia diária do banco criptografada (AES-256, chave só no servidor) às 3h30, junto com os anexos da Sofia (`SOFIA_ANEXOS_DIR`, decisão do dono 25/11/2026), enviada para fora do servidor (rclone, `BACKUP_REMOTO`), guardando 30 diárias + 12 mensais (`scripts/rotacao-backups.js`); teste de restauração automático no dia 1º de cada mês num banco separado (OPR-06). | 0 | `backup.test.js` › DEP-06 SOF-10 cópia do banco (e dos anexos da Sofia) sai criptografada, com nome por data, e não abre sem a chave<br>`backup.test.js` › DEP-06 SOF-10 teste de restauração recria o banco num banco separado e confere migrações, histórico e anexos<br>`rotacao-backups.test.js` › DEP-06 guarda a última cópia de cada um dos 30 dias mais recentes<br>`rotacao-backups.test.js` › DEP-06 guarda a primeira cópia de cada um dos 12 meses mais recentes<br>`rotacao-backups.test.js` › DEP-06 cópia feita antes de atualizar vale 30 dias; arquivo estranho nunca é apagado<br>`rotacao-backups.test.js` › DEP-06 SOF-10 anexos da Sofia seguem a cópia do banco de mesmo nome | ✅ |
 | DEP-09 | Dados de demonstração (`scripts/demo.js`, e-mails `@playsquash-demo.invalid`, nomes fictícios) só entram em banco sem contatos nem aulas: o script recusa banco com dados. Nunca rodar na produção. | 1 | `demo.test.js` › DEP-09 demonstração entra em banco vazio, com nomes fictícios e e-mails .invalid, e é recusada se já houver dados | ✅ |
 | DEP-08 | O CI move a marca `estavel` para o commit da `main` quando todos os jobs passam; é ela que a homologação baixa. | 0 | — | processo |
 | DEP-07 | Hooks do Claude ligados em `.claude/settings.json`: `bloquear-segredos.js` (antes de commit/push) e `limpar-restos-teste.js` (fim da sessão). | 0 | — | processo |
@@ -140,7 +140,7 @@ Testes: 94 no total, 94 ligados a uma regra.
 | Código | Regra | Casos | Testes escritos | Cobertura |
 |---|---|---|---|---|
 | OPR-01 | WhatsApp Web (QR) em módulo isolado, trocável pela API oficial. | 1 | `whatsapp.test.js` › OPR-01 WhatsApp desconectado: nada é enviado e a mensagem continua na fila<br>`whatsapp.test.js` › OPR-01/OPR-04 cliente real: QR, conectado, envio com o número certo, só conversas individuais e religa ao cair | ✅ |
-| OPR-02 | Ritmo de envio: intervalo aleatório, limite por hora/dia, janela de campanhas, não enviar a quem está conversando. | 2 | `whatsapp.test.js` › OPR-02 com o limite por hora atingido nada sai; campanha para quem está conversando é adiada e o aviso passa na frente<br>`whatsapp.test.js` › OPR-02 limite por hora: com 40 saídas na última hora, espera a mais antiga sair da janela<br>`whatsapp.test.js` › OPR-02 campanha só na janela e nunca para quem está conversando; aviso não espera<br>`whatsapp.test.js` › OPR-02 intervalo aleatório entre mensagens fica entre o mínimo e o máximo | ✅ |
+| OPR-02 | Ritmo de envio: intervalo aleatório, limite por hora/dia, janela de campanhas, não enviar a quem está conversando. | 2 | `sofia.test.js` › OPR-02 SOF-01 nunca responde em dobro e junta mensagens seguidas numa resposta<br>`whatsapp.test.js` › OPR-02 com o limite por hora atingido nada sai; campanha para quem está conversando é adiada e o aviso passa na frente<br>`whatsapp.test.js` › OPR-02 limite por hora: com 40 saídas na última hora, espera a mais antiga sair da janela<br>`whatsapp.test.js` › OPR-02 campanha só na janela e nunca para quem está conversando; aviso não espera<br>`whatsapp.test.js` › OPR-02 intervalo aleatório entre mensagens fica entre o mínimo e o máximo | ✅ |
 | OPR-03 | 'SAIR' remove das campanhas na hora. | 1 | `whatsapp.test.js` › OPR-03 quem responde SAIR sai das campanhas na hora e recebe confirmação; campanha nova não entra<br>`whatsapp.test.js` › OPR-03 "SAIR" e variações tiram das campanhas; frase comum não | ✅ |
 | OPR-04 | Aviso ao admin quando a conexão cair. | 1 | `whatsapp.test.js` › OPR-04 painel do admin mostra o aviso quando o WhatsApp está fora do ar há mais de 10 min<br>`whatsapp.test.js` › OPR-01/OPR-04 cliente real: QR, conectado, envio com o número certo, só conversas individuais e religa ao cair<br>`whatsapp.test.js` › OPR-04 aviso ao admin só depois de 10 min fora do ar (desligado de propósito não avisa) | ✅ |
 | OPR-05 | Anonimização de contato pelo admin. | 1 | `agenda.test.js` › OPR-05 anonimizar apaga os dados pessoais e mantém aulas e histórico | ✅ |
@@ -156,17 +156,17 @@ Testes: 94 no total, 94 ligados a uma regra.
 | Código | Regra | Casos | Testes escritos | Cobertura |
 |---|---|---|---|---|
 | SOF-01 | Atender só leads novos; aluno ativo ou responsável recebe a mensagem fixa e a IA não é chamada. | 3 | `whatsapp.test.js` › SOF-01 aluno ativo e responsável recebem a mensagem fixa no máximo uma vez por dia; lead vai para a Sofia | parcial |
-| SOF-02 | Qualificar: nome, já jogou squash, adulto/kids (data de nascimento), individual/dupla, dias e período. | 1 | — | ❌ |
+| SOF-02 | Qualificar: nome, já jogou squash, adulto/kids (data de nascimento), individual/dupla, dias e período. | 1 | `sofia.test.js` › SOF-02 SOF-04 SOF-05 conversa completa: qualifica, oferece até 3 horários e marca a experimental<br>`sofia.test.js` › SOF-02 ferramentas da Sofia têm esquema fechado e nomes únicos | ✅ |
 | SOF-03 ⏳ | Quem já jogou: informar valor da experimental e chave Pix antes de marcar. | 2 | — | ❌ |
-| SOF-04 | Oferecer até 3 horários livres próximos da preferência, com o professor; sem pré-reserva. | 2 | `disponibilidade.test.js` › SOF-04 antecedência mínima de 3 h tira os horários próximos | parcial |
-| SOF-05 | Travar a vaga no banco ao escolher, criar aula e evento no Google; se a vaga foi tomada, oferecer outras. | 2 | `banco.test.js` › SOF-05 duas aulas ativas na mesma quadra e horário são recusadas pelo banco | parcial |
-| SOF-06 | 1 experimental por participante (nome + data de nascimento); exceção liberada pelo admin. | 2 | — | ❌ |
-| SOF-07 | Experimental em dupla: coletar nome e telefone do parceiro; os dois consomem a experimental; só juntos. | 1 | — | ❌ |
-| SOF-08 | Remarcação pelo lead na conversa (libera o antigo, marca o novo). | 1 | — | ❌ |
-| SOF-09 | Transbordo: pausa a IA no contato e notifica o admin; o admin devolve à Sofia manualmente. | 2 | `whatsapp.test.js` › SOF-09 conversa em atendimento humano não vai para a Sofia; número da equipe só é registrado | parcial |
-| SOF-10 | Anexos configuráveis (imagem/PDF) enviados quando pedidos. | 1 | — | ❌ |
-| SOF-11 | Lead em horário cheio entra na lista de espera. | 1 | — | ❌ |
-| SOF-12 | Registrar custo da IA por conversa e por dia. | 1 | — | ❌ |
+| SOF-04 | Oferecer até 3 horários livres próximos da preferência, com o professor; sem pré-reserva. | 2 | `disponibilidade.test.js` › SOF-04 antecedência mínima de 3 h tira os horários próximos<br>`sofia.test.js` › SOF-04 período do dia da preferência do lead | ✅ |
+| SOF-05 | Travar a vaga no banco ao escolher, criar aula e evento no Google; se a vaga foi tomada, oferecer outras. | 2 | `banco.test.js` › SOF-05 duas aulas ativas na mesma quadra e horário são recusadas pelo banco<br>`sofia.test.js` › SOF-05 vaga tomada entre a oferta e a escolha: não marca e a Sofia oferece outras | ✅ |
+| SOF-06 | 1 experimental por participante (nome + data de nascimento); exceção liberada pelo admin. | 3 | `sofia.test.js` › SOF-06 uma experimental por participante (nome sem acento + nascimento); admin libera exceção<br>`sofia.test.js` › SOF-06 SOF-08 responsável marca uma experimental para cada filho e remarca a do filho certo<br>`sofia.test.js` › SOF-06 participante identificado por nome sem acento, caixa e espaços | ✅ |
+| SOF-07 | Experimental em dupla: coletar nome e telefone do parceiro; os dois consomem a experimental; só juntos. | 1 | `sofia.test.js` › SOF-07 experimental em dupla: parceiro precisa de telefone; os dois entram na mesma aula | ✅ |
+| SOF-08 | Remarcação pelo lead na conversa (libera o antigo, marca o novo). | 1 | `sofia.test.js` › SOF-08 remarcação: libera o horário antigo e marca o novo, avisando o professor | ✅ |
+| SOF-09 | Transbordo: pausa a IA no contato e notifica o admin; o admin devolve à Sofia manualmente. | 3 | `sofia.test.js` › SOF-09 transbordo: pausa a Sofia, avisa o admin; o admin devolve pelo painel<br>`sofia.test.js` › SOF-09 IA fora do ar ou recusando: não responde besteira e avisa a equipe<br>`whatsapp.test.js` › SOF-09 conversa em atendimento humano não vai para a Sofia; número da equipe só é registrado<br>`sofia.test.js` › SOF-09 ligação com a Anthropic: pede fallback, guarda o cache e entende ferramentas e recusa | ✅ |
+| SOF-10 | Anexos configuráveis (imagem/PDF) enviados quando pedidos. | 2 | `sofia.test.js` › SOF-10 admin cadastra anexo no painel e a Sofia manda o arquivo quando pedem<br>`sofia.test.js` › SOF-10 SOF-12 tela Sofia: admin muda instruções com versão e vê o custo | ✅ |
+| SOF-11 | Lead em horário cheio entra na lista de espera. | 1 | `sofia.test.js` › SOF-11 LES-03 lead entra na lista de espera e sai dela ao marcar a experimental | ✅ |
+| SOF-12 | Registrar custo da IA por conversa e por dia. | 1 | `sofia.test.js` › SOF-12 custo da IA registrado por chamada, com tokens e valor<br>`sofia.test.js` › SOF-12 custo da IA por modelo, com cache de leitura e escrita | ✅ |
 | CNF-01 | Pedido na véspera 19h, reenvio 3 h antes, cancelamento sem resposta 90 min antes (editáveis e desligáveis). | 3 | `confirmacao.test.js` › CNF-01 experimental amanhã 18h: pedido hoje 19h, reenvio 15h, cancelamento 16h30<br>`confirmacao.test.js` › CNF-01 cancelamento desligado: nada é cancelado<br>`confirmacao.test.js` › CNF-01 véspera no 1º do mês (aula em 01/01 → pedido em 31/12) | ✅ |
 | CNF-02 | Classificar respostas livres em confirmou / não vai / dúvida (dúvida = transbordo). | 1 | — | ❌ |
 | CNF-03 | Confirmou: status e ✓ no evento. Não vai: apaga evento, libera vaga, oferece outra data. | 1 | — | ❌ |
@@ -189,7 +189,7 @@ Testes: 94 no total, 94 ligados a uma regra.
 | TST-05 | Bateria completa antes de cada PR, e o CI (`.github/workflows/ci.yml`) precisa ficar ✓. | 0 | — | processo |
 | TST-06 | "Agora" e "hoje" vêm só de `src/relogio.js`. Em teste, fixe com `NODE_ENV=test` + `PS_AGORA` (ISO) ou passe o horário como parâmetro; fora de teste `PS_AGORA` é ignorado. Datas difíceis: 1º do mês, fim de fevereiro, 1º de janeiro, domingo, virada do dia em Brasília. | 0 | `relogio.test.js` › TST-06 PS_AGORA fixa o relógio só em teste<br>`relogio.test.js` › TST-06 datas difíceis: fim de fevereiro em ano bissexto e domingo | ✅ |
 | TST-07 | Teste que cria pasta temporária usa o prefixo `ps-teste-` e apaga no fim (`finally`); restos com mais de 2 h são apagados pelo hook `limpar-restos-teste.js`. | 0 | — | processo |
-| TST-08 | Simuladores (`testes/simuladores/`) seguem a mesma interface das integrações reais; integração real nova → simulador com a mesma interface e um teste do simulador. | 0 | `simuladores.test.js` › TST-08 WhatsApp falso guarda envios, entrega recebidas e avisa desconexão<br>`simuladores.test.js` › TST-08 IA falsa responde pelo roteiro e conta as chamadas<br>`simuladores.test.js` › TST-08 Google falso cria, atualiza, apaga e simula indisponibilidade | ✅ |
+| TST-08 | Simuladores (`testes/simuladores/`) seguem a mesma interface das integrações reais; integração real nova → simulador com a mesma interface e um teste do simulador. | 0 | `simuladores.test.js` › TST-08 WhatsApp falso guarda envios, entrega recebidas e avisa desconexão<br>`simuladores.test.js` › TST-08 IA falsa responde pelo roteiro e conta as chamadas<br>`simuladores.test.js` › TST-08 Google falso cria, atualiza, apaga e simula indisponibilidade<br>`sofia.test.js` › TST-08 IA falsa pede ferramentas e lê o resultado; WhatsApp falso manda arquivo | ✅ |
 
 ### Padrão visual
 
@@ -204,4 +204,10 @@ Testes: 94 no total, 94 ligados a uma regra.
 
 ## Achados
 
-Nenhum até agora. Erro ou contradição de regra de negócio encontrado no desenvolvimento entra aqui e é mostrado ao dono.
+Erro, contradição ou lacuna de regra de negócio encontrado no desenvolvimento entra aqui e é mostrado ao dono.
+
+1. **SOF-03 (⏳ kickoff):** enquanto não houver resposta, a Sofia não fala de valor nem de Pix e marca a experimental de quem já jogou como de quem nunca jogou; o professor recebe "já jogou: combinar o pagamento". Os casos CT-005/CT-006 ficam para depois do kickoff.
+2. **Experimental não divide a quadra (interpretação, confirmar no kickoff):** a Sofia só oferece horário sem nenhuma outra aula na quadra, mesmo quando o tipo permitiria mais alunos. Experimental em dupla exige que o tipo "experimental" aceite 2 alunos (AGD-01, capacidade por tipo ⏳ kickoff).
+3. **SOF-06 com responsável:** "1 experimental por participante" permite que um responsável marque uma para cada filho (CT-012); por isso um mesmo lead pode ter mais de uma experimental marcada, e a remarcação pergunta qual.
+4. **Cópia de segurança dos anexos da Sofia:** ~~ficavam fora da cópia~~ — resolvido: o dono pediu (25/11/2026) e a cópia diária leva os anexos junto (DEP-06).
+5. **Liberação de experimental na anonimização:** a liberação guarda nome + nascimento; o dono decidiu (25/11/2026) que a anonimização apaga isso também (DAD-07).

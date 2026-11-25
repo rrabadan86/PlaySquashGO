@@ -26,7 +26,9 @@ before(async () => {
   await pool.query(`INSERT INTO historico (ator_tipo, origem, acao, entidade) VALUES ('sistema','sistema','teste.backup','teste')`);
   pasta = fs.mkdtempSync(path.join(os.tmpdir(), 'ps-teste-backup-'));
   fs.mkdirSync(path.join(pasta, 'etc'));
-  fs.writeFileSync(path.join(pasta, 'etc', 'producao.env'), `DATABASE_URL=${URL_TESTE}\nPORTA=3999\n`);
+  fs.mkdirSync(path.join(pasta, 'anexos'));
+  fs.writeFileSync(path.join(pasta, 'anexos', 'abc.pdf'), '%PDF-1.4 tabela de horarios');
+  fs.writeFileSync(path.join(pasta, 'etc', 'producao.env'), `DATABASE_URL=${URL_TESTE}\nPORTA=3999\nSOFIA_ANEXOS_DIR=${path.join(pasta, 'anexos')}\n`);
   fs.writeFileSync(path.join(pasta, 'etc', 'backup.chave'), 'chave-de-teste-'.padEnd(64, 'k'), { mode: 0o600 });
 });
 after(async () => {
@@ -39,20 +41,25 @@ const rodar = (script, args) => execFileSync('bash', [path.join(RAIZ, 'infra', s
   env: { ...process.env, PS_ETC: path.join(pasta, 'etc'), PS_BACKUPS: path.join(pasta, 'backups') },
 });
 
-test('DEP-06 cópia do banco sai criptografada, com nome por data, e não abre sem a chave', opc, () => {
+test('DEP-06 SOF-10 cópia do banco (e dos anexos da Sofia) sai criptografada, com nome por data, e não abre sem a chave', opc, () => {
   const saida = rodar('backup.sh', ['producao']);
   // duas cópias seguidas não se sobrescrevem
   rodar('backup.sh', ['producao', 'antes-de-atualizar']);
   assert.match(saida, /Cópia criada: .*producao-\d{4}-\d{2}-\d{2}_\d{6}\.dump\.gpg/);
-  const arqs = fs.readdirSync(path.join(pasta, 'backups', 'producao'));
+  const todos = fs.readdirSync(path.join(pasta, 'backups', 'producao')).sort();
+  const arqs = todos.filter(n => n.endsWith('.dump.gpg'));
   assert.equal(arqs.length, 2);
+  // SOF-10: anexos da Sofia vão junto, com o mesmo nome, também criptografados.
+  const anexos = todos.filter(n => n.endsWith('.anexos.tar.gpg'));
+  assert.deepEqual(anexos.map(n => n.replace('.anexos.tar.gpg', '')), arqs.map(n => n.replace('.dump.gpg', '')));
+  assert.ok(!fs.readFileSync(path.join(pasta, 'backups', 'producao', anexos[0])).includes(Buffer.from('tabela de horarios')), 'anexos não podem estar legíveis');
   const bruto = fs.readFileSync(path.join(pasta, 'backups', 'producao', arqs[0]));
   assert.ok(!bruto.includes(Buffer.from('teste.backup')), 'conteúdo não pode estar legível');
   assert.ok(!bruto.subarray(0, 5).equals(Buffer.from('PGDMP')), 'não pode ser um dump aberto');
   assert.throws(() => execFileSync('gpg', ['--batch', '--decrypt', '--passphrase', 'errada', path.join(pasta, 'backups', 'producao', arqs[0])], { stdio: 'pipe' }));
 });
 
-test('DEP-06 teste de restauração recria o banco num banco separado e confere migrações e histórico', opc, () => {
+test('DEP-06 SOF-10 teste de restauração recria o banco num banco separado e confere migrações, histórico e anexos', opc, () => {
   const saida = rodar('restaurar.sh', ['producao', '--teste']);
-  assert.match(saida, /Teste de restauração OK: .* \d+ migração\(ões\), 1 registro\(s\) no histórico/);
+  assert.match(saida, /Teste de restauração OK: .* \d+ migração\(ões\), 1 registro\(s\) no histórico, 1 anexo\(s\) da Sofia/);
 });

@@ -64,7 +64,7 @@ sudo -u playsquash bash -c 'set -a; . /etc/playsquash/homologacao.env; set +a; c
 sudo -u playsquash rclone config        # crie um remoto "drive" (Google Drive da Play Squash)
 ```
 Em cada `/etc/playsquash/<ambiente>.env`: `BACKUP_REMOTO=drive:playsquash-backups`.
-As cópias rodam todo dia às 3h30; no dia 1º de cada mês, um teste restaura a cópia mais recente num banco separado.
+As cópias rodam todo dia às 3h30 e levam junto as fotos e PDFs da Sofia (`SOFIA_ANEXOS_DIR`); no dia 1º de cada mês, um teste restaura a cópia mais recente num banco separado e confere os anexos.
 
 ## 6. WhatsApp da Play Squash (só na produção)
 

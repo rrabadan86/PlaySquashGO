@@ -16,16 +16,16 @@ Gerada por `npm run matriz` (não edite à mão, exceto a seção "Achados"). O 
 | App do aluno e reposição | 11 | 12 | 8 | 4 | 0 | 7 | 0 | 2 |
 | Planos e contratos | 12 | 18 | 0 | 0 | 0 | 12 | 0 | 5 |
 | Dados e segredos | 10 | 0 | 3 | 3 | 0 | 0 | 7 | 0 |
-| Publicar e atualizar | 9 | 2 | 7 | 3 | 0 | 0 | 6 | 0 |
+| Publicar e atualizar | 9 | 2 | 8 | 3 | 0 | 0 | 6 | 0 |
 | Cobrança e financeiro | 8 | 11 | 0 | 0 | 0 | 8 | 0 | 1 |
 | Indicadores | 6 | 6 | 0 | 0 | 0 | 6 | 0 | 1 |
 | WhatsApp, dados e operação | 11 | 13 | 23 | 10 | 0 | 1 | 0 | 0 |
 | Sofia, confirmação da experimental e lista de espera | 22 | 37 | 26 | 12 | 1 | 9 | 0 | 1 |
 | Testes | 8 | 0 | 9 | 3 | 0 | 0 | 5 | 0 |
 | Padrão visual | 6 | 0 | 1 | 1 | 0 | 0 | 5 | 0 |
-| **Total** | 118 | 120 | 113 | 48 | 1 | 46 | 23 | 13 |
+| **Total** | 118 | 120 | 114 | 48 | 1 | 46 | 23 | 13 |
 
-Testes: 113 no total, 113 ligados a uma regra.
+Testes: 114 no total, 114 ligados a uma regra.
 
 ## Regras
 
@@ -106,7 +106,7 @@ Testes: 113 no total, 113 ligados a uma regra.
 | DEP-03 | Atualizar produção fora do horário de aulas e de envios (a Sofia e os avisos param durante o reinício). | 0 | — | processo |
 | DEP-04 | Atualizar (`infra/atualizar.sh`): instala a versão numa pasta nova, faz cópia do banco, aplica as migrações, troca a versão, reinicia e confere `/saude` por 30 s; se não responder, volta sozinho para a anterior. | 0 | — | processo |
 | DEP-05 | Mudança que o dono ou os professores vão notar → item no topo de `NOVIDADES` em `src/painel/novidades.js` (tela "Novidades" do painel; item `para: 'admin'` não aparece para professor). | 1 | `novidades.test.js` › DEP-05 professor não vê as novidades só de administrador; a lista vem da mais nova para a mais velha | ✅ |
-| DEP-06 | Cópia diária do banco criptografada (AES-256, chave só no servidor) às 3h30, enviada para fora do servidor (rclone, `BACKUP_REMOTO`), guardando 30 diárias + 12 mensais (`scripts/rotacao-backups.js`); teste de restauração automático no dia 1º de cada mês num banco separado (OPR-06). | 0 | `backup.test.js` › DEP-06 cópia do banco sai criptografada, com nome por data, e não abre sem a chave<br>`backup.test.js` › DEP-06 teste de restauração recria o banco num banco separado e confere migrações e histórico<br>`rotacao-backups.test.js` › DEP-06 guarda a última cópia de cada um dos 30 dias mais recentes<br>`rotacao-backups.test.js` › DEP-06 guarda a primeira cópia de cada um dos 12 meses mais recentes<br>`rotacao-backups.test.js` › DEP-06 cópia feita antes de atualizar vale 30 dias; arquivo estranho nunca é apagado | ✅ |
+| DEP-06 | Cópia diária do banco criptografada (AES-256, chave só no servidor) às 3h30, junto com os anexos da Sofia (`SOFIA_ANEXOS_DIR`, decisão do dono 25/11/2026), enviada para fora do servidor (rclone, `BACKUP_REMOTO`), guardando 30 diárias + 12 mensais (`scripts/rotacao-backups.js`); teste de restauração automático no dia 1º de cada mês num banco separado (OPR-06). | 0 | `backup.test.js` › DEP-06 SOF-10 cópia do banco (e dos anexos da Sofia) sai criptografada, com nome por data, e não abre sem a chave<br>`backup.test.js` › DEP-06 SOF-10 teste de restauração recria o banco num banco separado e confere migrações, histórico e anexos<br>`rotacao-backups.test.js` › DEP-06 guarda a última cópia de cada um dos 30 dias mais recentes<br>`rotacao-backups.test.js` › DEP-06 guarda a primeira cópia de cada um dos 12 meses mais recentes<br>`rotacao-backups.test.js` › DEP-06 cópia feita antes de atualizar vale 30 dias; arquivo estranho nunca é apagado<br>`rotacao-backups.test.js` › DEP-06 SOF-10 anexos da Sofia seguem a cópia do banco de mesmo nome | ✅ |
 | DEP-09 | Dados de demonstração (`scripts/demo.js`, e-mails `@playsquash-demo.invalid`, nomes fictícios) só entram em banco sem contatos nem aulas: o script recusa banco com dados. Nunca rodar na produção. | 1 | `demo.test.js` › DEP-09 demonstração entra em banco vazio, com nomes fictícios e e-mails .invalid, e é recusada se já houver dados | ✅ |
 | DEP-08 | O CI move a marca `estavel` para o commit da `main` quando todos os jobs passam; é ela que a homologação baixa. | 0 | — | processo |
 | DEP-07 | Hooks do Claude ligados em `.claude/settings.json`: `bloquear-segredos.js` (antes de commit/push) e `limpar-restos-teste.js` (fim da sessão). | 0 | — | processo |
@@ -209,4 +209,4 @@ Erro, contradição ou lacuna de regra de negócio encontrado no desenvolvimento
 1. **SOF-03 (⏳ kickoff):** enquanto não houver resposta, a Sofia não fala de valor nem de Pix e marca a experimental de quem já jogou como de quem nunca jogou; o professor recebe "já jogou: combinar o pagamento". Os casos CT-005/CT-006 ficam para depois do kickoff.
 2. **Experimental não divide a quadra (interpretação, confirmar no kickoff):** a Sofia só oferece horário sem nenhuma outra aula na quadra, mesmo quando o tipo permitiria mais alunos. Experimental em dupla exige que o tipo "experimental" aceite 2 alunos (AGD-01, capacidade por tipo ⏳ kickoff).
 3. **SOF-06 com responsável:** "1 experimental por participante" permite que um responsável marque uma para cada filho (CT-012); por isso um mesmo lead pode ter mais de uma experimental marcada, e a remarcação pergunta qual.
-4. **Cópia de segurança dos anexos da Sofia:** os arquivos ficam em `SOFIA_ANEXOS_DIR`, fora do banco; a cópia diária (DEP-06) cobre só o banco. Como são poucos arquivos que o admin tem no computador, ficam fora da cópia por enquanto.
+4. **Cópia de segurança dos anexos da Sofia:** ~~ficavam fora da cópia~~ — resolvido: o dono pediu (25/11/2026) e a cópia diária leva os anexos junto (DEP-06).

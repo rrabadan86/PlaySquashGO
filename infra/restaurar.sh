@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Restaura uma cópia do banco (DEP-06).
+# Restaura uma cópia do banco (DEP-06) e, se houver, os anexos da Sofia da mesma cópia.
 #
 #   Teste (padrão, não mexe no sistema): restaura num banco separado "<banco>_restauro",
 #   confere que tem histórico e apaga o banco de teste no fim.
@@ -24,6 +24,7 @@ ENV_ARQ="$PS_ETC/$AMBIENTE.env"
 CHAVE="$PS_ETC/backup.chave"
 DATABASE_URL="$(grep -E '^DATABASE_URL=' "$ENV_ARQ" | cut -d= -f2-)"
 PORTA="$(grep -E '^PORTA=' "$ENV_ARQ" | cut -d= -f2- || true)"
+ANEXOS_DIR="$(grep -E '^SOFIA_ANEXOS_DIR=' "$ENV_ARQ" | cut -d= -f2- || true)"
 if [[ -z "$ARQUIVO" ]]; then
   ARQUIVO="$(find "$PS_BACKUPS/$AMBIENTE" -maxdepth 1 -name "$AMBIENTE-*.dump.gpg" | sort | tail -1)"
 fi
@@ -32,6 +33,12 @@ fi
 TMPDIR_R="$(mktemp -d -t ps-restauro-XXXX)"
 trap 'rm -rf "$TMPDIR_R"' EXIT
 gpg --batch --quiet --decrypt --passphrase-file "$CHAVE" -o "$TMPDIR_R/banco.dump" "$ARQUIVO"
+ARQ_ANEXOS="${ARQUIVO%.dump.gpg}.anexos.tar.gpg"
+TEM_ANEXOS=""
+if [[ -r "$ARQ_ANEXOS" ]]; then
+  gpg --batch --quiet --decrypt --passphrase-file "$CHAVE" -o "$TMPDIR_R/anexos.tar" "$ARQ_ANEXOS"
+  TEM_ANEXOS="$(tar -tf "$TMPDIR_R/anexos.tar" | grep -vc '/$' || true)"
+fi
 
 # Restaura via SQL, parando no primeiro erro. Ignora só os SET que um pg_dump mais novo grava e um
 # servidor mais antigo não conhece (ex.: transaction_timeout do PostgreSQL 17+), para a cópia
@@ -56,7 +63,7 @@ if [[ "$MODO" == "--teste" ]]; then
   M="$(psql -tAq "$ALVO" -c 'SELECT count(*) FROM schema_migracao')"
   psql -q "$ADMIN_URL" -c "DROP DATABASE \"$BANCO\";"
   [[ "$M" -ge 1 ]] || { echo "FALHOU: a cópia restaurada não tem as migrações." >&2; exit 1; }
-  echo "Teste de restauração OK: $(basename "$ARQUIVO") — $M migração(ões), $N registro(s) no histórico."
+  echo "Teste de restauração OK: $(basename "$ARQUIVO") — $M migração(ões), $N registro(s) no histórico${TEM_ANEXOS:+, $TEM_ANEXOS anexo(s) da Sofia}."
   exit 0
 fi
 
@@ -67,6 +74,13 @@ read -r -p "Digite RESTAURAR $AMBIENTE para continuar: " OK
 sudo -u playsquash "$RAIZ/infra/backup.sh" "$AMBIENTE" antes-de-restaurar
 systemctl stop "playsquash@$AMBIENTE"
 restaurar_sql "$DATABASE_URL" --clean --if-exists
+if [[ -n "$TEM_ANEXOS" && -n "$ANEXOS_DIR" ]]; then
+  install -d -o playsquash -g playsquash -m 700 "$ANEXOS_DIR"
+  find "$ANEXOS_DIR" -mindepth 1 -delete
+  tar -C "$ANEXOS_DIR" -xf "$TMPDIR_R/anexos.tar"
+  chown -R playsquash:playsquash "$ANEXOS_DIR"
+  echo "Anexos da Sofia restaurados ($TEM_ANEXOS arquivo(s))."
+fi
 systemctl start "playsquash@$AMBIENTE"
 sleep 3
 curl -fsS "http://127.0.0.1:${PORTA:-3000}/saude" >/dev/null && echo "Restaurado e no ar." || { echo "Restaurado, mas o painel não respondeu. Veja: journalctl -u playsquash@$AMBIENTE" >&2; exit 1; }

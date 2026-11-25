@@ -99,6 +99,9 @@ BACKUP_REMOTO=
 # WhatsApp: um número só pode estar conectado em UM ambiente — ligue só na produção (OPR-01).
 WHATSAPP_LIGADO=0
 WA_SESSAO_DIR=/srv/playsquash/$AMB/whatsapp
+# Sofia: chave da Anthropic (ANTHROPIC_API_KEY) e pasta das fotos/PDFs (entra na cópia diária).
+ANTHROPIC_API_KEY=
+SOFIA_ANEXOS_DIR=/srv/playsquash/$AMB/anexos
 EOF
     chown root:"$USUARIO" "$ARQ"; chmod 640 "$ARQ"
     echo "  $AMB: banco $BANCO criado; configuração em $ARQ"

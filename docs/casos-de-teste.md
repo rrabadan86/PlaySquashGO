@@ -120,3 +120,6 @@ Tipos: **Unitário** (regra pura, sem banco), **Integração** (banco de teste e
 | CT-112 | AGD-12 | Integração | Dada uma aula marcada, quando o admin cancela com motivo, então o evento sai do Google, o horário volta a ficar livre e o histórico guarda o motivo. |
 | CT-113 | DEP-09 | Integração | Dado um banco vazio, quando a demonstração é gerada, então há professores, quadras, grade e aulas fictícias; quando rodada de novo, é recusada sem mexer no banco. |
 | CT-114 | DEP-05 | Unidade | Dado um professor, quando abre Novidades, então não vê os itens só de administrador. |
+| CT-115 | OPR-10 | Integração | Dado um item marcado como enviando há 10 min sem confirmação (o sistema caiu), quando o envio roda, então ele não é reenviado e aparece "a conferir" para o admin. |
+| CT-116 | OPR-10 | Integração | Dado um item a conferir, quando o admin confirma ou pede reenvio na tela WhatsApp, então a mensagem é registrada ou volta para a fila, com histórico. |
+| CT-117 | OPR-11 | Unidade | Dado um número com ou sem o 9, quando normalizado, então fica com o 9 e é procurado pelas duas formas. |

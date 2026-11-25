@@ -19,13 +19,13 @@ Gerada por `npm run matriz` (não edite à mão, exceto a seção "Achados"). O 
 | Publicar e atualizar | 9 | 2 | 7 | 3 | 0 | 0 | 6 | 0 |
 | Cobrança e financeiro | 8 | 11 | 0 | 0 | 0 | 8 | 0 | 1 |
 | Indicadores | 6 | 6 | 0 | 0 | 0 | 6 | 0 | 1 |
-| WhatsApp, dados e operação | 9 | 10 | 6 | 4 | 0 | 5 | 0 | 0 |
-| Sofia, confirmação da experimental e lista de espera | 22 | 34 | 7 | 2 | 2 | 18 | 0 | 1 |
+| WhatsApp, dados e operação | 11 | 13 | 22 | 10 | 0 | 1 | 0 | 0 |
+| Sofia, confirmação da experimental e lista de espera | 22 | 34 | 9 | 2 | 4 | 16 | 0 | 1 |
 | Testes | 8 | 0 | 8 | 3 | 0 | 0 | 5 | 0 |
 | Padrão visual | 6 | 0 | 1 | 1 | 0 | 0 | 5 | 0 |
-| **Total** | 116 | 114 | 77 | 32 | 2 | 59 | 23 | 13 |
+| **Total** | 118 | 117 | 94 | 38 | 4 | 53 | 23 | 13 |
 
-Testes: 77 no total, 77 ligados a uma regra.
+Testes: 94 no total, 94 ligados a uma regra.
 
 ## Regras
 
@@ -139,21 +139,23 @@ Testes: 77 no total, 77 ligados a uma regra.
 
 | Código | Regra | Casos | Testes escritos | Cobertura |
 |---|---|---|---|---|
-| OPR-01 | WhatsApp Web (QR) em módulo isolado, trocável pela API oficial. | 1 | — | ❌ |
-| OPR-02 | Ritmo de envio: intervalo aleatório, limite por hora/dia, janela de campanhas, não enviar a quem está conversando. | 2 | — | ❌ |
-| OPR-03 | 'SAIR' remove das campanhas na hora. | 1 | — | ❌ |
-| OPR-04 | Aviso ao admin quando a conexão cair. | 1 | — | ❌ |
+| OPR-01 | WhatsApp Web (QR) em módulo isolado, trocável pela API oficial. | 1 | `whatsapp.test.js` › OPR-01 WhatsApp desconectado: nada é enviado e a mensagem continua na fila<br>`whatsapp.test.js` › OPR-01/OPR-04 cliente real: QR, conectado, envio com o número certo, só conversas individuais e religa ao cair | ✅ |
+| OPR-02 | Ritmo de envio: intervalo aleatório, limite por hora/dia, janela de campanhas, não enviar a quem está conversando. | 2 | `whatsapp.test.js` › OPR-02 com o limite por hora atingido nada sai; campanha para quem está conversando é adiada e o aviso passa na frente<br>`whatsapp.test.js` › OPR-02 limite por hora: com 40 saídas na última hora, espera a mais antiga sair da janela<br>`whatsapp.test.js` › OPR-02 campanha só na janela e nunca para quem está conversando; aviso não espera<br>`whatsapp.test.js` › OPR-02 intervalo aleatório entre mensagens fica entre o mínimo e o máximo | ✅ |
+| OPR-03 | 'SAIR' remove das campanhas na hora. | 1 | `whatsapp.test.js` › OPR-03 quem responde SAIR sai das campanhas na hora e recebe confirmação; campanha nova não entra<br>`whatsapp.test.js` › OPR-03 "SAIR" e variações tiram das campanhas; frase comum não | ✅ |
+| OPR-04 | Aviso ao admin quando a conexão cair. | 1 | `whatsapp.test.js` › OPR-04 painel do admin mostra o aviso quando o WhatsApp está fora do ar há mais de 10 min<br>`whatsapp.test.js` › OPR-01/OPR-04 cliente real: QR, conectado, envio com o número certo, só conversas individuais e religa ao cair<br>`whatsapp.test.js` › OPR-04 aviso ao admin só depois de 10 min fora do ar (desligado de propósito não avisa) | ✅ |
 | OPR-05 | Anonimização de contato pelo admin. | 1 | `agenda.test.js` › OPR-05 anonimizar apaga os dados pessoais e mantém aulas e histórico | ✅ |
 | OPR-06 | Backup diário fora do servidor; exportação Excel. | 1 | `agenda.test.js` › OPR-06 exportação para Excel só para o admin e fica registrada<br>`agenda-google.test.js` › OPR-06 exportação em CSV do Excel: ";" , acento e fórmula neutralizada | ✅ |
 | OPR-07 | Auditoria de ações e de mudanças de regra (quem, quando, antes e depois). | 1 | `banco.test.js` › OPR-07 histórico só recebe inclusões: alterar e apagar são barrados<br>`painel.test.js` › OPR-07 cada mudança no painel grava quem fez, quando, antes e depois | ✅ |
 | OPR-08 | Instância exclusiva em VPS Hostinger; fuso America/Sao_Paulo. | 1 | `relogio.test.js` › OPR-08 18h em Brasília continua 18h, qualquer que seja o fuso do servidor | ✅ |
+| OPR-10 | Envio em duas etapas: o item é marcado "enviando" e gravado no banco **antes** de mandar e "enviado" depois; se o sistema cair no meio, o item fica "a conferir" na tela WhatsApp e **nunca é reenviado sozinho** (o admin confere no celular e escolhe). Mesma mensagem nunca entra duas vezes na fila (`chave_unica`). | 2 | `whatsapp.test.js` › OPR-10 mesma mensagem não entra duas vezes; enviada fica registrada<br>`whatsapp.test.js` › OPR-10 sistema caiu no meio do envio: item fica "a conferir" e nunca é reenviado sozinho<br>`whatsapp.test.js` › OPR-10 admin resolve o "a conferir" pela tela: confirmar registra, reenviar volta para a fila | ✅ |
+| OPR-11 | Telefone guardado sempre como +55 DDD 9 número; ao receber e ao enviar, o número é procurado com e sem o 9 (contas antigas do WhatsApp). | 1 | `whatsapp.test.js` › OPR-11 mensagem de conta antiga (sem o 9) cai no mesmo contato<br>`whatsapp.test.js` › OPR-11 telefone guardado sempre com o 9 e procurado com e sem o 9 | ✅ |
 | OPR-09 | Convite a ex-alunos (30/60/90 dias) e mensagem de aniversário. | 1 | — | ❌ |
 
 ### Sofia, confirmação da experimental e lista de espera
 
 | Código | Regra | Casos | Testes escritos | Cobertura |
 |---|---|---|---|---|
-| SOF-01 | Atender só leads novos; aluno ativo ou responsável recebe a mensagem fixa e a IA não é chamada. | 3 | — | ❌ |
+| SOF-01 | Atender só leads novos; aluno ativo ou responsável recebe a mensagem fixa e a IA não é chamada. | 3 | `whatsapp.test.js` › SOF-01 aluno ativo e responsável recebem a mensagem fixa no máximo uma vez por dia; lead vai para a Sofia | parcial |
 | SOF-02 | Qualificar: nome, já jogou squash, adulto/kids (data de nascimento), individual/dupla, dias e período. | 1 | — | ❌ |
 | SOF-03 ⏳ | Quem já jogou: informar valor da experimental e chave Pix antes de marcar. | 2 | — | ❌ |
 | SOF-04 | Oferecer até 3 horários livres próximos da preferência, com o professor; sem pré-reserva. | 2 | `disponibilidade.test.js` › SOF-04 antecedência mínima de 3 h tira os horários próximos | parcial |
@@ -161,7 +163,7 @@ Testes: 77 no total, 77 ligados a uma regra.
 | SOF-06 | 1 experimental por participante (nome + data de nascimento); exceção liberada pelo admin. | 2 | — | ❌ |
 | SOF-07 | Experimental em dupla: coletar nome e telefone do parceiro; os dois consomem a experimental; só juntos. | 1 | — | ❌ |
 | SOF-08 | Remarcação pelo lead na conversa (libera o antigo, marca o novo). | 1 | — | ❌ |
-| SOF-09 | Transbordo: pausa a IA no contato e notifica o admin; o admin devolve à Sofia manualmente. | 2 | — | ❌ |
+| SOF-09 | Transbordo: pausa a IA no contato e notifica o admin; o admin devolve à Sofia manualmente. | 2 | `whatsapp.test.js` › SOF-09 conversa em atendimento humano não vai para a Sofia; número da equipe só é registrado | parcial |
 | SOF-10 | Anexos configuráveis (imagem/PDF) enviados quando pedidos. | 1 | — | ❌ |
 | SOF-11 | Lead em horário cheio entra na lista de espera. | 1 | — | ❌ |
 | SOF-12 | Registrar custo da IA por conversa e por dia. | 1 | — | ❌ |

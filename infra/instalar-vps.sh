@@ -33,6 +33,10 @@ echo "→ Pacotes"
 apt-get update -qq
 apt-get install -y -qq curl git ufw gnupg ca-certificates debian-keyring debian-archive-keyring apt-transport-https \
   postgresql-16 rclone unattended-upgrades >/dev/null
+# Bibliotecas do Chrome usado pelo WhatsApp Web (whatsapp-web.js / puppeteer).
+apt-get install -y -qq fonts-liberation libasound2t64 libatk-bridge2.0-0t64 libatk1.0-0t64 libcairo2 libcups2t64 \
+  libdbus-1-3 libdrm2 libgbm1 libglib2.0-0t64 libgtk-3-0t64 libnspr4 libnss3 libpango-1.0-0 libx11-xcb1 libxcomposite1 \
+  libxdamage1 libxfixes3 libxkbcommon0 libxrandr2 libxss1 libxtst6 >/dev/null
 if ! command -v node >/dev/null || ! node -v | grep -q '^v22\.'; then
   curl -fsSL https://deb.nodesource.com/setup_22.x | bash - >/dev/null
   apt-get install -y -qq nodejs >/dev/null
@@ -92,6 +96,9 @@ PAINEL_SEGREDO=$(segredo 64)
 GOOGLE_CONTA_SERVICO_ARQUIVO=
 # Cópias fora do servidor (rclone), ex.: drive:playsquash-backups — configure com "rclone config".
 BACKUP_REMOTO=
+# WhatsApp: um número só pode estar conectado em UM ambiente — ligue só na produção (OPR-01).
+WHATSAPP_LIGADO=0
+WA_SESSAO_DIR=/srv/playsquash/$AMB/whatsapp
 EOF
     chown root:"$USUARIO" "$ARQ"; chmod 640 "$ARQ"
     echo "  $AMB: banco $BANCO criado; configuração em $ARQ"

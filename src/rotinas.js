@@ -8,6 +8,8 @@ const { feriadosNacionais } = require('./regras/feriados');
 const { registrar } = require('./historico');
 const { processarFila } = require('./agenda/sincronizar');
 const { hojeSP } = require('./relogio');
+const { processarUm } = require('./whatsapp/envio');
+const { receberMensagem } = require('./whatsapp/recebimento');
 
 const SISTEMA = { tipo: 'sistema', id: null };
 
@@ -52,4 +54,27 @@ function iniciarRotinas({ pool, google, log = console, intervaloMs = 30000 }) {
   return { parar: () => clearInterval(t), volta };
 }
 
-module.exports = { carregarFeriados, iniciarRotinas };
+/**
+ * Laço de envio do WhatsApp (OPR-02): uma mensagem por vez, esperando o intervalo aleatório
+ * do ritmo entre elas. E o recebimento: cada mensagem que chega vai para receberMensagem;
+ * quem responde ao lead é a Sofia (aoLead, etapa 2 parte 2).
+ */
+function iniciarWhatsapp({ pool, wa, aoLead = async () => {}, log = console }) {
+  let parado = false, t = null;
+  async function volta() {
+    let espera = 5000;
+    try { espera = (await processarUm({ pool, wa, log })).esperarMs; } catch (e) { log.error(`[whatsapp] envio: ${e.message}`); }
+    if (!parado) t = setTimeout(volta, Math.max(1000, espera));
+  }
+  wa.aoReceber(async e => {
+    if (e.tipo !== 'mensagem') return;
+    try {
+      const r = await receberMensagem(pool, e);
+      if (r.acao === 'sofia') await aoLead(r, e);
+    } catch (err) { log.error(`[whatsapp] recebimento: ${err.message}`); }
+  });
+  volta();
+  return { parar: () => { parado = true; clearTimeout(t); } };
+}
+
+module.exports = { carregarFeriados, iniciarRotinas, iniciarWhatsapp };

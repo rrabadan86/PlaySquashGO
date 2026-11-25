@@ -11,7 +11,10 @@ test('TST-08 WhatsApp falso guarda envios, entrega recebidas e avisa desconexão
   await wa.enviar('+5562900000001', 'Olá');
   wa.receber('+5562900000001', 'sim');
   assert.equal(wa.para('+5562900000001').length, 1);
-  assert.deepEqual(eventos[0], { tipo: 'mensagem', de: '+5562900000001', texto: 'sim' });
+  assert.equal(eventos[0].tipo, 'mensagem');
+  assert.equal(eventos[0].de, '+5562900000001');
+  assert.equal(eventos[0].texto, 'sim');
+  assert.ok(Number.isFinite(eventos[0].em));
   wa.desconectar();
   await assert.rejects(wa.enviar('+5562900000001', 'x'), /desconectado/);
   assert.equal(eventos[1].tipo, 'desconectado');

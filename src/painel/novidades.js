@@ -7,6 +7,15 @@ const { esc, pagina } = require('./html');
 
 const NOVIDADES = [
   {
+    data: '2026-11-25', titulo: 'WhatsApp da Play Squash no painel', para: 'admin', itens: [
+      'Nova tela "WhatsApp": conecte o número lendo o QR e acompanhe tudo o que entrou e saiu.',
+      'As mensagens saem com intervalo e limites para proteger o número; campanhas só em horário comercial.',
+      'Quem responder SAIR deixa de receber campanhas na hora.',
+      'Aluno que escrever no número recebe uma mensagem pedindo para usar o app ou falar com o professor.',
+      'Se o WhatsApp cair por mais de 10 minutos, aparece um aviso no topo do painel.',
+    ],
+  },
+  {
     data: '2026-11-25', titulo: 'Google Agenda, aulas pelo painel e mais', para: 'admin', itens: [
       'Botão "+ Aula" na grade: escolha o dia e o tipo e veja só os horários livres.',
       'Cada aula da grade abre a tela dela; dá para cancelar com motivo e o horário volta a ficar livre.',

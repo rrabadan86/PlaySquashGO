@@ -18,6 +18,9 @@ const opc = { skip: !URL_TESTE ? 'sem DATABASE_URL_TESTE' : !playwright ? 'sem p
 
 // Telas do painel (TST-03): tela nova entra aqui.
 const TELAS = ['/grade?data=2026-12-01', '/aulas/nova?data=2026-12-01', '/aulas/1', '/cadastros', '/contatos', '/usuarios', '/historico', '/exportar', '/novidades', '/whatsapp', '/conversas', '/conversas/1', '/sofia', '/experimentais', '/experimentais?filtro=passadas', '/planos', '/planos?editar=1', '/alunos', '/alunos/1', '/contratos/novo?aluno=1'];
+// Telas do app do aluno (VIS-05: celular primeiro). Entram com uma sessão de app de teste.
+const TELAS_APP = ['/app/entrar', '/app/codigo?t=5562900000001', '/app', '/app/aulas/1/desmarcar', '/app/reposicoes', '/app/reposicoes/1', '/app/contratos', '/app/historico'];
+const TOKEN_APP = 'a'.repeat(64);
 const TAMANHOS = [{ nome: 'computador', width: 1366, height: 900 }, { nome: 'celular', width: 390, height: 844 }];
 
 let pool, painel, navegador, pasta;
@@ -64,6 +67,11 @@ before(async () => {
     VALUES ($1,$2,'{}','{}','2026-11-01','2027-01-31',320,20,'Irmã também treina','parcelado',3,10,'ativo') RETURNING id`, [al, pl])).rows[0].id;
   await pool.query(`INSERT INTO horario_fixo (contrato_id, quadra_id, dia_semana, hora, desde) VALUES ($1,$2,2,'16:00','2026-11-01')`, [k, q1]);
   await pool.query(`UPDATE aula_participante SET contrato_id = $1 WHERE contato_id = $2`, [k, ct]);
+  // Sessão do app para a Ana (o token de teste é conhecido; só o hash vai para o banco).
+  await pool.query(`INSERT INTO app_sessao (telefone, token_hash, aluno_id) VALUES ('+5562900000001', encode(sha256($1::bytea),'hex'), $2)`, [TOKEN_APP, al]);
+  const futura = (await pool.query(`INSERT INTO aula (quadra_id, professor_id, tipo_aula_id, periodo, origem) VALUES ($1,$2,$3,tstzrange(now() + interval '3 days', now() + interval '3 days 1 hour'),'fixa') RETURNING id`, [q1, g, t])).rows[0].id;
+  await pool.query('INSERT INTO aula_participante (aula_id, contato_id, contrato_id) VALUES ($1,$2,$3)', [futura, ct, k]);
+  await pool.query(`INSERT INTO credito_reposicao (aluno_id, contrato_id, aula_origem_id, motivo, valido_ate) VALUES ($1,$2,$3,'aluno', current_date + 5)`, [al, k, a]);
   painel = await subirPainel(pool);
   navegador = await playwright.chromium.launch();
   pasta = fs.mkdtempSync(path.join(os.tmpdir(), 'ps-telas-'));
@@ -95,6 +103,32 @@ for (const tam of TAMANHOS) {
       assert.doesNotMatch(texto, /\((?:[A-Z]{3}-\d{2}[a-z]?)(?:[,/ ][^)]*)?\)/, `${tela}: código interno de regra aparecendo na tela`);
       assert.ok(largura <= janela, `${tela}: rolagem lateral (${largura} > ${janela})`);
       await pag.screenshot({ path: path.join(pasta, `${tam.nome}${tela.replace(/[/?=]/g, '_')}.png`), fullPage: true });
+    }
+    assert.deepEqual(errosJs, []);
+    await ctx.close();
+  });
+}
+
+for (const tam of TAMANHOS) {
+  test(`VIS-05 VIS-06 app do aluno no ${tam.nome} (${tam.width} px): sem erro, sem rolagem lateral, abas embaixo`, opc, async () => {
+    const ctx = await navegador.newContext({ viewport: { width: tam.width, height: tam.height }, locale: 'pt-BR', timezoneId: 'America/Sao_Paulo' });
+    await ctx.addCookies([{ name: 'ps_app', value: TOKEN_APP, url: painel.base + '/app' }]);
+    const pag = await ctx.newPage();
+    const errosJs = [];
+    pag.on('pageerror', e => errosJs.push(e.message));
+    for (const tela of TELAS_APP) {
+      const r = await pag.goto(painel.base + tela);
+      assert.equal(r.status(), 200, tela);
+      const { texto, largura, janela, abas, manifesto } = await pag.evaluate(() => ({
+        texto: document.body.innerText, largura: document.documentElement.scrollWidth, janela: window.innerWidth,
+        abas: document.querySelectorAll('nav.abas a').length, manifesto: !!document.querySelector('link[rel=manifest]'),
+      }));
+      assert.doesNotMatch(texto, /\bundefined\b|\bNaN\b|\bnull\b/, `${tela}: texto quebrado`);
+      assert.doesNotMatch(texto, /\((?:[A-Z]{3}-\d{2}[a-z]?)(?:[,/ ][^)]*)?\)/, `${tela}: código interno de regra aparecendo na tela`);
+      assert.ok(largura <= janela, `${tela}: rolagem lateral (${largura} > ${janela})`);
+      assert.ok(manifesto, `${tela}: sem manifesto (APP-01)`);
+      if (!tela.startsWith('/app/entrar') && !tela.startsWith('/app/codigo')) assert.equal(abas, 4, `${tela}: abas`);
+      await pag.screenshot({ path: path.join(pasta, `app-${tam.nome}${tela.replace(/[/?=]/g, '_')}.png`), fullPage: true });
     }
     assert.deepEqual(errosJs, []);
     await ctx.close();

@@ -14,6 +14,7 @@ const { processarUm } = require('./whatsapp/envio');
 const { receberMensagem } = require('./whatsapp/recebimento');
 const { processarConfirmacoes, processarPosAula } = require('./sofia/confirmacao');
 const { gerarAulasFixas } = require('./agenda/aulas-fixas');
+const { vencerCreditos } = require('./agenda/reposicao');
 
 const SISTEMA = { tipo: 'sistema', id: null };
 
@@ -44,6 +45,8 @@ function iniciarRotinas({ pool, google, log = console, intervaloMs = 30000 }) {
         const ano = Number(hoje.slice(0, 4));
         const n = await tx(pool, async c => (await carregarFeriados(c, ano)) + (await carregarFeriados(c, ano + 1)));
         if (n) log.log(`[rotinas] ${n} feriado(s) nacional(is) carregado(s).`);
+        const vencidos = await tx(pool, c => vencerCreditos(c)); // REP-03
+        if (vencidos) log.log(`[rotinas] ${vencidos} crédito(s) de reposição vencido(s).`);
         const fixas = await gerarAulasFixas({ pool, log });
         if (fixas) log.log(`[rotinas] ${fixas} aula(s) fixa(s) gerada(s).`);
         ultimoDiaFeriados = hoje;

@@ -133,3 +133,6 @@ Tipos: **Unitário** (regra pura, sem banco), **Integração** (banco de teste e
 | CT-125 | AGD-05 | Integração | Dado um horário fixo individual já contratado, quando outro aluno tenta o mesmo horário, então ele não aparece e o salvamento é recusado; na dupla, os dois contratos dividem a mesma aula. |
 | CT-126 | AGD-07 | Integração | Dada uma faixa com aulas futuras, quando o admin troca o professor, então as aulas futuras daquela faixa passam para o novo professor e vão para o Google. |
 | CT-127 | CON-10 | Integração | Dado um contrato encerrado, quando o admin abre um novo contrato para outro aluno, então o horário liberado aparece de novo. |
+| CT-128 | APP-01 | Integração | Dado um telefone que não é de aluno, quando pede o código, então a tela é a mesma e nada é enviado; dado o 4º pedido na mesma hora, nenhum código novo é criado. |
+| CT-129 | APP-01 | Integração | Dado um código, quando erra 5 vezes, então o código deixa de valer e é preciso pedir outro. |
+| CT-130 | REP-05 | Integração | Dado um crédito de aluno de dupla, quando ele tenta usar, então o app explica que a regra será combinada (⏳ kickoff). |

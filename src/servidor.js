@@ -16,6 +16,7 @@ const { ROTAS_WHATSAPP } = require('./painel/rotas-whatsapp');
 const { ROTAS_SOFIA } = require('./painel/rotas-sofia');
 const { ROTAS_EXPERIMENTAIS } = require('./painel/rotas-experimentais');
 const { ROTAS_CONTRATOS } = require('./painel/rotas-contratos');
+const { ROTAS_APP } = require('./app/rotas');
 const { paginaErro } = require('./painel/html');
 
 const LIMITE = 100 * 1024;
@@ -83,7 +84,7 @@ function mesmaOrigem(req) {
 
 function criarServidor({ pool, segredo, googleConfigurado = false, log = console }) {
   if (!segredo || segredo.length < 32) throw new Error('PAINEL_SEGREDO precisa de pelo menos 32 caracteres.');
-  const rotas = compilar([...ROTAS, ...ROTAS_AULAS, ...ROTAS_NOVIDADES, ...ROTAS_WHATSAPP, ...ROTAS_SOFIA, ...ROTAS_EXPERIMENTAIS, ...ROTAS_CONTRATOS]);
+  const rotas = compilar([...ROTAS, ...ROTAS_AULAS, ...ROTAS_NOVIDADES, ...ROTAS_WHATSAPP, ...ROTAS_SOFIA, ...ROTAS_EXPERIMENTAIS, ...ROTAS_CONTRATOS, ...ROTAS_APP]);
 
   return http.createServer(async (req, res) => {
     const url = new URL(req.url, 'http://local');
@@ -108,16 +109,17 @@ function criarServidor({ pool, segredo, googleConfigurado = false, log = console
       if (req.method === 'POST' && !mesmaOrigem(req)) return enviar(403, 'text/html; charset=utf-8', paginaErro(403, 'Envio recusado (origem desconhecida).'));
 
       const usuario = await sessao.usuarioDaReq(pool, segredo, req);
-      if (rota.login && !usuario) {
+      // login: true = painel; false = tela de entrar do painel; 'app' = app do aluno (sessão própria, src/app/sessao.js).
+      if (rota.login === true && !usuario) {
         if (req.method === 'GET') { res.writeHead(302, { Location: '/login' }); return res.end(); }
         return enviar(401, 'text/html; charset=utf-8', paginaErro(403, 'Entre de novo no painel.'));
       }
-      if (!rota.login && usuario && req.method === 'GET') { res.writeHead(302, { Location: '/grade' }); return res.end(); }
+      if (rota.login === false && usuario && req.method === 'GET') { res.writeHead(302, { Location: '/grade' }); return res.end(); }
 
       const corpo = req.method === 'POST' ? await lerCorpo(req) : {};
       const ip = String(req.headers['x-forwarded-for'] || '').split(',')[0].trim() || req.socket.remoteAddress;
       const ctx = {
-        pool, segredo, usuario, corpo, params, https, ip, googleConfigurado, res, enviar,
+        pool, segredo, usuario, corpo, params, https, ip, googleConfigurado, req, res, enviar,
         query: Object.fromEntries(url.searchParams),
         html: (status, h) => enviar(status, 'text/html; charset=utf-8', h),
         redirecionar: (loc, extras = {}) => { res.writeHead(303, { Location: loc, 'Cache-Control': 'no-store', ...extras }); res.end(); },

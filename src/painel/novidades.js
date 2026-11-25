@@ -7,6 +7,16 @@ const { esc, pagina } = require('./html');
 
 const NOVIDADES = [
   {
+    data: '2026-11-25', titulo: 'App do aluno', para: 'admin', itens: [
+      'Os alunos entram em /app com o WhatsApp cadastrado: chega um código de 6 números e o app fica logado no celular (dá para instalar na tela inicial).',
+      'Quem é responsável por mais de um aluno troca o aluno no topo da tela.',
+      'Abas: Minhas aulas, Reposições, Contratos e Histórico.',
+      'Desmarcar com 3 horas ou mais dá um crédito válido por 7 dias depois da aula; com menos, conta como dada. O professor recebe o aviso.',
+      'O crédito é usado em um horário livre do mesmo tipo de aula, dentro da validade. A reposição de aluno de dupla e o limite por mês ficam para o kickoff.',
+      'O aluno aceita o contrato no app (fica registrado com data e hora).',
+    ],
+  },
+  {
     data: '2026-11-25', titulo: 'Planos, alunos e contratos', para: 'admin', itens: [
       'Nova tela "Planos": crie, edite e duplique planos. Mudar um plano vale só para contratos novos.',
       'Nova tela "Alunos": cadastro (com responsável para kids), ficha com contratos, horários e próximas aulas.',

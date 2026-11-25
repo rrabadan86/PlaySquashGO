@@ -13,8 +13,8 @@ Gerada por `npm run matriz` (não edite à mão, exceto a seção "Achados"). O 
 | Área | Regras | Casos planejados | Testes escritos | ✅ | parcial | ❌ | processo | ⏳ kickoff |
 |---|---|---|---|---|---|---|---|---|
 | Agenda, grade, Google Agenda e perfis | 15 | 23 | 41 | 13 | 0 | 2 | 0 | 3 |
-| App do aluno e reposição | 11 | 12 | 8 | 4 | 0 | 7 | 0 | 2 |
-| Planos e contratos | 12 | 20 | 5 | 1 | 3 | 8 | 0 | 5 |
+| App do aluno e reposição | 11 | 15 | 15 | 6 | 1 | 4 | 0 | 2 |
+| Planos e contratos | 12 | 20 | 6 | 2 | 3 | 7 | 0 | 5 |
 | Dados e segredos | 10 | 0 | 4 | 4 | 0 | 0 | 6 | 0 |
 | Publicar e atualizar | 9 | 2 | 8 | 3 | 0 | 0 | 6 | 0 |
 | Cobrança e financeiro | 8 | 11 | 0 | 0 | 0 | 8 | 0 | 1 |
@@ -22,10 +22,10 @@ Gerada por `npm run matriz` (não edite à mão, exceto a seção "Achados"). O 
 | WhatsApp, dados e operação | 11 | 13 | 23 | 10 | 0 | 1 | 0 | 0 |
 | Sofia, confirmação da experimental e lista de espera | 22 | 40 | 33 | 14 | 2 | 6 | 0 | 1 |
 | Testes | 8 | 0 | 9 | 3 | 0 | 0 | 5 | 0 |
-| Padrão visual | 6 | 0 | 1 | 1 | 0 | 0 | 5 | 0 |
-| **Total** | 118 | 127 | 131 | 53 | 5 | 38 | 22 | 13 |
+| Padrão visual | 6 | 0 | 2 | 2 | 0 | 0 | 4 | 0 |
+| **Total** | 118 | 130 | 140 | 57 | 6 | 34 | 21 | 13 |
 
-Testes: 131 no total, 131 ligados a uma regra.
+Testes: 140 no total, 140 ligados a uma regra.
 
 ## Regras
 
@@ -53,15 +53,15 @@ Testes: 131 no total, 131 ligados a uma regra.
 
 | Código | Regra | Casos | Testes escritos | Cobertura |
 |---|---|---|---|---|
-| APP-01 | PWA instalável; login por código de uso único no WhatsApp; sessão longa. | 2 | — | ❌ |
-| APP-02 | Um telefone ligado a vários alunos; seletor de aluno. | 1 | — | ❌ |
+| APP-01 | PWA instalável; login por código de uso único no WhatsApp; sessão longa. | 4 | `app.test.js` › APP-01 código de uso único pelo WhatsApp: vale uma vez, vence, limita tentativas e não revela quem é aluno<br>`app.test.js` › APP-01 app instalável: manifesto, service worker e ícones | parcial |
+| APP-02 | Um telefone ligado a vários alunos; seletor de aluno. | 1 | `app.test.js` › APP-02 responsável com dois filhos troca o aluno no seletor e vê as aulas de cada um | ✅ |
 | APP-03 | Telas: Minhas aulas, Reposições, Meus contratos, Histórico. | 1 | — | ❌ |
 | APP-04 | Contrato em atraso bloqueado: aulas daquele contrato só leitura, com aviso e Pix. | 1 | — | ❌ |
-| REP-01 | Desmarcar com antecedência ≥ parâmetro (3 h): cancela, libera vaga, gera crédito. | 1 | `reposicao.test.js` › REP-01 desmarcar com exatamente 3 h de antecedência gera crédito | ✅ |
-| REP-02 | Menos que o parâmetro ou falta: conta como dada, sem crédito, sem exceção. | 1 | `reposicao.test.js` › REP-02 desmarcar com 2h59 conta como dada e não gera crédito<br>`reposicao.test.js` › REP-02 aula que já começou não gera crédito | ✅ |
+| REP-01 | Desmarcar com antecedência ≥ parâmetro (3 h): cancela, libera vaga, gera crédito. | 1 | `app.test.js` › REP-01 REP-03 REP-07 desmarcar com 3 h ou mais gera crédito até a data da aula + 7 dias e avisa o professor<br>`reposicao.test.js` › REP-01 desmarcar com exatamente 3 h de antecedência gera crédito | ✅ |
+| REP-02 | Menos que o parâmetro ou falta: conta como dada, sem crédito, sem exceção. | 1 | `app.test.js` › REP-02 desmarcar com menos de 3 h conta como dada e não gera crédito<br>`reposicao.test.js` › REP-02 desmarcar com 2h59 conta como dada e não gera crédito<br>`reposicao.test.js` › REP-02 aula que já começou não gera crédito | ✅ |
 | REP-03 | Validade = data da aula desmarcada + 7 dias (editável). | 1 | `reposicao.test.js` › REP-03 validade conta da data da aula desmarcada, não do dia da desmarcação<br>`reposicao.test.js` › REP-03 validade atravessa a virada do ano e respeita o dia em Brasília<br>`reposicao.test.js` › REP-03 validade editável (10 dias) | ✅ |
 | REP-04 | Reposição desmarcada não gera novo crédito. | 1 | `banco.test.js` › REP-04 um só crédito por desmarcação (banco recusa o segundo)<br>`reposicao.test.js` › REP-04 desmarcar a própria reposição no prazo não gera novo crédito | ✅ |
-| REP-05 ⏳ | Reposição só em horário livre do mesmo tipo do contrato. | 1 | — | ❌ |
+| REP-05 ⏳ | Reposição só em horário livre do mesmo tipo do contrato. | 2 | `app.test.js` › REP-05 REP-04 crédito usado só em horário livre do mesmo tipo e na validade; reposição desmarcada não gera crédito<br>`app.test.js` › REP-05 reposição de aluno de dupla fica para o kickoff; REP-03 crédito vencido some da tela | ✅ |
 | REP-06 ⏳ | Limite de reposições por mês. | 1 | — | ❌ |
 | REP-07 | Professor avisado de cada desmarcação e reposição. | 1 | — | ❌ |
 
@@ -76,7 +76,7 @@ Testes: 131 no total, 131 ligados a uma regra.
 | CON-04 | Aluno com vários contratos ativos. | 1 | — | ❌ |
 | CON-05 ⏳ | Dupla: dois contratos no mesmo horário; desmarcação independente. | 1 | — | ❌ |
 | CON-06 | Kids: modelo próprio; responsável recebe as mensagens. | 1 | — | ❌ |
-| CON-07 ⏳ | Aceite no app com data e hora; texto do contrato definido pelo admin. | 1 | — | ❌ |
+| CON-07 ⏳ | Aceite no app com data e hora; texto do contrato definido pelo admin. | 1 | `app.test.js` › CON-07 APP-03 aluno vê contrato, horários e aceita com data e hora; histórico e telas do app | ✅ |
 | CON-08 | Renovação assistida: detectar contrato anterior e pré-preencher horário e dados. | 1 | `contratos.test.js` › CON-08 renovação: novo contrato traz plano, valor e horários do anterior | ✅ |
 | CON-09 | Aviso de fim de vigência ao admin e ao aluno (10 dias); sem renovação, horário liberado. | 2 | — | ❌ |
 | CON-10 ⏳ | Encerramento só pelo admin, com motivo; horário liberado na hora. | 2 | `contratos.test.js` › CON-10 encerramento libera o horário na hora e tira o aluno das próximas aulas | parcial |
@@ -199,7 +199,7 @@ Testes: 131 no total, 131 ligados a uma regra.
 | VIS-02 | Situação sempre com cor **e** texto (nunca só cor): ok `#E3F5EE`/`#047857`, atenção `#FFF3DF`/`#A35F00`, problema `#FDE8E8`/`#B42318`, informação `#E8EEFC`/`#3651A8`. | 0 | — | processo |
 | VIS-03 | Fonte Inter; títulos 600; números grandes em 25 px/600; legenda 12 px suave. | 0 | — | processo |
 | VIS-04 | Painel: menu lateral escuro com grupos (Sofia, Agenda, Alunos, Financeiro, Indicadores), barra superior branca com título e ações à direita, conteúdo em cartões brancos com borda `#E3E9E6` e canto 12 px. | 0 | — | processo |
-| VIS-05 | App do aluno e do professor: celular primeiro (390 px), cabeçalho com saudação + título, cartões de 14 px de canto, barra de abas embaixo, botões de ação curtos ("Desmarcar", "Usar"). | 0 | — | processo |
+| VIS-05 | App do aluno e do professor: celular primeiro (390 px), cabeçalho com saudação + título, cartões de 14 px de canto, barra de abas embaixo, botões de ação curtos ("Desmarcar", "Usar"). | 0 | `telas.test.js` › VIS-05 VIS-06 app do aluno no ${tam.nome} (${tam.width} px): sem erro, sem rolagem lateral, abas embaixo | ✅ |
 | VIS-06 | Toda tela funciona em 1366 px e 390 px sem rolagem lateral (TST-03). | 0 | `telas.test.js` › VIS-06 telas do painel no ${tam.nome} (${tam.width} px): sem erro, sem rolagem lateral, sem "undefined" | ✅ |
 
 ## Achados
@@ -213,3 +213,4 @@ Erro, contradição ou lacuna de regra de negócio encontrado no desenvolvimento
 5. **Liberação de experimental na anonimização:** a liberação guarda nome + nascimento; o dono decidiu (25/11/2026) que a anonimização apaga isso também (DAD-07).
 6. **Ordem das etapas (decisão do dono, 25/11/2026):** a parte básica de planos e contratos (CON-01, CON-01a, CON-02, CON-04, CON-06, CON-08, CON-10 sem multa) foi antecipada para a etapa 3, porque o app do aluno depende das aulas fixas. Cobrança, régua, bloqueio e as partes ⏳ kickoff de contrato continuam na etapa 4.
 7. **Fim da vigência:** o contrato vai até a véspera do mesmo dia N meses depois (01/12 + 3 meses → 28/02). Confirmar no kickoff junto com o proporcional (CON-03).
+8. **App do aluno (pendências de kickoff):** reposição de aluno de dupla (REP-05) fica bloqueada com aviso; o limite de reposições por mês (REP-06) não é aplicado; o aceite do contrato (CON-07) mostra o resumo do contrato até o texto do modelo ser definido. Aluno com crédito na lista de espera (LES-01) entra na parte 3.

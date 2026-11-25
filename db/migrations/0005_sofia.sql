@@ -8,12 +8,14 @@ CREATE INDEX aula_marcada_por ON aula (marcada_por_contato_id) WHERE marcada_por
 -- SOF-06: 1 experimental por participante (nome + data de nascimento); exceção liberada pelo admin.
 CREATE TABLE experimental_liberacao (
   id               bigserial PRIMARY KEY,
-  nome_chave       text NOT NULL,                 -- nome sem acento, minúsculo, espaços simples
-  data_nascimento  date NOT NULL,
+  nome_chave       text,                          -- nome sem acento, minúsculo, espaços simples
+  data_nascimento  date,
+  anonimizado_em   timestamptz,                   -- OPR-05/DAD-07: apagado junto com o contato
   liberado_por     bigint NOT NULL REFERENCES usuario(id),
   motivo           text NOT NULL,
   usada_aula_id    bigint REFERENCES aula(id),
-  criado_em        timestamptz NOT NULL DEFAULT now()
+  criado_em        timestamptz NOT NULL DEFAULT now(),
+  CHECK ((anonimizado_em IS NULL) = (nome_chave IS NOT NULL AND data_nascimento IS NOT NULL))
 );
 CREATE TRIGGER experimental_liberacao_sem_apagar BEFORE DELETE ON experimental_liberacao FOR EACH ROW EXECUTE FUNCTION trava_sem_apagar();
 

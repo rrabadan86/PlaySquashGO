@@ -8,6 +8,7 @@ const { tx } = require('../db');
 const { registrar, atorDoUsuario } = require('../historico');
 const { pode } = require('../regras/permissoes');
 const { livresDoDia } = require('../agenda/livres');
+const { chaveNome } = require('../sofia/texto');
 const { hojeSP, dataSP } = require('../relogio');
 const fila = require('../agenda/fila');
 const { carregarFeriados } = require('../rotinas');
@@ -162,12 +163,20 @@ ${rows.map(c => `<tr><td>${c.anonimizado_em ? '<span class="muted">(anonimizado)
 const postAnonimizar = mudanca('contatos.anonimizar', '/contatos', async (ctx, c, ator) => {
   const cid = id(ctx.params.id);
   const motivo = String(ctx.corpo.motivo || '').trim() || falha('Informe o motivo.');
-  const r = await c.query(
+  const ct = (await c.query(`SELECT nome, to_char(data_nascimento,'YYYY-MM-DD') nasc FROM contato WHERE id = $1 AND anonimizado_em IS NULL FOR UPDATE`, [cid])).rows[0];
+  if (!ct) falha('Contato não encontrado ou já anonimizado.');
+  await c.query(
     `UPDATE contato SET nome = NULL, telefone = NULL, email = NULL, data_nascimento = NULL, sem_campanha = true, anonimizado_em = now()
-      WHERE id = $1 AND anonimizado_em IS NULL`, [cid]);
-  if (!r.rowCount) falha('Contato não encontrado ou já anonimizado.');
+      WHERE id = $1`, [cid]);
+  // Liberação de experimental (SOF-06) guarda nome + nascimento: some junto (decisão do dono, 25/11/2026).
+  let liberacoes = 0;
+  if (ct.nome && ct.nasc) {
+    liberacoes = (await c.query(
+      `UPDATE experimental_liberacao SET nome_chave = NULL, data_nascimento = NULL, anonimizado_em = now()
+        WHERE nome_chave = $1 AND data_nascimento = $2 AND anonimizado_em IS NULL`, [chaveNome(ct.nome), ct.nasc])).rowCount;
+  }
   // DAD-07: o histórico não guarda os dados apagados, só quais campos foram apagados.
-  await registrar(c, { ator, acao: 'contato.anonimizado', entidade: 'contato', entidadeId: cid, depois: { campos: ['nome', 'telefone', 'email', 'data_nascimento'] }, motivo: motivo.slice(0, 120) });
+  await registrar(c, { ator, acao: 'contato.anonimizado', entidade: 'contato', entidadeId: cid, depois: { campos: ['nome', 'telefone', 'email', 'data_nascimento'], liberacoes_experimental: liberacoes }, motivo: motivo.slice(0, 120) });
   return 'Contato anonimizado.';
 });
 

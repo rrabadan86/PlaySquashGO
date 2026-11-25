@@ -15,7 +15,7 @@ Gerada por `npm run matriz` (não edite à mão, exceto a seção "Achados"). O 
 | Agenda, grade, Google Agenda e perfis | 15 | 21 | 37 | 12 | 0 | 3 | 0 | 3 |
 | App do aluno e reposição | 11 | 12 | 8 | 4 | 0 | 7 | 0 | 2 |
 | Planos e contratos | 12 | 18 | 0 | 0 | 0 | 12 | 0 | 5 |
-| Dados e segredos | 10 | 0 | 3 | 3 | 0 | 0 | 7 | 0 |
+| Dados e segredos | 10 | 0 | 4 | 4 | 0 | 0 | 6 | 0 |
 | Publicar e atualizar | 9 | 2 | 8 | 3 | 0 | 0 | 6 | 0 |
 | Cobrança e financeiro | 8 | 11 | 0 | 0 | 0 | 8 | 0 | 1 |
 | Indicadores | 6 | 6 | 0 | 0 | 0 | 6 | 0 | 1 |
@@ -23,9 +23,9 @@ Gerada por `npm run matriz` (não edite à mão, exceto a seção "Achados"). O 
 | Sofia, confirmação da experimental e lista de espera | 22 | 37 | 26 | 12 | 1 | 9 | 0 | 1 |
 | Testes | 8 | 0 | 9 | 3 | 0 | 0 | 5 | 0 |
 | Padrão visual | 6 | 0 | 1 | 1 | 0 | 0 | 5 | 0 |
-| **Total** | 118 | 120 | 114 | 48 | 1 | 46 | 23 | 13 |
+| **Total** | 118 | 120 | 115 | 49 | 1 | 46 | 22 | 13 |
 
-Testes: 114 no total, 114 ligados a uma regra.
+Testes: 115 no total, 115 ligados a uma regra.
 
 ## Regras
 
@@ -92,7 +92,7 @@ Testes: 114 no total, 114 ligados a uma regra.
 | DAD-04 | A tabela `historico` só recebe inclusões: `UPDATE` e `DELETE` são barrados por trava no banco. Toda ação de usuário, Sofia ou sistema grava quem, por onde, quando, o quê, antes/depois e o motivo (OPR-07). | 0 | — | processo |
 | DAD-05 | Contrato guarda um retrato do plano e das regras do momento (`plano_retrato`, `regras_retrato`): mudar plano ou regra nunca altera o passado (CON-01a). | 0 | — | processo |
 | DAD-06 | Regras configuráveis mudam por nova versão com data (`regra_config`), nunca editando a versão antiga. | 0 | `banco.test.js` › DAD-06 regra configurável muda por nova versão, nunca editando a antiga | ✅ |
-| DAD-07 | Anonimização (OPR-05) apaga nome, telefone, e-mail e data de nascimento do contato e marca `anonimizado_em`; IDs, aulas e parcelas continuam. Por isso o histórico guarda **IDs, não dados pessoais** (nome, telefone, e-mail) de alunos e leads. | 0 | — | processo |
+| DAD-07 | Anonimização (OPR-05) apaga nome, telefone, e-mail e data de nascimento do contato e marca `anonimizado_em`; apaga também o nome e o nascimento das liberações de experimental dessa pessoa (SOF-06, decisão do dono 25/11/2026); IDs, aulas e parcelas continuam. Por isso o histórico guarda **IDs, não dados pessoais** (nome, telefone, e-mail) de alunos e leads. | 0 | `sofia.test.js` › DAD-07 OPR-05 anonimizar o contato apaga também o nome e o nascimento da liberação de experimental | ✅ |
 | DAD-08 | Mudança de banco só por migração nova em `db/migrations/` (número seguinte), aplicada primeiro na homologação; nunca editar migração já aplicada. | 0 | `banco.test.js` › DAD-08 migrações aplicam do zero e não reaplicam | ✅ |
 | DAD-10 | A chave da conta de serviço do Google fica num arquivo fora do repositório (`GOOGLE_CONTA_SERVICO_ARQUIVO`), legível só pelo usuário do sistema. | 0 | — | processo |
 | DAD-09 | Dados da Play Squash (alunos, conversas, comprovantes) nunca vão para serviço de terceiros além dos combinados (Anthropic para a Sofia, Google Agenda, WhatsApp). | 0 | — | processo |
@@ -210,3 +210,4 @@ Erro, contradição ou lacuna de regra de negócio encontrado no desenvolvimento
 2. **Experimental não divide a quadra (interpretação, confirmar no kickoff):** a Sofia só oferece horário sem nenhuma outra aula na quadra, mesmo quando o tipo permitiria mais alunos. Experimental em dupla exige que o tipo "experimental" aceite 2 alunos (AGD-01, capacidade por tipo ⏳ kickoff).
 3. **SOF-06 com responsável:** "1 experimental por participante" permite que um responsável marque uma para cada filho (CT-012); por isso um mesmo lead pode ter mais de uma experimental marcada, e a remarcação pergunta qual.
 4. **Cópia de segurança dos anexos da Sofia:** ~~ficavam fora da cópia~~ — resolvido: o dono pediu (25/11/2026) e a cópia diária leva os anexos junto (DEP-06).
+5. **Liberação de experimental na anonimização:** a liberação guarda nome + nascimento; o dono decidiu (25/11/2026) que a anonimização apaga isso também (DAD-07).

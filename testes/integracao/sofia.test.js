@@ -159,6 +159,30 @@ test('SOF-06 uma experimental por participante (nome sem acento + nascimento); a
   assert.equal((await um(`SELECT count(*)::int n FROM historico WHERE acao = 'experimental.liberada'`)).n, 1);
 });
 
+test('DAD-07 OPR-05 anonimizar o contato apaga também o nome e o nascimento da liberação de experimental', opc, async () => {
+  const tel = novoTel();
+  await falar(tel, 'oi', criarIaFalsa(verEMarcar([{ nome: 'Íris Apagar', data_nascimento: '1970-10-10', eh_quem_conversa: true }])));
+  const ct = await um('SELECT id FROM contato WHERE telefone = $1', [tel]);
+  const conv = await um('SELECT id FROM conversa WHERE contato_id = $1', [ct.id]);
+  const painel = await subirPainel(pool);
+  try {
+    const adm = cliente(painel.base);
+    await adm.entrar('adm-sofia@teste.local');
+    await adm.post(`/conversas/${conv.id}/liberar`, { nome: 'Iris Apagar', nascimento: '1970-10-10', motivo: 'teste' });
+    await adm.post(`/conversas/${conv.id}/liberar`, { nome: 'Outra Pessoa', nascimento: '1970-10-10', motivo: 'teste' });
+    const r = await adm.post(`/contatos/${ct.id}/anonimizar`, { motivo: 'pedido do titular' });
+    assert.match(decodeURIComponent(r.local), /anonimizado/);
+  } finally { await painel.fechar(); }
+  const libs = await todos(`SELECT nome_chave, data_nascimento, anonimizado_em FROM experimental_liberacao WHERE motivo = 'teste' ORDER BY id`);
+  assert.equal(libs[0].nome_chave, null);
+  assert.equal(libs[0].data_nascimento, null);
+  assert.ok(libs[0].anonimizado_em);
+  assert.equal(libs[1].nome_chave, 'outra pessoa', 'liberação de outra pessoa não muda');
+  const h = await um(`SELECT depois FROM historico WHERE acao = 'contato.anonimizado' AND entidade_id = $1`, [ct.id]);
+  assert.equal(h.depois.liberacoes_experimental, 1);
+  assert.doesNotMatch(JSON.stringify(h.depois), /iris/i);
+});
+
 test('SOF-07 experimental em dupla: parceiro precisa de telefone; os dois entram na mesma aula', opc, async () => {
   const tel = novoTel();
   let semTel;
